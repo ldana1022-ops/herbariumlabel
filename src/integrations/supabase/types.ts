@@ -14,7 +14,69 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      herbarium_specimens: {
+        Row: {
+          accession_number: string
+          altitude_m: number | null
+          collection_date: string
+          collectors: string
+          created_at: string
+          determination: string | null
+          determination_date: string | null
+          determined_by: string | null
+          family: string
+          id: string
+          latitude: number | null
+          local_name: string | null
+          locality: string
+          longitude: number | null
+          notes: string | null
+          region: string | null
+          scientific_name: string
+          updated_at: string
+        }
+        Insert: {
+          accession_number: string
+          altitude_m?: number | null
+          collection_date: string
+          collectors: string
+          created_at?: string
+          determination?: string | null
+          determination_date?: string | null
+          determined_by?: string | null
+          family: string
+          id?: string
+          latitude?: number | null
+          local_name?: string | null
+          locality: string
+          longitude?: number | null
+          notes?: string | null
+          region?: string | null
+          scientific_name: string
+          updated_at?: string
+        }
+        Update: {
+          accession_number?: string
+          altitude_m?: number | null
+          collection_date?: string
+          collectors?: string
+          created_at?: string
+          determination?: string | null
+          determination_date?: string | null
+          determined_by?: string | null
+          family?: string
+          id?: string
+          latitude?: number | null
+          local_name?: string | null
+          locality?: string
+          longitude?: number | null
+          notes?: string | null
+          region?: string | null
+          scientific_name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
