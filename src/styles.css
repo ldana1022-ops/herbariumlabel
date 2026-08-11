@@ -142,3 +142,143 @@
     color: var(--color-foreground);
   }
 }
+
+/* ---------------------------------------------------------------
+ * Institutional typography
+ * ------------------------------------------------------------- */
+body {
+  font-family: "IBM Plex Sans Arabic", "Segoe UI", system-ui, sans-serif;
+}
+
+/* ---------------------------------------------------------------
+ * Herbarium label — fixed 105 x 74 mm, official scientific layout
+ * ------------------------------------------------------------- */
+.herbarium-label {
+  width: 105mm;
+  height: 74mm;
+  background: #ffffff;
+  color: #000000;
+  padding: 2mm;
+  box-sizing: border-box;
+  font-family: "Times New Roman", "Liberation Serif", Georgia, serif;
+  direction: ltr;
+  text-align: left;
+}
+
+.herbarium-label-inner {
+  height: 100%;
+  border: 1.6pt solid #000;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.herbarium-label-head {
+  border-bottom: 1.6pt solid #000;
+  background: #f0f0f0;
+  padding: 2mm 2mm 1.6mm;
+  text-align: center;
+}
+
+.head-line-1 {
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 700;
+  font-size: 8.2pt;
+  letter-spacing: 0.02em;
+}
+
+.head-line-2 {
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 700;
+  font-size: 6.6pt;
+  line-height: 1.35;
+  margin-top: 1.2mm;
+}
+
+.herbarium-label-body {
+  flex: 1;
+  padding: 1.8mm 2.4mm;
+  font-size: 8pt;
+  line-height: 1.55;
+  position: relative;
+}
+
+.label-row {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.label-coords {
+  display: flex;
+  gap: 4mm;
+}
+
+.label-key {
+  font-weight: 700;
+}
+
+.label-value {
+  font-weight: 400;
+}
+
+.label-dots {
+  color: #000;
+  letter-spacing: 0.5px;
+}
+
+.label-accession {
+  position: absolute;
+  right: 2.4mm;
+  bottom: 1mm;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 6pt;
+  letter-spacing: 0.04em;
+  color: #333;
+}
+
+/* ---------------------------------------------------------------
+ * Printing
+ * ------------------------------------------------------------- */
+@page {
+  size: A4 portrait;
+  margin: 8mm;
+}
+
+.print-sheet {
+  display: grid;
+  grid-template-columns: repeat(2, 105mm);
+  gap: 4mm;
+  justify-content: center;
+}
+
+@media print {
+  html,
+  body {
+    background: #ffffff !important;
+  }
+
+  .no-print,
+  .no-print-wrapper header,
+  .no-print-wrapper footer,
+  .no-print-wrapper nav {
+    display: none !important;
+  }
+
+  .print-only-labels {
+    display: block !important;
+  }
+
+  .print-hide {
+    display: none !important;
+  }
+
+  .herbarium-label {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .print-sheet {
+    gap: 0;
+  }
+}
