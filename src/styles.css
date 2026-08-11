@@ -63,25 +63,25 @@
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.129 0.042 264.695);
+  --background: oklch(0.985 0.002 106);
+  --foreground: oklch(0.21 0.01 150);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.129 0.042 264.695);
+  --card-foreground: oklch(0.21 0.01 150);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.129 0.042 264.695);
-  --primary: oklch(0.208 0.042 265.755);
-  --primary-foreground: oklch(0.984 0.003 247.858);
-  --secondary: oklch(0.968 0.007 247.896);
-  --secondary-foreground: oklch(0.208 0.042 265.755);
-  --muted: oklch(0.968 0.007 247.896);
-  --muted-foreground: oklch(0.554 0.046 257.417);
-  --accent: oklch(0.968 0.007 247.896);
-  --accent-foreground: oklch(0.208 0.042 265.755);
+  --popover-foreground: oklch(0.21 0.01 150);
+  --primary: oklch(0.42 0.075 152);
+  --primary-foreground: oklch(0.985 0.005 150);
+  --secondary: oklch(0.955 0.006 150);
+  --secondary-foreground: oklch(0.28 0.03 152);
+  --muted: oklch(0.962 0.004 150);
+  --muted-foreground: oklch(0.5 0.012 150);
+  --accent: oklch(0.93 0.02 152);
+  --accent-foreground: oklch(0.3 0.04 152);
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.984 0.003 247.858);
-  --border: oklch(0.929 0.013 255.508);
-  --input: oklch(0.929 0.013 255.508);
-  --ring: oklch(0.704 0.04 256.788);
+  --border: oklch(0.9 0.005 150);
+  --input: oklch(0.9 0.005 150);
+  --ring: oklch(0.55 0.06 152);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -140,5 +140,146 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+  }
+}
+
+/* ---------------------------------------------------------------
+ * Institutional typography
+ * ------------------------------------------------------------- */
+body {
+  font-family: "IBM Plex Sans Arabic", "Segoe UI", system-ui, sans-serif;
+}
+
+/* ---------------------------------------------------------------
+ * Herbarium label — fixed 105 x 74 mm, official scientific layout
+ * ------------------------------------------------------------- */
+.herbarium-label {
+  width: 105mm;
+  height: 74mm;
+  background: #ffffff;
+  color: #000000;
+  padding: 2mm;
+  box-sizing: border-box;
+  font-family: "Times New Roman", "Liberation Serif", Georgia, serif;
+  direction: ltr;
+  text-align: left;
+}
+
+.herbarium-label-inner {
+  height: 100%;
+  border: 1.6pt solid #000;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.herbarium-label-head {
+  border-bottom: 1.6pt solid #000;
+  background: #f0f0f0;
+  padding: 2mm 2mm 1.6mm;
+  text-align: center;
+}
+
+.head-line-1 {
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 700;
+  font-size: 8.2pt;
+  letter-spacing: 0.02em;
+}
+
+.head-line-2 {
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 700;
+  font-size: 6.6pt;
+  line-height: 1.35;
+  margin-top: 1.2mm;
+}
+
+.herbarium-label-body {
+  flex: 1;
+  padding: 1.6mm 2.4mm;
+  font-size: 7.8pt;
+  line-height: 1.42;
+  padding-bottom: 4mm;
+  position: relative;
+}
+
+.label-row {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.label-coords {
+  display: flex;
+  gap: 4mm;
+}
+
+.label-key {
+  font-weight: 700;
+}
+
+.label-value {
+  font-weight: 400;
+}
+
+.label-dots {
+  color: #000;
+  letter-spacing: 0.5px;
+}
+
+.label-accession {
+  position: absolute;
+  right: 2.4mm;
+  bottom: 1mm;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 6pt;
+  letter-spacing: 0.04em;
+  color: #333;
+}
+
+/* ---------------------------------------------------------------
+ * Printing
+ * ------------------------------------------------------------- */
+@page {
+  size: A4 portrait;
+  margin: 8mm;
+}
+
+.print-sheet {
+  display: grid;
+  grid-template-columns: repeat(2, 105mm);
+  gap: 4mm;
+  justify-content: center;
+}
+
+@media print {
+  html,
+  body {
+    background: #ffffff !important;
+  }
+
+  .no-print,
+  .no-print-wrapper header,
+  .no-print-wrapper footer,
+  .no-print-wrapper nav {
+    display: none !important;
+  }
+
+  .print-only-labels {
+    display: block !important;
+  }
+
+  .print-hide {
+    display: none !important;
+  }
+
+  .herbarium-label {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .print-sheet {
+    gap: 0;
   }
 }
