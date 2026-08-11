@@ -10,12 +10,20 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PrintRouteImport } from './routes/print'
 import { Route as SpecimensIndexRouteImport } from './routes/specimens.index'
 import { Route as SpecimensNewRouteImport } from './routes/specimens.new'
+import { Route as SpecimensIdIndexRouteImport } from './routes/specimens.$id.index'
+import { Route as SpecimensIdEditRouteImport } from './routes/specimens.$id.edit'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrintRoute = PrintRouteImport.update({
+  id: '/print',
+  path: '/print',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SpecimensIndexRoute = SpecimensIndexRouteImport.update({
@@ -28,35 +36,76 @@ const SpecimensNewRoute = SpecimensNewRouteImport.update({
   path: '/specimens/new',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SpecimensIdIndexRoute = SpecimensIdIndexRouteImport.update({
+  id: '/specimens/$id/',
+  path: '/specimens/$id/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SpecimensIdEditRoute = SpecimensIdEditRouteImport.update({
+  id: '/specimens/$id/edit',
+  path: '/specimens/$id/edit',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/print': typeof PrintRoute
   '/specimens/new': typeof SpecimensNewRoute
   '/specimens/': typeof SpecimensIndexRoute
+  '/specimens/$id/edit': typeof SpecimensIdEditRoute
+  '/specimens/$id/': typeof SpecimensIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/print': typeof PrintRoute
   '/specimens/new': typeof SpecimensNewRoute
   '/specimens': typeof SpecimensIndexRoute
+  '/specimens/$id/edit': typeof SpecimensIdEditRoute
+  '/specimens/$id': typeof SpecimensIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/print': typeof PrintRoute
   '/specimens/new': typeof SpecimensNewRoute
   '/specimens/': typeof SpecimensIndexRoute
+  '/specimens/$id/edit': typeof SpecimensIdEditRoute
+  '/specimens/$id/': typeof SpecimensIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/specimens/new' | '/specimens/'
+  fullPaths:
+    | '/'
+    | '/print'
+    | '/specimens/new'
+    | '/specimens/'
+    | '/specimens/$id/edit'
+    | '/specimens/$id/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/specimens/new' | '/specimens'
-  id: '__root__' | '/' | '/specimens/new' | '/specimens/'
+  to:
+    | '/'
+    | '/print'
+    | '/specimens/new'
+    | '/specimens'
+    | '/specimens/$id/edit'
+    | '/specimens/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/print'
+    | '/specimens/new'
+    | '/specimens/'
+    | '/specimens/$id/edit'
+    | '/specimens/$id/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  PrintRoute: typeof PrintRoute
   SpecimensNewRoute: typeof SpecimensNewRoute
   SpecimensIndexRoute: typeof SpecimensIndexRoute
+  SpecimensIdEditRoute: typeof SpecimensIdEditRoute
+  SpecimensIdIndexRoute: typeof SpecimensIdIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -66,6 +115,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/print': {
+      id: '/print'
+      path: '/print'
+      fullPath: '/print'
+      preLoaderRoute: typeof PrintRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/specimens/': {
@@ -82,13 +138,30 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SpecimensNewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/specimens/$id/': {
+      id: '/specimens/$id/'
+      path: '/specimens/$id'
+      fullPath: '/specimens/$id/'
+      preLoaderRoute: typeof SpecimensIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/specimens/$id/edit': {
+      id: '/specimens/$id/edit'
+      path: '/specimens/$id/edit'
+      fullPath: '/specimens/$id/edit'
+      preLoaderRoute: typeof SpecimensIdEditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  PrintRoute: PrintRoute,
   SpecimensNewRoute: SpecimensNewRoute,
   SpecimensIndexRoute: SpecimensIndexRoute,
+  SpecimensIdEditRoute: SpecimensIdEditRoute,
+  SpecimensIdIndexRoute: SpecimensIdIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

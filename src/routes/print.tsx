@@ -7,7 +7,7 @@ import { useI18n } from "@/lib/i18n";
 import { fetchSpecimens } from "@/lib/specimens";
 
 export const Route = createFileRoute("/print")({
-  validateSearch: (search: Record<string, unknown>) => ({
+  validateSearch: (search: Record<string, unknown>): { ids: string } => ({
     ids: typeof search['ids'] === "string" ? (search['ids'] as string) : "",
   }),
   head: () => ({
@@ -29,7 +29,10 @@ function PrintPage() {
   const { t, dir } = useI18n();
   const { data = [], isLoading } = useQuery({ queryKey: ["specimens"], queryFn: fetchSpecimens });
 
-  const idList = ids.split(",").map((v) => v.trim()).filter(Boolean);
+  const idList = ids
+    .split(",")
+    .map((v: string) => v.trim())
+    .filter(Boolean);
   const labels = idList.length > 0 ? data.filter((s) => idList.includes(s.id)) : [];
 
   return (
