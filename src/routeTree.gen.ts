@@ -10,11 +10,17 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SpecimensIndexRouteImport } from './routes/specimens.index'
 import { Route as SpecimensNewRouteImport } from './routes/specimens.new'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SpecimensIndexRoute = SpecimensIndexRouteImport.update({
+  id: '/specimens/',
+  path: '/specimens/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SpecimensNewRoute = SpecimensNewRouteImport.update({
@@ -26,27 +32,31 @@ const SpecimensNewRoute = SpecimensNewRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/specimens/new': typeof SpecimensNewRoute
+  '/specimens/': typeof SpecimensIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/specimens/new': typeof SpecimensNewRoute
+  '/specimens': typeof SpecimensIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/specimens/new': typeof SpecimensNewRoute
+  '/specimens/': typeof SpecimensIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/specimens/new'
+  fullPaths: '/' | '/specimens/new' | '/specimens/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/specimens/new'
-  id: '__root__' | '/' | '/specimens/new'
+  to: '/' | '/specimens/new' | '/specimens'
+  id: '__root__' | '/' | '/specimens/new' | '/specimens/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   SpecimensNewRoute: typeof SpecimensNewRoute
+  SpecimensIndexRoute: typeof SpecimensIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -56,6 +66,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/specimens/': {
+      id: '/specimens/'
+      path: '/specimens'
+      fullPath: '/specimens/'
+      preLoaderRoute: typeof SpecimensIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/specimens/new': {
@@ -71,6 +88,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   SpecimensNewRoute: SpecimensNewRoute,
+  SpecimensIndexRoute: SpecimensIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
