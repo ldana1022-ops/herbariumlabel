@@ -197,9 +197,10 @@ body {
 
 .herbarium-label-body {
   flex: 1;
-  padding: 1.8mm 2.4mm;
-  font-size: 8pt;
-  line-height: 1.55;
+  padding: 1.6mm 2.4mm;
+  font-size: 7.8pt;
+  line-height: 1.42;
+  padding-bottom: 4mm;
   position: relative;
 }
 
