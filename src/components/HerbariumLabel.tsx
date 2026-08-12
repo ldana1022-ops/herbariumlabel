@@ -1,4 +1,5 @@
 import { formatDate, type Specimen } from "@/lib/specimens";
+import { DEFAULT_LABEL_SIZE, labelStyle, type LabelSize } from "@/lib/label-size";
 
 const DOTS = "....................................................................";
 
@@ -30,9 +31,15 @@ function ScientificName({ name }: { name: string }) {
   );
 }
 
-export function HerbariumLabel({ specimen }: { specimen: Specimen }) {
+export function HerbariumLabel({
+  specimen,
+  size = DEFAULT_LABEL_SIZE,
+}: {
+  specimen: Specimen;
+  size?: LabelSize;
+}) {
   return (
-    <div className="herbarium-label" dir="ltr" lang="en">
+    <div className="herbarium-label" dir="ltr" lang="en" style={labelStyle(size)}>
       <div className="herbarium-label-inner">
         <div className="herbarium-label-head">
           <div className="head-line-1">FLORA OF SAUDIA ARABIA KINGDOM</div>
@@ -50,14 +57,13 @@ export function HerbariumLabel({ specimen }: { specimen: Specimen }) {
           <Row label="Family:" value={specimen.family} />
           <Row label="Local Name:" value={specimen.local_name} />
           <Row label="Locality:" value={specimen.locality} />
-          <Row label="Region:" value={specimen.region} />
           <div className="label-row label-coords">
             <span>
               <span className="label-key">Lat (N):</span>{" "}
               <span className="label-value">{specimen.latitude ?? "........."}</span>
             </span>
             <span>
-              <span className="label-key">Long (E):</span>{" "}
+              <span className="label-key">(E):</span>{" "}
               <span className="label-value">{specimen.longitude ?? "........."}</span>
             </span>
             <span>
@@ -71,9 +77,7 @@ export function HerbariumLabel({ specimen }: { specimen: Specimen }) {
           </div>
           <Row label="Collection Date:" value={formatDate(specimen.collection_date)} />
           <Row label="Collector (s):" value={specimen.collectors} />
-          <Row label="Det.:" value={specimen.determination} fill />
           <Row label="Determined By:" value={specimen.determined_by} fill />
-          <Row label="Determination Date:" value={formatDate(specimen.determination_date)} fill />
           <Row label="Notes:" value={specimen.notes} fill />
           <div className="label-accession">{specimen.accession_number}</div>
         </div>
