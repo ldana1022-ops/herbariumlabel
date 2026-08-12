@@ -38,9 +38,8 @@ import {
 } from "@/lib/specimens";
 
 export const Route = createFileRoute("/specimens/")({
-  validateSearch: (search: Record<string, unknown>) => ({
-    focus: typeof search['focus'] === "string" ? (search['focus'] as string) : undefined,
-  }),
+  validateSearch: (search: Record<string, unknown>): { focus?: string } =>
+    typeof search['focus'] === "string" ? { focus: search['focus'] as string } : {},
   head: () => ({
     meta: [
       { title: "قاعدة بيانات عينات المعشبة | NCVC" },

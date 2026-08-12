@@ -151,3 +151,26 @@ export async function deleteSpecimen(id: string): Promise<void> {
   const { error } = await supabase.from("herbarium_specimens").delete().eq("id", id);
   if (error) throw new Error(error.message);
 }
+
+export async function bulkInsertSpecimens(payloads: SpecimenPayload[]): Promise<number> {
+  if (payloads.length === 0) return 0;
+  let inserted = 0;
+  for (let i = 0; i < payloads.length; i += 200) {
+    const chunk = payloads.slice(i, i + 200);
+    const { data, error } = await supabase.from("herbarium_specimens").insert(chunk).select("id");
+    if (error) throw new Error(humanizeError(error.message));
+    inserted += data?.length ?? 0;
+  }
+  return inserted;
+}
+
+export async function bulkUpdateSpecimens(
+  updates: { id: string; payload: SpecimenPayload }[],
+): Promise<number> {
+  let updated = 0;
+  for (const item of updates) {
+    await updateSpecimen(item.id, item.payload);
+    updated += 1;
+  }
+  return updated;
+}

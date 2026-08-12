@@ -154,8 +154,8 @@ body {
  * Herbarium label — fixed 105 x 74 mm, official scientific layout
  * ------------------------------------------------------------- */
 .herbarium-label {
-  width: 105mm;
-  height: 74mm;
+  width: var(--label-w, 105mm);
+  height: var(--label-h, 74mm);
   background: #ffffff;
   color: #000000;
   padding: 2mm;
@@ -163,6 +163,9 @@ body {
   font-family: "Times New Roman", "Liberation Serif", Georgia, serif;
   direction: ltr;
   text-align: left;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+  overflow: hidden;
 }
 
 .herbarium-label-inner {
@@ -183,14 +186,14 @@ body {
 .head-line-1 {
   font-family: Arial, Helvetica, sans-serif;
   font-weight: 700;
-  font-size: 8.2pt;
+  font-size: calc(8.2pt * var(--label-scale, 1));
   letter-spacing: 0.02em;
 }
 
 .head-line-2 {
   font-family: Arial, Helvetica, sans-serif;
   font-weight: 700;
-  font-size: 6.6pt;
+  font-size: calc(6.6pt * var(--label-scale, 1));
   line-height: 1.35;
   margin-top: 1.2mm;
 }
@@ -198,7 +201,7 @@ body {
 .herbarium-label-body {
   flex: 1;
   padding: 1.6mm 2.4mm;
-  font-size: 7.8pt;
+  font-size: calc(7.8pt * var(--label-scale, 1));
   line-height: 1.42;
   padding-bottom: 4mm;
   position: relative;
@@ -233,7 +236,7 @@ body {
   right: 2.4mm;
   bottom: 1mm;
   font-family: Arial, Helvetica, sans-serif;
-  font-size: 6pt;
+  font-size: calc(6pt * var(--label-scale, 1));
   letter-spacing: 0.04em;
   color: #333;
 }
@@ -241,15 +244,10 @@ body {
 /* ---------------------------------------------------------------
  * Printing
  * ------------------------------------------------------------- */
-@page {
-  size: A4 portrait;
-  margin: 8mm;
-}
-
 .print-sheet {
   display: grid;
-  grid-template-columns: repeat(2, 105mm);
-  gap: 4mm;
+  grid-template-columns: repeat(var(--sheet-cols, 2), var(--label-w, 105mm));
+  gap: var(--sheet-gap, 4mm);
   justify-content: center;
 }
 
@@ -257,6 +255,13 @@ body {
   html,
   body {
     background: #ffffff !important;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  * {
+    print-color-adjust: exact !important;
+    -webkit-print-color-adjust: exact !important;
   }
 
   .no-print,
@@ -280,6 +285,6 @@ body {
   }
 
   .print-sheet {
-    gap: 0;
+    gap: var(--sheet-gap, 4mm);
   }
 }
