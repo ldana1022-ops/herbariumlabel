@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate, useParams } from "@tanstack/react-r
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { ArrowRight, Pencil, Printer } from "lucide-react";
+import { ArrowRight, FileText, Pencil, Printer } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { HerbariumLabel } from "@/components/HerbariumLabel";
 import { Button } from "@/components/ui/button";
@@ -127,6 +127,10 @@ function SpecimenDetailPage() {
                 {t("printLabel")}
               </Link>
             </Button>
+            <Button size="sm" variant="outline" onClick={() => exportLabelsToWord([s], size)}>
+              <FileText className="size-4" />
+              {t("exportWord")}
+            </Button>
             <Button asChild size="sm" variant="ghost">
               <Link to="/specimens">
                 <ArrowRight className="size-4" />
@@ -202,7 +206,7 @@ function SpecimenDetailPage() {
               </CardHeader>
               <CardContent>
                 <div className="overflow-x-auto rounded-md border border-border bg-white p-3">
-                  <HerbariumLabel specimen={s} />
+                  <HerbariumLabel specimen={s} size={size} />
                 </div>
               </CardContent>
             </Card>
