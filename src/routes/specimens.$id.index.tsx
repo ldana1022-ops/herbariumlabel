@@ -11,6 +11,8 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useI18n } from "@/lib/i18n";
+import { exportLabelsToWord } from "@/lib/export-word";
+import { useLabelSize } from "@/lib/label-size";
 import {
   fetchSpecimen,
   formatDate,
@@ -48,6 +50,7 @@ function SpecimenDetailPage() {
   const { t, f } = useI18n();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { size } = useLabelSize();
   const { data, isLoading } = useQuery({
     queryKey: ["specimen", id],
     queryFn: () => fetchSpecimen(id),
