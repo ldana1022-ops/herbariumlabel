@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { Eye, FileSpreadsheet, Pencil, Plus, Printer, Trash2 } from "lucide-react";
+import { Eye, FileSpreadsheet, FileText, Pencil, Plus, Printer, Trash2, Upload } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,6 +29,8 @@ import {
 } from "@/components/ui/select";
 import { useI18n } from "@/lib/i18n";
 import { exportSpecimensToExcel } from "@/lib/export-excel";
+import { exportLabelsToWord } from "@/lib/export-word";
+import { useLabelSize } from "@/lib/label-size";
 import {
   deleteSpecimen,
   fetchSpecimens,
@@ -63,6 +65,7 @@ function SpecimensPage() {
   const { t, f } = useI18n();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { size } = useLabelSize();
   const { data = [], isLoading } = useQuery({ queryKey: ["specimens"], queryFn: fetchSpecimens });
 
   const [q, setQ] = useState("");
@@ -172,11 +175,35 @@ function SpecimensPage() {
             <Button
               size="sm"
               variant="outline"
+              asChild
+            >
+              <Link to="/specimens/import">
+                <Upload className="size-4" />
+                {t("importExcel")}
+              </Link>
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
               onClick={() => exportSpecimensToExcel(filtered)}
               disabled={filtered.length === 0}
             >
               <FileSpreadsheet className="size-4" />
               {t("exportExcel")}
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              disabled={selected.length === 0}
+              onClick={() =>
+                exportLabelsToWord(
+                  data.filter((s) => selected.includes(s.id)),
+                  size,
+                )
+              }
+            >
+              <FileText className="size-4" />
+              {t("exportWord")}
             </Button>
             <Button
               size="sm"
