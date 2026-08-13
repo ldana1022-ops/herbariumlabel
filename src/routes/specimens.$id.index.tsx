@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate, useParams } from "@tanstack/react-r
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { ArrowRight, Pencil, Printer } from "lucide-react";
+import { ArrowRight, FileText, Pencil, Printer } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { HerbariumLabel } from "@/components/HerbariumLabel";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,8 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useI18n } from "@/lib/i18n";
+import { exportLabelsToWord } from "@/lib/export-word";
+import { useLabelSize } from "@/lib/label-size";
 import {
   fetchSpecimen,
   formatDate,
@@ -48,6 +50,7 @@ function SpecimenDetailPage() {
   const { t, f } = useI18n();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { size } = useLabelSize();
   const { data, isLoading } = useQuery({
     queryKey: ["specimen", id],
     queryFn: () => fetchSpecimen(id),
@@ -127,6 +130,10 @@ function SpecimenDetailPage() {
                 {t("printLabel")}
               </Link>
             </Button>
+            <Button size="sm" variant="outline" onClick={() => exportLabelsToWord([s], size)}>
+              <FileText className="size-4" />
+              {t("exportWord")}
+            </Button>
             <Button asChild size="sm" variant="ghost">
               <Link to="/specimens">
                 <ArrowRight className="size-4" />
@@ -202,7 +209,7 @@ function SpecimenDetailPage() {
               </CardHeader>
               <CardContent>
                 <div className="overflow-x-auto rounded-md border border-border bg-white p-3">
-                  <HerbariumLabel specimen={s} />
+                  <HerbariumLabel specimen={s} size={size} />
                 </div>
               </CardContent>
             </Card>
