@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Database, LayoutDashboard, Languages, Plus, Printer } from "lucide-react";
+import { Database, LayoutDashboard, Languages, Plus, Printer, Upload } from "lucide-react";
 import type { ReactNode } from "react";
 import { useI18n } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
@@ -49,6 +49,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
             <NavLink to="/" icon={<LayoutDashboard className="size-4" />} label={t("dashboard")} />
             <NavLink to="/specimens" icon={<Database className="size-4" />} label={t("database")} />
             <NavLink to="/specimens/new" icon={<Plus className="size-4" />} label={t("newSpecimen")} />
+            <NavLink to="/specimens/import" icon={<Upload className="size-4" />} label={t("importExcel")} />
             <NavLink to="/print" icon={<Printer className="size-4" />} label={t("printLabels")} />
           </div>
         </nav>
