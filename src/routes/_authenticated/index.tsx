@@ -8,7 +8,7 @@ import { useI18n } from "@/lib/i18n";
 import { exportSpecimensToExcel } from "@/lib/export-excel";
 import { fetchSpecimens, isDetermined, type Specimen } from "@/lib/specimens";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/_authenticated/")({
   head: () => ({
     meta: [
       { title: "لوحة التحكم | نظام إدارة ملصقات المعشبة النباتية" },

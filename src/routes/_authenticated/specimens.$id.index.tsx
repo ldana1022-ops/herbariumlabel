@@ -21,7 +21,7 @@ import {
   type Specimen,
 } from "@/lib/specimens";
 
-export const Route = createFileRoute("/specimens/$id/")({
+export const Route = createFileRoute("/_authenticated/specimens/$id/")({
   head: () => ({
     meta: [
       { title: "تفاصيل العينة | نظام إدارة ملصقات المعشبة" },
@@ -46,7 +46,7 @@ function DetailRow({ label, value }: { label: string; value?: string | number | 
 }
 
 function SpecimenDetailPage() {
-  const { id } = useParams({ from: "/specimens/$id/" });
+  const { id } = useParams({ from: "/_authenticated/specimens/$id/" });
   const { t, f } = useI18n();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
