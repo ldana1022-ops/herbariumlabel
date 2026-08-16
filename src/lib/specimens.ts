@@ -7,7 +7,8 @@ export type Specimen = {
   scientific_name: string;
   family: string;
   local_name: string | null;
-  locality: string;
+  local_name_ar: string | null;
+  locality: string | null;
   region: string | null;
   latitude: number | null;
   longitude: number | null;
