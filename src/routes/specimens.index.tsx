@@ -118,11 +118,11 @@ function SpecimensPage() {
       }
       if (family !== ALL && s.family !== family) return false;
       if (region !== ALL && s.region !== region) return false;
-      if (collector !== ALL && !s.collectors.includes(collector)) return false;
+      if (collector !== ALL && !(s.collectors ?? "").includes(collector)) return false;
       if (statusFilter === "determined" && !isDetermined(s)) return false;
       if (statusFilter === "undetermined" && isDetermined(s)) return false;
-      if (from && s.collection_date < from) return false;
-      if (to && s.collection_date > to) return false;
+      if (from && (s.collection_date ?? "") < from) return false;
+      if (to && (s.collection_date ?? "") > to) return false;
       return true;
     });
   }, [data, q, family, region, collector, statusFilter, from, to]);
