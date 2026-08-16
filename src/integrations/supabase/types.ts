@@ -18,17 +18,18 @@ export type Database = {
         Row: {
           accession_number: string
           altitude_m: number | null
-          collection_date: string
-          collectors: string
+          collection_date: string | null
+          collectors: string | null
           created_at: string
           determination: string | null
           determination_date: string | null
           determined_by: string | null
-          family: string
+          family: string | null
           id: string
           latitude: number | null
           local_name: string | null
-          locality: string
+          local_name_ar: string | null
+          locality: string | null
           longitude: number | null
           notes: string | null
           region: string | null
@@ -38,17 +39,18 @@ export type Database = {
         Insert: {
           accession_number: string
           altitude_m?: number | null
-          collection_date: string
-          collectors: string
+          collection_date?: string | null
+          collectors?: string | null
           created_at?: string
           determination?: string | null
           determination_date?: string | null
           determined_by?: string | null
-          family: string
+          family?: string | null
           id?: string
           latitude?: number | null
           local_name?: string | null
-          locality: string
+          local_name_ar?: string | null
+          locality?: string | null
           longitude?: number | null
           notes?: string | null
           region?: string | null
@@ -58,17 +60,18 @@ export type Database = {
         Update: {
           accession_number?: string
           altitude_m?: number | null
-          collection_date?: string
-          collectors?: string
+          collection_date?: string | null
+          collectors?: string | null
           created_at?: string
           determination?: string | null
           determination_date?: string | null
           determined_by?: string | null
-          family?: string
+          family?: string | null
           id?: string
           latitude?: number | null
           local_name?: string | null
-          locality?: string
+          local_name_ar?: string | null
+          locality?: string | null
           longitude?: number | null
           notes?: string | null
           region?: string | null

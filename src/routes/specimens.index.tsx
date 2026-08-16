@@ -90,7 +90,7 @@ function SpecimensPage() {
     () =>
       [
         ...new Set(
-          data.flatMap((s) => s.collectors.split(";").map((c) => c.trim())).filter(Boolean),
+          data.flatMap((s) => (s.collectors ?? "").split(";").map((c) => c.trim())).filter(Boolean),
         ),
       ].sort(),
     [data],
@@ -105,6 +105,7 @@ function SpecimensPage() {
           s.scientific_name,
           s.family,
           s.local_name,
+          s.local_name_ar,
           s.locality,
           s.region,
           s.collectors,
@@ -117,11 +118,11 @@ function SpecimensPage() {
       }
       if (family !== ALL && s.family !== family) return false;
       if (region !== ALL && s.region !== region) return false;
-      if (collector !== ALL && !s.collectors.includes(collector)) return false;
+      if (collector !== ALL && !(s.collectors ?? "").includes(collector)) return false;
       if (statusFilter === "determined" && !isDetermined(s)) return false;
       if (statusFilter === "undetermined" && isDetermined(s)) return false;
-      if (from && s.collection_date < from) return false;
-      if (to && s.collection_date > to) return false;
+      if (from && (s.collection_date ?? "") < from) return false;
+      if (to && (s.collection_date ?? "") > to) return false;
       return true;
     });
   }, [data, q, family, region, collector, statusFilter, from, to]);
@@ -364,15 +365,17 @@ function SpecimensPage() {
                     </td>
                     <td className="whitespace-nowrap p-2 font-medium">{s.accession_number}</td>
                     <td className="whitespace-nowrap p-2 italic">{s.scientific_name}</td>
-                    <td className="whitespace-nowrap p-2">{s.family}</td>
-                    <td className="whitespace-nowrap p-2">{s.local_name ?? "—"}</td>
-                    <td className="whitespace-nowrap p-2">{s.locality}</td>
+                    <td className="whitespace-nowrap p-2">{s.family ?? "—"}</td>
+                    <td className="whitespace-nowrap p-2">
+                      {[s.local_name, s.local_name_ar].filter(Boolean).join(" / ") || "—"}
+                    </td>
+                    <td className="whitespace-nowrap p-2">{s.locality ?? "—"}</td>
                     <td className="whitespace-nowrap p-2">{s.region ?? "—"}</td>
                     <td className="whitespace-nowrap p-2 tabular-nums">{s.latitude ?? "—"}</td>
                     <td className="whitespace-nowrap p-2 tabular-nums">{s.longitude ?? "—"}</td>
                     <td className="whitespace-nowrap p-2 tabular-nums">{s.altitude_m ?? "—"}</td>
                     <td className="whitespace-nowrap p-2 tabular-nums">{formatDate(s.collection_date)}</td>
-                    <td className="whitespace-nowrap p-2">{s.collectors}</td>
+                    <td className="whitespace-nowrap p-2">{s.collectors ?? "—"}</td>
                     <td className="whitespace-nowrap p-2">{s.determination ?? "—"}</td>
                     <td className="whitespace-nowrap p-2">{s.determined_by ?? "—"}</td>
                     <td className="whitespace-nowrap p-2 tabular-nums">

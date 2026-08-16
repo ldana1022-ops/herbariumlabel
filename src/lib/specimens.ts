@@ -7,7 +7,8 @@ export type Specimen = {
   scientific_name: string;
   family: string;
   local_name: string | null;
-  locality: string;
+  local_name_ar: string | null;
+  locality: string | null;
   region: string | null;
   latitude: number | null;
   longitude: number | null;
@@ -46,9 +47,10 @@ const optionalDate = z
 export const specimenSchema = z.object({
   accession_number: z.string().trim().min(1, "required").max(60),
   scientific_name: z.string().trim().min(1, "required").max(200),
-  family: z.string().trim().min(1, "required").max(120),
+  family: optionalText,
   local_name: optionalText,
-  locality: z.string().trim().min(1, "required").max(300),
+  local_name_ar: optionalText,
+  locality: z.string().trim().max(300).optional().transform((v) => (v && v.length > 0 ? v : null)),
   region: optionalText,
   latitude: optionalNumber.refine(
     (v) => v === null || (!Number.isNaN(v) && v >= -90 && v <= 90),
@@ -62,8 +64,8 @@ export const specimenSchema = z.object({
     (v) => v === null || !Number.isNaN(v),
     "invalidNumber",
   ),
-  collection_date: z.string().trim().min(1, "required"),
-  collectors: z.string().trim().min(1, "required").max(300),
+  collection_date: optionalDate,
+  collectors: z.string().trim().max(300).optional().transform((v) => (v && v.length > 0 ? v : null)),
   determination: optionalText,
   determined_by: optionalText,
   determination_date: optionalDate,

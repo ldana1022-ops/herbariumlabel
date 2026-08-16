@@ -142,6 +142,7 @@ const fieldLabels: Record<string, { ar: string; en: string }> = {
   scientific_name: { ar: "الاسم العلمي", en: "Scientific Name" },
   family: { ar: "الفصيلة", en: "Family" },
   local_name: { ar: "الاسم المحلي", en: "Local Name" },
+  local_name_ar: { ar: "الاسم المحلي (عربي)", en: "Local Name (Arabic)" },
   locality: { ar: "موقع الجمع", en: "Locality" },
   region: { ar: "المنطقة", en: "Region" },
   latitude: { ar: "خط العرض (N)", en: "Latitude (N)" },

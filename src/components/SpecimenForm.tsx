@@ -18,15 +18,16 @@ type Props = {
 const dataFields: Array<{ name: keyof SpecimenInput; type?: string; required?: boolean }> = [
   { name: "accession_number", required: true },
   { name: "scientific_name", required: true },
-  { name: "family", required: true },
+  { name: "family" },
   { name: "local_name" },
-  { name: "locality", required: true },
+  { name: "local_name_ar" },
+  { name: "locality" },
   { name: "region" },
   { name: "latitude" },
   { name: "longitude" },
   { name: "altitude_m" },
-  { name: "collection_date", type: "date", required: true },
-  { name: "collectors", required: true },
+  { name: "collection_date", type: "date" },
+  { name: "collectors" },
 ];
 
 export function SpecimenForm({ initial, submitting, submitLabel, onSubmit, onCancel }: Props) {
