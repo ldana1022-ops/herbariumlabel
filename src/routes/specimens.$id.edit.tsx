@@ -73,9 +73,10 @@ function EditSpecimenPage() {
   const initial: SpecimenInput = {
     accession_number: data.accession_number,
     scientific_name: data.scientific_name,
-    family: data.family,
+    family: data.family ?? "",
     local_name: data.local_name ?? "",
-    locality: data.locality,
+    local_name_ar: data.local_name_ar ?? "",
+    locality: data.locality ?? "",
     region: data.region ?? "",
     latitude: data.latitude ?? "",
     longitude: data.longitude ?? "",
