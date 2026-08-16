@@ -153,6 +153,7 @@ function SpecimenDetailPage() {
               <DetailRow label={f("scientific_name")} value={s.scientific_name} />
               <DetailRow label={f("family")} value={s.family} />
               <DetailRow label={f("local_name")} value={s.local_name} />
+              <DetailRow label={f("local_name_ar")} value={s.local_name_ar} />
               <DetailRow label={f("locality")} value={s.locality} />
               <DetailRow label={f("region")} value={s.region} />
               <DetailRow label={f("latitude")} value={s.latitude} />
