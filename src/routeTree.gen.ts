@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedPrintRouteImport } from './routes/_authenticated/print'
 import { Route as AuthenticatedSpecimensIndexRouteImport } from './routes/_authenticated/specimens.index'
@@ -17,50 +18,54 @@ import { Route as AuthenticatedSpecimensNewRouteImport } from './routes/_authent
 import { Route as AuthenticatedSpecimensIdIndexRouteImport } from './routes/_authenticated/specimens.$id.index'
 import { Route as AuthenticatedSpecimensIdEditRouteImport } from './routes/_authenticated/specimens.$id.edit'
 
-const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
-  id: '/_authenticated/',
-  path: '/',
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedPrintRoute = AuthenticatedPrintRouteImport.update({
-  id: '/_authenticated/print',
+  id: '/print',
   path: '/print',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedSpecimensIndexRoute =
   AuthenticatedSpecimensIndexRouteImport.update({
-    id: '/_authenticated/specimens/',
+    id: '/specimens/',
     path: '/specimens/',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedSpecimensImportRoute =
   AuthenticatedSpecimensImportRouteImport.update({
-    id: '/_authenticated/specimens/import',
+    id: '/specimens/import',
     path: '/specimens/import',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedSpecimensNewRoute =
   AuthenticatedSpecimensNewRouteImport.update({
-    id: '/_authenticated/specimens/new',
+    id: '/specimens/new',
     path: '/specimens/new',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedSpecimensIdIndexRoute =
   AuthenticatedSpecimensIdIndexRouteImport.update({
-    id: '/_authenticated/specimens/$id/',
+    id: '/specimens/$id/',
     path: '/specimens/$id/',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedSpecimensIdEditRoute =
   AuthenticatedSpecimensIdEditRouteImport.update({
-    id: '/_authenticated/specimens/$id/edit',
+    id: '/specimens/$id/edit',
     path: '/specimens/$id/edit',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
-  '/print': typeof AuthenticatedPrintRoute
   '/': typeof AuthenticatedIndexRoute
+  '/print': typeof AuthenticatedPrintRoute
   '/specimens/import': typeof AuthenticatedSpecimensImportRoute
   '/specimens/new': typeof AuthenticatedSpecimensNewRoute
   '/specimens/': typeof AuthenticatedSpecimensIndexRoute
@@ -78,6 +83,7 @@ export interface FileRoutesByTo {
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/_authenticated/print': typeof AuthenticatedPrintRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/specimens/import': typeof AuthenticatedSpecimensImportRoute
@@ -89,8 +95,8 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/print'
     | '/'
+    | '/print'
     | '/specimens/import'
     | '/specimens/new'
     | '/specimens/'
@@ -107,6 +113,7 @@ export interface FileRouteTypes {
     | '/specimens/$id'
   id:
     | '__root__'
+    | '/_authenticated'
     | '/_authenticated/print'
     | '/_authenticated/'
     | '/_authenticated/specimens/import'
@@ -117,6 +124,71 @@ export interface FileRouteTypes {
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+}
+
+declare module '@tanstack/react-router' {
+  interface FileRoutesByPath {
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/': {
+      id: '/_authenticated/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/print': {
+      id: '/_authenticated/print'
+      path: '/print'
+      fullPath: '/print'
+      preLoaderRoute: typeof AuthenticatedPrintRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/specimens/': {
+      id: '/_authenticated/specimens/'
+      path: '/specimens'
+      fullPath: '/specimens/'
+      preLoaderRoute: typeof AuthenticatedSpecimensIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/specimens/import': {
+      id: '/_authenticated/specimens/import'
+      path: '/specimens/import'
+      fullPath: '/specimens/import'
+      preLoaderRoute: typeof AuthenticatedSpecimensImportRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/specimens/new': {
+      id: '/_authenticated/specimens/new'
+      path: '/specimens/new'
+      fullPath: '/specimens/new'
+      preLoaderRoute: typeof AuthenticatedSpecimensNewRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/specimens/$id/': {
+      id: '/_authenticated/specimens/$id/'
+      path: '/specimens/$id'
+      fullPath: '/specimens/$id/'
+      preLoaderRoute: typeof AuthenticatedSpecimensIdIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/specimens/$id/edit': {
+      id: '/_authenticated/specimens/$id/edit'
+      path: '/specimens/$id/edit'
+      fullPath: '/specimens/$id/edit'
+      preLoaderRoute: typeof AuthenticatedSpecimensIdEditRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+  }
+}
+
+interface AuthenticatedRouteRouteChildren {
   AuthenticatedPrintRoute: typeof AuthenticatedPrintRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedSpecimensImportRoute: typeof AuthenticatedSpecimensImportRoute
@@ -126,61 +198,7 @@ export interface RootRouteChildren {
   AuthenticatedSpecimensIdIndexRoute: typeof AuthenticatedSpecimensIdIndexRoute
 }
 
-declare module '@tanstack/react-router' {
-  interface FileRoutesByPath {
-    '/_authenticated/': {
-      id: '/_authenticated/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof AuthenticatedIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/print': {
-      id: '/_authenticated/print'
-      path: '/print'
-      fullPath: '/print'
-      preLoaderRoute: typeof AuthenticatedPrintRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/specimens/': {
-      id: '/_authenticated/specimens/'
-      path: '/specimens'
-      fullPath: '/specimens/'
-      preLoaderRoute: typeof AuthenticatedSpecimensIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/specimens/import': {
-      id: '/_authenticated/specimens/import'
-      path: '/specimens/import'
-      fullPath: '/specimens/import'
-      preLoaderRoute: typeof AuthenticatedSpecimensImportRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/specimens/new': {
-      id: '/_authenticated/specimens/new'
-      path: '/specimens/new'
-      fullPath: '/specimens/new'
-      preLoaderRoute: typeof AuthenticatedSpecimensNewRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/specimens/$id/': {
-      id: '/_authenticated/specimens/$id/'
-      path: '/specimens/$id'
-      fullPath: '/specimens/$id/'
-      preLoaderRoute: typeof AuthenticatedSpecimensIdIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/specimens/$id/edit': {
-      id: '/_authenticated/specimens/$id/edit'
-      path: '/specimens/$id/edit'
-      fullPath: '/specimens/$id/edit'
-      preLoaderRoute: typeof AuthenticatedSpecimensIdEditRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-  }
-}
-
-const rootRouteChildren: RootRouteChildren = {
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPrintRoute: AuthenticatedPrintRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedSpecimensImportRoute: AuthenticatedSpecimensImportRoute,
@@ -188,6 +206,13 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedSpecimensIndexRoute: AuthenticatedSpecimensIndexRoute,
   AuthenticatedSpecimensIdEditRoute: AuthenticatedSpecimensIdEditRoute,
   AuthenticatedSpecimensIdIndexRoute: AuthenticatedSpecimensIdIndexRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
+const rootRouteChildren: RootRouteChildren = {
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
