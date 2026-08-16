@@ -375,7 +375,7 @@ function SpecimensPage() {
                     <td className="whitespace-nowrap p-2 tabular-nums">{s.longitude ?? "—"}</td>
                     <td className="whitespace-nowrap p-2 tabular-nums">{s.altitude_m ?? "—"}</td>
                     <td className="whitespace-nowrap p-2 tabular-nums">{formatDate(s.collection_date)}</td>
-                    <td className="whitespace-nowrap p-2">{s.collectors}</td>
+                    <td className="whitespace-nowrap p-2">{s.collectors ?? "—"}</td>
                     <td className="whitespace-nowrap p-2">{s.determination ?? "—"}</td>
                     <td className="whitespace-nowrap p-2">{s.determined_by ?? "—"}</td>
                     <td className="whitespace-nowrap p-2 tabular-nums">
