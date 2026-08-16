@@ -47,9 +47,10 @@ const optionalDate = z
 export const specimenSchema = z.object({
   accession_number: z.string().trim().min(1, "required").max(60),
   scientific_name: z.string().trim().min(1, "required").max(200),
-  family: z.string().trim().min(1, "required").max(120),
+  family: optionalText,
   local_name: optionalText,
-  locality: z.string().trim().min(1, "required").max(300),
+  local_name_ar: optionalText,
+  locality: z.string().trim().max(300).optional().transform((v) => (v && v.length > 0 ? v : null)),
   region: optionalText,
   latitude: optionalNumber.refine(
     (v) => v === null || (!Number.isNaN(v) && v >= -90 && v <= 90),
