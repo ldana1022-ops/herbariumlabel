@@ -90,7 +90,7 @@ function SpecimensPage() {
     () =>
       [
         ...new Set(
-          data.flatMap((s) => s.collectors.split(";").map((c) => c.trim())).filter(Boolean),
+          data.flatMap((s) => (s.collectors ?? "").split(";").map((c) => c.trim())).filter(Boolean),
         ),
       ].sort(),
     [data],
