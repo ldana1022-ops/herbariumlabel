@@ -14,6 +14,18 @@ export type Database = {
   }
   public: {
     Tables: {
+      _rls_verify: {
+        Row: {
+          id: number
+        }
+        Insert: {
+          id: number
+        }
+        Update: {
+          id?: number
+        }
+        Relationships: []
+      }
       herbarium_specimens: {
         Row: {
           accession_number: string
