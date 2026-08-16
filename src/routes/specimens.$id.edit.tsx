@@ -12,7 +12,7 @@ import {
   type SpecimenPayload,
 } from "@/lib/specimens";
 
-export const Route = createFileRoute("/_authenticated/specimens/$id/edit")({
+export const Route = createFileRoute("/specimens/$id/edit")({
   head: () => ({
     meta: [
       { title: "تعديل بيانات العينة | نظام إدارة ملصقات المعشبة" },
@@ -28,7 +28,7 @@ export const Route = createFileRoute("/_authenticated/specimens/$id/edit")({
 });
 
 function EditSpecimenPage() {
-  const { id } = useParams({ from: "/_authenticated/specimens/$id/edit" });
+  const { id } = useParams({ from: "/specimens/$id/edit" });
   const { t } = useI18n();
   const navigate = useNavigate();
   const queryClient = useQueryClient();

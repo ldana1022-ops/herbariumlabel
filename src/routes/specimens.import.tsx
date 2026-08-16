@@ -27,7 +27,7 @@ import {
 } from "@/lib/import-excel";
 import { bulkInsertSpecimens, bulkUpdateSpecimens, fetchSpecimens } from "@/lib/specimens";
 
-export const Route = createFileRoute("/_authenticated/specimens/import")({
+export const Route = createFileRoute("/specimens/import")({
   head: () => ({
     meta: [
       { title: "استيراد عينات من Excel | NCVC" },
