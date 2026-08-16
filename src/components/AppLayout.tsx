@@ -1,7 +1,9 @@
-import { Link } from "@tanstack/react-router";
-import { Database, LayoutDashboard, Languages, Plus, Printer, Upload } from "lucide-react";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
+import { Database, LayoutDashboard, Languages, LogOut, Plus, Printer, Upload, Users } from "lucide-react";
 import type { ReactNode } from "react";
 import { useI18n } from "@/lib/i18n";
+import { useAuth, roleLabel } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 
 function NavLink({ to, icon, label }: { to: string; icon: ReactNode; label: string }) {
@@ -20,6 +22,16 @@ function NavLink({ to, icon, label }: { to: string; icon: ReactNode; label: stri
 
 export function AppLayout({ children }: { children: ReactNode }) {
   const { t, lang, setLang, dir } = useI18n();
+  const { user, role, can, signOut } = useAuth();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  async function handleSignOut() {
+    await queryClient.cancelQueries();
+    queryClient.clear();
+    await signOut();
+    navigate({ to: "/auth", replace: true });
+  }
 
   return (
     <div dir={dir} className="min-h-screen bg-muted/40 no-print-wrapper">
@@ -34,23 +46,46 @@ export function AppLayout({ children }: { children: ReactNode }) {
               <p className="max-w-2xl text-xs leading-tight text-muted-foreground">{t("org")}</p>
             </div>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setLang(lang === "ar" ? "en" : "ar")}
-            className="w-fit gap-2"
-          >
-            <Languages className="size-4" />
-            {lang === "ar" ? "English" : "العربية"}
-          </Button>
+          <div className="flex flex-wrap items-center gap-2">
+            {user ? (
+              <div className="leading-tight text-xs text-muted-foreground">
+                <div className="font-medium text-foreground">{user.email}</div>
+                <div>{role ? roleLabel[role][lang] : "—"}</div>
+              </div>
+            ) : null}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setLang(lang === "ar" ? "en" : "ar")}
+              className="w-fit gap-2"
+            >
+              <Languages className="size-4" />
+              {lang === "ar" ? "English" : "العربية"}
+            </Button>
+            {user ? (
+              <Button variant="ghost" size="sm" className="gap-2" onClick={handleSignOut}>
+                <LogOut className="size-4" />
+                {t("signOut")}
+              </Button>
+            ) : null}
+          </div>
         </div>
         <nav className="border-t border-border bg-card">
           <div className="mx-auto flex max-w-7xl flex-wrap gap-1 px-2 py-1.5 sm:px-4">
             <NavLink to="/" icon={<LayoutDashboard className="size-4" />} label={t("dashboard")} />
             <NavLink to="/specimens" icon={<Database className="size-4" />} label={t("database")} />
-            <NavLink to="/specimens/new" icon={<Plus className="size-4" />} label={t("newSpecimen")} />
-            <NavLink to="/specimens/import" icon={<Upload className="size-4" />} label={t("importExcel")} />
-            <NavLink to="/print" icon={<Printer className="size-4" />} label={t("printLabels")} />
+            {can("edit") ? (
+              <NavLink to="/specimens/new" icon={<Plus className="size-4" />} label={t("newSpecimen")} />
+            ) : null}
+            {can("import") ? (
+              <NavLink to="/specimens/import" icon={<Upload className="size-4" />} label={t("importExcel")} />
+            ) : null}
+            {can("print") ? (
+              <NavLink to="/print" icon={<Printer className="size-4" />} label={t("printLabels")} />
+            ) : null}
+            {can("manageUsers") ? (
+              <NavLink to="/users" icon={<Users className="size-4" />} label={t("users")} />
+            ) : null}
           </div>
         </nav>
       </header>
