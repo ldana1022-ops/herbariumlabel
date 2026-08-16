@@ -55,7 +55,10 @@ export function HerbariumLabel({
             <ScientificName name={specimen.scientific_name} />
           </div>
           <Row label="Family:" value={specimen.family} />
-          <Row label="Local Name:" value={specimen.local_name} />
+          <Row
+            label="Local Name:"
+            value={[specimen.local_name, specimen.local_name_ar].filter(Boolean).join("  /  ")}
+          />
           <Row label="Locality:" value={specimen.locality} />
           <div className="label-row label-coords">
             <span>
@@ -63,7 +66,7 @@ export function HerbariumLabel({
               <span className="label-value">{specimen.latitude ?? "........."}</span>
             </span>
             <span>
-              <span className="label-key">(E):</span>{" "}
+              <span className="label-key">Long (E):</span>{" "}
               <span className="label-value">{specimen.longitude ?? "........."}</span>
             </span>
             <span>
@@ -76,8 +79,8 @@ export function HerbariumLabel({
             </span>
           </div>
           <Row label="Collection Date:" value={formatDate(specimen.collection_date)} />
-          <Row label="Collector (s):" value={specimen.collectors} />
-          <Row label="Determined By:" value={specimen.determined_by} fill />
+          <Row label="Collector (s):" value={specimen.collectors} fill />
+          <Row label="Det.:" value={specimen.determination} fill />
           <Row label="Notes:" value={specimen.notes} fill />
           <div className="label-accession">{specimen.accession_number}</div>
         </div>
