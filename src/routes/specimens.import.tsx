@@ -124,6 +124,8 @@ function ImportPage() {
     "accession_number",
     "scientific_name",
     "family",
+    "local_name",
+    "local_name_ar",
     "locality",
     "collection_date",
     "collectors",
