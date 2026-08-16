@@ -13,6 +13,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedPrintRouteImport } from './routes/_authenticated/print'
+import { Route as AuthenticatedUsersRouteImport } from './routes/_authenticated/users'
 import { Route as AuthenticatedSpecimensIndexRouteImport } from './routes/_authenticated/specimens.index'
 import { Route as AuthenticatedSpecimensImportRouteImport } from './routes/_authenticated/specimens.import'
 import { Route as AuthenticatedSpecimensNewRouteImport } from './routes/_authenticated/specimens.new'
@@ -36,6 +37,11 @@ const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
 const AuthenticatedPrintRoute = AuthenticatedPrintRouteImport.update({
   id: '/print',
   path: '/print',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedUsersRoute = AuthenticatedUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedSpecimensIndexRoute =
@@ -73,6 +79,7 @@ export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/auth': typeof AuthRoute
   '/print': typeof AuthenticatedPrintRoute
+  '/users': typeof AuthenticatedUsersRoute
   '/specimens/import': typeof AuthenticatedSpecimensImportRoute
   '/specimens/new': typeof AuthenticatedSpecimensNewRoute
   '/specimens/': typeof AuthenticatedSpecimensIndexRoute
@@ -82,6 +89,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/print': typeof AuthenticatedPrintRoute
+  '/users': typeof AuthenticatedUsersRoute
   '/': typeof AuthenticatedIndexRoute
   '/specimens/import': typeof AuthenticatedSpecimensImportRoute
   '/specimens/new': typeof AuthenticatedSpecimensNewRoute
@@ -94,6 +102,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/print': typeof AuthenticatedPrintRoute
+  '/_authenticated/users': typeof AuthenticatedUsersRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/specimens/import': typeof AuthenticatedSpecimensImportRoute
   '/_authenticated/specimens/new': typeof AuthenticatedSpecimensNewRoute
@@ -107,6 +116,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/print'
+    | '/users'
     | '/specimens/import'
     | '/specimens/new'
     | '/specimens/'
@@ -116,6 +126,7 @@ export interface FileRouteTypes {
   to:
     | '/auth'
     | '/print'
+    | '/users'
     | '/'
     | '/specimens/import'
     | '/specimens/new'
@@ -127,6 +138,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/print'
+    | '/_authenticated/users'
     | '/_authenticated/'
     | '/_authenticated/specimens/import'
     | '/_authenticated/specimens/new'
@@ -170,6 +182,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPrintRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/users': {
+      id: '/_authenticated/users'
+      path: '/users'
+      fullPath: '/users'
+      preLoaderRoute: typeof AuthenticatedUsersRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/specimens/': {
       id: '/_authenticated/specimens/'
       path: '/specimens'
@@ -210,6 +229,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedPrintRoute: typeof AuthenticatedPrintRoute
+  AuthenticatedUsersRoute: typeof AuthenticatedUsersRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedSpecimensImportRoute: typeof AuthenticatedSpecimensImportRoute
   AuthenticatedSpecimensNewRoute: typeof AuthenticatedSpecimensNewRoute
@@ -220,6 +240,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPrintRoute: AuthenticatedPrintRoute,
+  AuthenticatedUsersRoute: AuthenticatedUsersRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedSpecimensImportRoute: AuthenticatedSpecimensImportRoute,
   AuthenticatedSpecimensNewRoute: AuthenticatedSpecimensNewRoute,

@@ -166,12 +166,15 @@ function SpecimensPage() {
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-xl font-semibold text-foreground">Herbarium Specimens Database</h2>
           <div className="flex flex-wrap gap-2">
+            {canEdit ? (
             <Button asChild size="sm">
               <Link to="/specimens/new">
                 <Plus className="size-4" />
                 {t("newSpecimen")}
               </Link>
             </Button>
+            ) : null}
+            {canImport ? (
             <Button
               size="sm"
               variant="outline"
@@ -182,6 +185,7 @@ function SpecimensPage() {
                 {t("importExcel")}
               </Link>
             </Button>
+            ) : null}
             <Button
               size="sm"
               variant="outline"
@@ -381,16 +385,19 @@ function SpecimensPage() {
                             <Eye className="size-4" />
                           </Link>
                         </Button>
+                        {canEdit ? (
                         <Button asChild size="icon" variant="ghost" title={t("edit")}>
                           <Link to="/specimens/$id/edit" params={{ id: s.id }}>
                             <Pencil className="size-4" />
                           </Link>
                         </Button>
+                        ) : null}
                         <Button asChild size="icon" variant="ghost" title={t("printLabel")}>
                           <Link to="/print" search={{ ids: s.id }}>
                             <Printer className="size-4" />
                           </Link>
                         </Button>
+                        {canDelete ? (
                         <Button
                           size="icon"
                           variant="ghost"
@@ -399,6 +406,7 @@ function SpecimensPage() {
                         >
                           <Trash2 className="size-4 text-destructive" />
                         </Button>
+                        ) : null}
                       </div>
                     </td>
                   </tr>

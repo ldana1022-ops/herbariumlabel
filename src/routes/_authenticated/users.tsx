@@ -100,7 +100,7 @@ function UsersPage() {
                       <td className="p-2" dir="ltr">{row.email || "—"}</td>
                       <td className="p-2">
                         <Select
-                          value={row.role ?? undefined}
+                          {...(row.role ? { value: row.role } : {})}
                           onValueChange={(value) =>
                             mutation.mutate({ userId: row.id, role: value as AppRole })
                           }
