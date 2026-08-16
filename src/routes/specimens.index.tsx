@@ -365,9 +365,11 @@ function SpecimensPage() {
                     </td>
                     <td className="whitespace-nowrap p-2 font-medium">{s.accession_number}</td>
                     <td className="whitespace-nowrap p-2 italic">{s.scientific_name}</td>
-                    <td className="whitespace-nowrap p-2">{s.family}</td>
-                    <td className="whitespace-nowrap p-2">{s.local_name ?? "—"}</td>
-                    <td className="whitespace-nowrap p-2">{s.locality}</td>
+                    <td className="whitespace-nowrap p-2">{s.family ?? "—"}</td>
+                    <td className="whitespace-nowrap p-2">
+                      {[s.local_name, s.local_name_ar].filter(Boolean).join(" / ") || "—"}
+                    </td>
+                    <td className="whitespace-nowrap p-2">{s.locality ?? "—"}</td>
                     <td className="whitespace-nowrap p-2">{s.region ?? "—"}</td>
                     <td className="whitespace-nowrap p-2 tabular-nums">{s.latitude ?? "—"}</td>
                     <td className="whitespace-nowrap p-2 tabular-nums">{s.longitude ?? "—"}</td>
