@@ -115,6 +115,24 @@ const dict = {
   rowNumber: { ar: "الصف", en: "Row" },
   errorLabel: { ar: "الخطأ", en: "Error" },
   newRows: { ar: "صفوف جديدة", en: "New rows" },
+  signIn: { ar: "تسجيل الدخول", en: "Sign in" },
+  signUp: { ar: "إنشاء حساب", en: "Create account" },
+  signOut: { ar: "تسجيل الخروج", en: "Sign out" },
+  signedIn: { ar: "تم تسجيل الدخول", en: "Signed in" },
+  email: { ar: "البريد الإلكتروني", en: "Email" },
+  password: { ar: "كلمة المرور", en: "Password" },
+  fullName: { ar: "الاسم الكامل", en: "Full name" },
+  noAccount: { ar: "ليس لديك حساب؟ إنشاء حساب جديد", en: "No account? Create one" },
+  haveAccount: { ar: "لديك حساب؟ تسجيل الدخول", en: "Already have an account? Sign in" },
+  checkEmail: { ar: "تحقق من بريدك الإلكتروني لتأكيد الحساب", en: "Check your email to confirm the account" },
+  firstUserAdminHint: {
+    ar: "أول مستخدم يسجّل في النظام يحصل على صلاحية مدير النظام، ويكون المستخدمون التالون بصلاحية مطّلع حتى يرفعها المدير.",
+    en: "The first registered user becomes administrator; later users start as viewers until an admin upgrades them.",
+  },
+  users: { ar: "إدارة المستخدمين", en: "User management" },
+  role: { ar: "الصلاحية", en: "Role" },
+  roleUpdated: { ar: "تم تحديث الصلاحية", en: "Role updated" },
+  noPermission: { ar: "لا تملك صلاحية لتنفيذ هذا الإجراء", en: "You do not have permission for this action" },
 } as const;
 
 export type TKey = keyof typeof dict;
