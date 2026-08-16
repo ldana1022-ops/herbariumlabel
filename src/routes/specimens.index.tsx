@@ -105,6 +105,7 @@ function SpecimensPage() {
           s.scientific_name,
           s.family,
           s.local_name,
+          s.local_name_ar,
           s.locality,
           s.region,
           s.collectors,
