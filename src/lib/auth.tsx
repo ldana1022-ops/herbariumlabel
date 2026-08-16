@@ -39,14 +39,20 @@ async function ensureAccount(user: User): Promise<AppRole | null> {
     return "viewer";
   }
 
-  const { data: adminExists } = await supabase.rpc("admin_exists");
-  const desired: AppRole = adminExists ? "viewer" : "admin";
-  const { error } = await supabase.from("user_roles").insert({ user_id: user.id, role: desired });
-  if (error) {
-    const { data: retry } = await supabase.from("user_roles").select("role").eq("user_id", user.id);
-    return (retry?.[0]?.role as AppRole) ?? null;
-  }
-  return desired;
+  // The database enforces bootstrap rules: the very first account may claim admin,
+  // every later account may only claim viewer. Try admin first, fall back to viewer.
+  const { error: adminError } = await supabase
+    .from("user_roles")
+    .insert({ user_id: user.id, role: "admin" });
+  if (!adminError) return "admin";
+
+  const { error: viewerError } = await supabase
+    .from("user_roles")
+    .insert({ user_id: user.id, role: "viewer" });
+  if (!viewerError) return "viewer";
+
+  const { data: retry } = await supabase.from("user_roles").select("role").eq("user_id", user.id);
+  return (retry?.[0]?.role as AppRole) ?? null;
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {

@@ -28,6 +28,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useI18n } from "@/lib/i18n";
+import { useAuth } from "@/lib/auth";
 import { exportSpecimensToExcel } from "@/lib/export-excel";
 import { exportLabelsToWord } from "@/lib/export-word";
 import { useLabelSize } from "@/lib/label-size";
@@ -66,6 +67,10 @@ function SpecimensPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { size } = useLabelSize();
+  const { can } = useAuth();
+  const canEdit = can("edit");
+  const canImport = can("import");
+  const canDelete = can("delete");
   const { data = [], isLoading } = useQuery({ queryKey: ["specimens"], queryFn: fetchSpecimens });
 
   const [q, setQ] = useState("");
