@@ -66,6 +66,10 @@ function SpecimensPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { size } = useLabelSize();
+  const { can } = useAuth();
+  const canEdit = can("edit");
+  const canImport = can("import");
+  const canDelete = can("delete");
   const { data = [], isLoading } = useQuery({ queryKey: ["specimens"], queryFn: fetchSpecimens });
 
   const [q, setQ] = useState("");
