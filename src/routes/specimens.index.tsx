@@ -40,7 +40,7 @@ import {
   type Specimen,
 } from "@/lib/specimens";
 
-export const Route = createFileRoute("/_authenticated/specimens/")({
+export const Route = createFileRoute("/specimens/")({
   validateSearch: (search: Record<string, unknown>): { focus?: string } =>
     typeof search['focus'] === "string" ? { focus: search['focus'] as string } : {},
   head: () => ({
