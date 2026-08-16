@@ -5,9 +5,10 @@ export function exportSpecimensToExcel(specimens: Specimen[], filename = "herbar
   const rows = specimens.map((s) => ({
     "Accession Number": s.accession_number,
     "Scientific Name": s.scientific_name,
-    Family: s.family,
+    Family: s.family ?? "",
     "Local Name": s.local_name ?? "",
-    Locality: s.locality,
+    "Local Name (Arabic)": s.local_name_ar ?? "",
+    Locality: s.locality ?? "",
     Region: s.region ?? "",
     Latitude: s.latitude ?? "",
     Longitude: s.longitude ?? "",
