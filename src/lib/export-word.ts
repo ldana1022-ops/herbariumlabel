@@ -38,13 +38,13 @@ function labelHtml(s: Specimen, size: LabelSize) {
     <tr>
       <td style="height:${Math.max(h - 20, 20)}mm;vertical-align:top;padding:5pt 6pt;">
         <p style="margin:0 0 2pt 0;"><b>Scientific Name:</b> ${scientificName(s.scientific_name)}</p>
-        ${row("Family:", s.family)}
-        ${row("Local Name:", s.local_name ?? "", true)}
-        ${row("Locality:", s.locality)}
-        <p style="margin:0 0 2pt 0;"><b>Lat (N):</b> ${esc(lat)} &nbsp;&nbsp; <b>(E):</b> ${esc(lon)} &nbsp;&nbsp; <b>Alt.:</b> ${esc(alt)}</p>
+        ${row("Family:", s.family ?? "")}
+        ${row("Local Name:", [s.local_name, s.local_name_ar].filter(Boolean).join(" / "), true)}
+        ${row("Locality:", s.locality ?? "")}
+        <p style="margin:0 0 2pt 0;"><b>Lat (N):</b> ${esc(lat)} &nbsp;&nbsp; <b>Long (E):</b> ${esc(lon)} &nbsp;&nbsp; <b>Alt.:</b> ${esc(alt)}</p>
         ${row("Collection Date:", formatDate(s.collection_date))}
-        ${row("Collector (s):", s.collectors)}
-        ${row("Determined By:", s.determined_by ?? "", true)}
+        ${row("Collector (s):", s.collectors ?? "", true)}
+        ${row("Det.:", s.determination ?? "", true)}
         ${row("Notes:", s.notes ?? "", true)}
         <p style="margin:4pt 0 0 0;text-align:right;font-family:Arial,sans-serif;font-size:${(6 * size.fontScale).toFixed(1)}pt;color:#333333;">${esc(s.accession_number)}</p>
       </td>
