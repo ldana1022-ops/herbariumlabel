@@ -1,1 +1,0 @@
-delete from public.herbarium_specimens where accession_number in ('TEST-9001','TEST-9002');
