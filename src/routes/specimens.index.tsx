@@ -169,7 +169,7 @@ function SpecimensPage() {
     <AppLayout>
       <div className="space-y-5">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <h2 className="text-xl font-semibold text-foreground">Herbarium Specimens Database</h2>
+          <h2 className="text-xl font-semibold text-foreground">{t("database")}</h2>
           <div className="flex flex-wrap gap-2">
             {canEdit ? (
             <Button asChild size="sm">
