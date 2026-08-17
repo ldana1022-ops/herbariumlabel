@@ -34,6 +34,7 @@ export type Database = {
           notes: string | null
           region: string | null
           scientific_name: string
+          status: Database["public"]["Enums"]["specimen_status"]
           updated_at: string
         }
         Insert: {
@@ -55,6 +56,7 @@ export type Database = {
           notes?: string | null
           region?: string | null
           scientific_name: string
+          status?: Database["public"]["Enums"]["specimen_status"]
           updated_at?: string
         }
         Update: {
@@ -76,6 +78,7 @@ export type Database = {
           notes?: string | null
           region?: string | null
           scientific_name?: string
+          status?: Database["public"]["Enums"]["specimen_status"]
           updated_at?: string
         }
         Relationships: []
@@ -134,6 +137,11 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "editor" | "viewer"
+      specimen_status:
+        | "incomplete"
+        | "in_progress"
+        | "pending_review"
+        | "completed"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -262,6 +270,12 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "editor", "viewer"],
+      specimen_status: [
+        "incomplete",
+        "in_progress",
+        "pending_review",
+        "completed",
+      ],
     },
   },
 } as const

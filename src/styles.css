@@ -59,6 +59,14 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --color-status-incomplete: var(--status-incomplete);
+  --color-status-incomplete-foreground: var(--status-incomplete-foreground);
+  --color-status-progress: var(--status-progress);
+  --color-status-progress-foreground: var(--status-progress-foreground);
+  --color-status-review: var(--status-review);
+  --color-status-review-foreground: var(--status-review-foreground);
+  --color-status-completed: var(--status-completed);
+  --color-status-completed-foreground: var(--status-completed-foreground);
 }
 
 :root {
@@ -95,6 +103,14 @@
   --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
   --sidebar-border: oklch(0.929 0.013 255.508);
   --sidebar-ring: oklch(0.704 0.04 256.788);
+  --status-incomplete: oklch(0.55 0.01 260);
+  --status-incomplete-foreground: oklch(0.99 0 0);
+  --status-progress: oklch(0.55 0.19 258);
+  --status-progress-foreground: oklch(0.99 0 0);
+  --status-review: oklch(0.83 0.16 87);
+  --status-review-foreground: oklch(0.26 0.03 60);
+  --status-completed: oklch(0.55 0.16 148);
+  --status-completed-foreground: oklch(0.99 0 0);
 }
 
 .dark {
@@ -130,6 +146,14 @@
   --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.551 0.027 264.364);
+  --status-incomplete: oklch(0.6 0.01 260);
+  --status-incomplete-foreground: oklch(0.15 0 0);
+  --status-progress: oklch(0.62 0.18 258);
+  --status-progress-foreground: oklch(0.14 0.02 260);
+  --status-review: oklch(0.85 0.16 87);
+  --status-review-foreground: oklch(0.2 0.03 60);
+  --status-completed: oklch(0.63 0.16 148);
+  --status-completed-foreground: oklch(0.14 0.02 150);
 }
 
 @layer base {

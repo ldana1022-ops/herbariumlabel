@@ -36,9 +36,11 @@ import {
   deleteSpecimen,
   fetchSpecimens,
   formatDate,
-  isDetermined,
+  updateSpecimenStatus,
   type Specimen,
 } from "@/lib/specimens";
+import { StatusSelect } from "@/components/StatusSelect";
+import { normalizeStatus, STATUS_ORDER, type SpecimenStatus } from "@/lib/specimen-status";
 
 export const Route = createFileRoute("/specimens/")({
   validateSearch: (search: Record<string, unknown>): { focus?: string } =>
@@ -63,7 +65,7 @@ export const Route = createFileRoute("/specimens/")({
 const ALL = "__all__";
 
 function SpecimensPage() {
-  const { t, f } = useI18n();
+  const { t, f, lang } = useI18n();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { size } = useLabelSize();
@@ -119,13 +121,22 @@ function SpecimensPage() {
       if (family !== ALL && s.family !== family) return false;
       if (region !== ALL && s.region !== region) return false;
       if (collector !== ALL && !(s.collectors ?? "").includes(collector)) return false;
-      if (statusFilter === "determined" && !isDetermined(s)) return false;
-      if (statusFilter === "undetermined" && isDetermined(s)) return false;
+      if (statusFilter !== ALL && normalizeStatus(s.status) !== statusFilter) return false;
       if (from && (s.collection_date ?? "") < from) return false;
       if (to && (s.collection_date ?? "") > to) return false;
       return true;
     });
   }, [data, q, family, region, collector, statusFilter, from, to]);
+
+  const statusMutation = useMutation({
+    mutationFn: ({ id, status }: { id: string; status: SpecimenStatus }) =>
+      updateSpecimenStatus(id, status),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["specimens"] });
+      toast.success(t("statusUpdated"));
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => deleteSpecimen(id),
@@ -284,8 +295,11 @@ function SpecimensPage() {
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value={ALL}>{t("all")}</SelectItem>
-                  <SelectItem value="determined">Determined</SelectItem>
-                  <SelectItem value="undetermined">Undetermined</SelectItem>
+                  {STATUS_ORDER.map((m) => (
+                    <SelectItem key={m.value} value={m.value}>
+                      {lang === "en" ? m.en : m.ar}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -382,9 +396,11 @@ function SpecimensPage() {
                       {formatDate(s.determination_date) || "—"}
                     </td>
                     <td className="p-2">
-                      <Badge variant={isDetermined(s) ? "default" : "secondary"}>
-                        {isDetermined(s) ? "Determined" : "Undetermined"}
-                      </Badge>
+                      <StatusSelect
+                        value={s.status}
+                        disabled={!canEdit || statusMutation.isPending}
+                        onChange={(status) => statusMutation.mutate({ id: s.id, status })}
+                      />
                     </td>
                     <td className="whitespace-nowrap p-2">
                       <div className="flex gap-1">

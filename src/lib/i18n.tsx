@@ -22,6 +22,7 @@ const dict = {
   byFamily: { ar: "العينات حسب الفصيلة", en: "Specimens by family" },
   quickActions: { ar: "اختصارات سريعة", en: "Quick actions" },
   status: { ar: "الحالة", en: "Status" },
+  statusUpdated: { ar: "تم تحديث حالة العينة", en: "Status updated" },
   actions: { ar: "الإجراءات", en: "Actions" },
   view: { ar: "عرض", en: "View" },
   edit: { ar: "تعديل", en: "Edit" },

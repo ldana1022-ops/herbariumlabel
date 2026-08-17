@@ -1,5 +1,6 @@
 import * as XLSX from "xlsx";
-import { isDetermined, type Specimen } from "./specimens";
+import { type Specimen } from "./specimens";
+import { statusLabel } from "./specimen-status";
 
 export function exportSpecimensToExcel(specimens: Specimen[], filename = "herbarium_specimens.xlsx") {
   const rows = specimens.map((s) => ({
@@ -19,7 +20,7 @@ export function exportSpecimensToExcel(specimens: Specimen[], filename = "herbar
     "Determined By": s.determined_by ?? "",
     "Determination Date": s.determination_date ?? "",
     Notes: s.notes ?? "",
-    Status: isDetermined(s) ? "Determined" : "Undetermined",
+    Status: statusLabel(s.status, "ar"),
   }));
 
   const sheet = XLSX.utils.json_to_sheet(rows);

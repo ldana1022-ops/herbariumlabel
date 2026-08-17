@@ -8,16 +8,17 @@ import { HerbariumLabel } from "@/components/HerbariumLabel";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
+import { StatusSelect } from "@/components/StatusSelect";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useI18n } from "@/lib/i18n";
 import { exportLabelsToWord } from "@/lib/export-word";
 import { useLabelSize } from "@/lib/label-size";
+import type { SpecimenStatus } from "@/lib/specimen-status";
 import {
   fetchSpecimen,
   formatDate,
-  isDetermined,
   updateSpecimen,
+  updateSpecimenStatus,
   type Specimen,
 } from "@/lib/specimens";
 
@@ -68,6 +69,16 @@ function SpecimenDetailPage() {
     }
   }, [data]);
 
+  const statusMutation = useMutation({
+    mutationFn: (status: SpecimenStatus) => updateSpecimenStatus(id, status),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["specimen", id] });
+      queryClient.invalidateQueries({ queryKey: ["specimens"] });
+      toast.success(t("statusUpdated"));
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
   const mutation = useMutation({
     mutationFn: () =>
       updateSpecimen(id, {
@@ -115,9 +126,11 @@ function SpecimenDetailPage() {
             <p className="text-sm italic text-muted-foreground">{s.scientific_name}</p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Badge variant={isDetermined(s) ? "default" : "secondary"}>
-              {isDetermined(s) ? "Determined" : "Undetermined"}
-            </Badge>
+            <StatusSelect
+              value={s.status}
+              disabled={statusMutation.isPending}
+              onChange={(status) => statusMutation.mutate(status)}
+            />
             <Button asChild size="sm" variant="outline">
               <Link to="/specimens/$id/edit" params={{ id: s.id }}>
                 <Pencil className="size-4" />
