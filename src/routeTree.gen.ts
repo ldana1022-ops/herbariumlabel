@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PrintRouteImport } from './routes/print'
+import { Route as SSerialRouteImport } from './routes/s.$serial'
 import { Route as SpecimensIndexRouteImport } from './routes/specimens.index'
 import { Route as SpecimensImportRouteImport } from './routes/specimens.import'
 import { Route as SpecimensNewRouteImport } from './routes/specimens.new'
@@ -25,6 +26,11 @@ const IndexRoute = IndexRouteImport.update({
 const PrintRoute = PrintRouteImport.update({
   id: '/print',
   path: '/print',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SSerialRoute = SSerialRouteImport.update({
+  id: '/s/$serial',
+  path: '/s/$serial',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SpecimensIndexRoute = SpecimensIndexRouteImport.update({
@@ -56,6 +62,7 @@ const SpecimensIdEditRoute = SpecimensIdEditRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/print': typeof PrintRoute
+  '/s/$serial': typeof SSerialRoute
   '/specimens/import': typeof SpecimensImportRoute
   '/specimens/new': typeof SpecimensNewRoute
   '/specimens/': typeof SpecimensIndexRoute
@@ -65,6 +72,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/print': typeof PrintRoute
+  '/s/$serial': typeof SSerialRoute
   '/specimens/import': typeof SpecimensImportRoute
   '/specimens/new': typeof SpecimensNewRoute
   '/specimens': typeof SpecimensIndexRoute
@@ -75,6 +83,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/print': typeof PrintRoute
+  '/s/$serial': typeof SSerialRoute
   '/specimens/import': typeof SpecimensImportRoute
   '/specimens/new': typeof SpecimensNewRoute
   '/specimens/': typeof SpecimensIndexRoute
@@ -86,6 +95,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/print'
+    | '/s/$serial'
     | '/specimens/import'
     | '/specimens/new'
     | '/specimens/'
@@ -95,6 +105,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/print'
+    | '/s/$serial'
     | '/specimens/import'
     | '/specimens/new'
     | '/specimens'
@@ -104,6 +115,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/print'
+    | '/s/$serial'
     | '/specimens/import'
     | '/specimens/new'
     | '/specimens/'
@@ -114,6 +126,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   PrintRoute: typeof PrintRoute
+  SSerialRoute: typeof SSerialRoute
   SpecimensImportRoute: typeof SpecimensImportRoute
   SpecimensNewRoute: typeof SpecimensNewRoute
   SpecimensIndexRoute: typeof SpecimensIndexRoute
@@ -135,6 +148,13 @@ declare module '@tanstack/react-router' {
       path: '/print'
       fullPath: '/print'
       preLoaderRoute: typeof PrintRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/s/$serial': {
+      id: '/s/$serial'
+      path: '/s/$serial'
+      fullPath: '/s/$serial'
+      preLoaderRoute: typeof SSerialRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/specimens/': {
@@ -178,6 +198,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   PrintRoute: PrintRoute,
+  SSerialRoute: SSerialRoute,
   SpecimensImportRoute: SpecimensImportRoute,
   SpecimensNewRoute: SpecimensNewRoute,
   SpecimensIndexRoute: SpecimensIndexRoute,
