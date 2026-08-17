@@ -255,6 +255,18 @@ body {
   letter-spacing: 0.5px;
 }
 
+.label-barcode {
+  position: absolute;
+  left: 2.4mm;
+  bottom: 0.6mm;
+}
+
+.label-barcode svg {
+  height: auto;
+  max-height: 9mm;
+  max-width: 42mm;
+}
+
 .label-accession {
   position: absolute;
   right: 2.4mm;

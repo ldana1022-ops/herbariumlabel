@@ -104,6 +104,7 @@ function SpecimensPage() {
       if (needle) {
         const hay = [
           s.accession_number,
+          s.serial_number,
           s.scientific_name,
           s.family,
           s.local_name,

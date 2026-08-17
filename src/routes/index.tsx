@@ -8,6 +8,7 @@ import { useI18n } from "@/lib/i18n";
 import { exportSpecimensToExcel } from "@/lib/export-excel";
 import { fetchSpecimens, type Specimen } from "@/lib/specimens";
 import { normalizeStatus, STATUS_ORDER } from "@/lib/specimen-status";
+import { countByRegion } from "@/lib/region";
 import { StatusBadge } from "@/components/StatusBadge";
 
 export const Route = createFileRoute("/")({
@@ -125,9 +126,12 @@ function Index() {
             </CardHeader>
             <CardContent className="space-y-2">
               {isLoading ? <p className="text-sm text-muted-foreground">{t("loading")}</p> : null}
-              {countBy(data, (s) => s.region ?? "").map(([name, count]) => (
-                <div key={name} className="flex items-center justify-between border-b border-border pb-1.5 text-sm last:border-0">
-                  <span>{name}</span>
+              {!isLoading && data.length === 0 ? (
+                <p className="text-sm text-muted-foreground">{t("noResults")}</p>
+              ) : null}
+              {countByRegion(data).map(({ region, count }) => (
+                <div key={region.key} className="flex items-center justify-between border-b border-border pb-1.5 text-sm last:border-0">
+                  <span>{lang === "en" ? region.en : region.ar}</span>
                   <span className="font-semibold tabular-nums">{count}</span>
                 </div>
               ))}

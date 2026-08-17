@@ -22,6 +22,10 @@ const dict = {
   byFamily: { ar: "العينات حسب الفصيلة", en: "Specimens by family" },
   quickActions: { ar: "اختصارات سريعة", en: "Quick actions" },
   status: { ar: "الحالة", en: "Status" },
+  serialNumber: { ar: "الرقم التسلسلي", en: "Serial number" },
+  barcode: { ar: "الباركود", en: "Barcode" },
+  barcodeHint: { ar: "امسح الباركود للوصول إلى بيانات هذه العينة.", en: "Scan the barcode to open this specimen." },
+  serialNotFound: { ar: "لا توجد عينة بهذا الرقم التسلسلي", en: "No specimen with this serial number" },
   statusUpdated: { ar: "تم تحديث حالة العينة", en: "Status updated" },
   actions: { ar: "الإجراءات", en: "Actions" },
   view: { ar: "عرض", en: "View" },
@@ -140,6 +144,7 @@ export type TKey = keyof typeof dict;
 
 const fieldLabels: Record<string, { ar: string; en: string }> = {
   accession_number: { ar: "رقم العينة", en: "Accession Number" },
+  serial_number: { ar: "الرقم التسلسلي", en: "Serial Number" },
   scientific_name: { ar: "الاسم العلمي", en: "Scientific Name" },
   family: { ar: "الفصيلة", en: "Family" },
   local_name: { ar: "الاسم المحلي", en: "Local Name" },
