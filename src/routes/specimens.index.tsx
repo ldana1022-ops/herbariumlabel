@@ -36,7 +36,6 @@ import {
   deleteSpecimen,
   fetchSpecimens,
   formatDate,
-  isDetermined,
   updateSpecimenStatus,
   type Specimen,
 } from "@/lib/specimens";
