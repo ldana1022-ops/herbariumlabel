@@ -28,19 +28,19 @@ export function normalizeText(value: string): string {
 type RegionDef = { ar: string; en: string; keys: string[] };
 
 const REGIONS: RegionDef[] = [
-  { ar: "الرياض", en: "Riyadh", keys: ["رياض", "riyadh", "riyad", "kharj", "خرج", "دوادمي", "دوادمى", "زلفي", "مجمعه", "شقراء", "افلاج", "حريق", "قويعيه", "وادي دواسر", "ثادق", "حوطه"] },
-  { ar: "مكة المكرمة", en: "Makkah", keys: ["مكه", "makkah", "mecca", "جده", "jeddah", "طائف", "taif", "قنفذه", "ليث", "رابغ", "كامل", "خرمه", "جموم"] },
-  { ar: "المدينة المنورة", en: "Madinah", keys: ["مدينه منوره", "مدينه", "madinah", "medina", "ينبع", "yanbu", "علا", "ula", "خيبر", "بدر", "مهد ذهب"] },
-  { ar: "القصيم", en: "Qassim", keys: ["قصيم", "qassim", "qasim", "بريده", "buraydah", "عنيزه", "unaizah", "رس", "بكيريه", "مذنب", "بدائع"] },
-  { ar: "المنطقة الشرقية", en: "Eastern Province", keys: ["شرقيه", "eastern", "دمام", "dammam", "احساء", "hofuf", "ahsa", "جبيل", "jubail", "قطيف", "خبر", "khobar", "ظهران", "dhahran", "خفجي", "نعيريه", "بقيق"] },
-  { ar: "عسير", en: "Asir", keys: ["عسير", "asir", "aseer", "ابها", "abha", "خميس مشيط", "khamis", "نماص", "بلسمر", "محايل", "رجال المع", "سراه عبيده", "تنومه", "بيشه", "bisha"] },
-  { ar: "تبوك", en: "Tabuk", keys: ["تبوك", "tabuk", "ضبا", "duba", "حقل", "تيماء", "taima", "وجه", "بدع"] },
-  { ar: "حائل", en: "Hail", keys: ["حايل", "حائل", "hail", "haiel", "بقعاء", "شنان", "سليمي"] },
-  { ar: "الحدود الشمالية", en: "Northern Borders", keys: ["حدود شماليه", "northern border", "عرعر", "arar", "رفحاء", "طريف", "turaif"] },
-  { ar: "جازان", en: "Jazan", keys: ["جازان", "جيزان", "jazan", "jizan", "صبيا", "ابو عريش", "فرسان", "صامطه", "بيش", "ريث"] },
-  { ar: "نجران", en: "Najran", keys: ["نجران", "najran", "شروره", "حبونا", "يدمه", "خباش"] },
-  { ar: "الباحة", en: "Al Bahah", keys: ["باحه", "bahah", "baha", "بلجرشي", "مندق", "قلوه", "عقيق", "مخواه"] },
-  { ar: "الجوف", en: "Al Jouf", keys: ["جوف", "jouf", "jawf", "سكاكا", "sakaka", "قريات", "دومه جندل"] },
+  { ar: "الرياض", en: "Riyadh", keys: ["رياض", "riyadh", "riyad", "kharj", "خرج", "دوادمي", "دوادمى", "زلفي", "مجمعه", "شقراء", "افلاج", "حريق", "قويعيه", "وادي دواسر", "ثادق", "حوطه", "kharj", "dawadmi", "zulfi", "shaqra", "aflaj", "quwayiyah"] },
+  { ar: "مكة المكرمة", en: "Makkah", keys: ["مكه", "makkah", "mecca", "جده", "jeddah", "طائف", "taif", "قنفذه", "ليث", "رابغ", "كامل", "خرمه", "جموم", "qunfudhah", "rabigh", "khurmah"] },
+  { ar: "المدينة المنورة", en: "Madinah", keys: ["مدينه منوره", "مدينه", "madinah", "medina", "ينبع", "yanbu", "علا", "ula", "خيبر", "بدر", "مهد ذهب", "khaybar", "badr", "alula"] },
+  { ar: "القصيم", en: "Qassim", keys: ["قصيم", "qassim", "qasim", "بريده", "buraydah", "عنيزه", "unaizah", "رس", "بكيريه", "مذنب", "بدائع", "buraidah", "unayzah", "rass", "bukayriyah"] },
+  { ar: "المنطقة الشرقية", en: "Eastern Province", keys: ["شرقيه", "eastern", "دمام", "dammam", "احساء", "hofuf", "ahsa", "جبيل", "jubail", "قطيف", "خبر", "khobar", "ظهران", "dhahran", "خفجي", "نعيريه", "بقيق", "hafuf", "qatif", "abqaiq", "nairiyah"] },
+  { ar: "عسير", en: "Asir", keys: ["عسير", "asir", "aseer", "ابها", "abha", "خميس مشيط", "khamis", "نماص", "بلسمر", "محايل", "رجال المع", "سراه عبيده", "تنومه", "بيشه", "bisha", "namas", "muhayil", "tanumah", "sarat"] },
+  { ar: "تبوك", en: "Tabuk", keys: ["تبوك", "tabuk", "ضبا", "duba", "حقل", "تيماء", "taima", "وجه", "بدع", "dhuba", "haql", "tayma", "wajh"] },
+  { ar: "حائل", en: "Hail", keys: ["حايل", "حائل", "hail", "haiel", "بقعاء", "شنان", "سليمي", "baqaa", "shinan"] },
+  { ar: "الحدود الشمالية", en: "Northern Borders", keys: ["حدود شماليه", "northern border", "عرعر", "arar", "رفحاء", "طريف", "turaif", "rafha", "arar"] },
+  { ar: "جازان", en: "Jazan", keys: ["جازان", "جيزان", "jazan", "jizan", "صبيا", "ابو عريش", "فرسان", "صامطه", "بيش", "ريث", "sabya", "farasan", "samtah", "abu arish"] },
+  { ar: "نجران", en: "Najran", keys: ["نجران", "najran", "شروره", "حبونا", "يدمه", "خباش", "sharurah", "habuna", "yadamah"] },
+  { ar: "الباحة", en: "Al Bahah", keys: ["باحه", "bahah", "baha", "بلجرشي", "مندق", "قلوه", "عقيق", "مخواه", "baljurashi", "mandaq", "qilwah", "aqiq", "makhwah"] },
+  { ar: "الجوف", en: "Al Jouf", keys: ["جوف", "jouf", "jawf", "سكاكا", "sakaka", "قريات", "دومه جندل", "qurayyat", "qurayat", "sakakah", "domat"] },
 ];
 
 export type RegionInfo = { key: string; ar: string; en: string };
@@ -72,7 +72,7 @@ export function specimenRegion(s: Pick<Specimen, "region" | "locality">): Region
   // Fallback: use the first meaningful segment of the locality text as-is.
   for (const source of sources) {
     const segment = source
-      .split(/[,،;/\-–—|>]/)[0]
+      .split(/[,،;/|>]/)[0]
       ?.trim()
       .replace(/\s+/g, " ");
     if (segment && segment.length > 1) {
