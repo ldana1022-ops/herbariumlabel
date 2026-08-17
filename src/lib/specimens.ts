@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
+import type { SpecimenStatus } from "./specimen-status";
 
 export type Specimen = {
   id: string;
@@ -19,6 +20,7 @@ export type Specimen = {
   determined_by: string | null;
   determination_date: string | null;
   notes: string | null;
+  status: SpecimenStatus;
   created_at: string;
   updated_at: string;
 };
@@ -92,6 +94,11 @@ export const emptySpecimen: SpecimenInput = {
   determination_date: "",
   notes: "",
 };
+
+export async function updateSpecimenStatus(id: string, status: SpecimenStatus): Promise<void> {
+  const { error } = await supabase.from("herbarium_specimens").update({ status }).eq("id", id);
+  if (error) throw new Error(error.message);
+}
 
 export const isDetermined = (s: Specimen) => Boolean(s.determination && s.determination.trim());
 
