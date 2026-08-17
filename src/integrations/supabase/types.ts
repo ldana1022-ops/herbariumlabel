@@ -34,6 +34,7 @@ export type Database = {
           notes: string | null
           region: string | null
           scientific_name: string
+          serial_number: string
           status: Database["public"]["Enums"]["specimen_status"]
           updated_at: string
         }
@@ -56,6 +57,7 @@ export type Database = {
           notes?: string | null
           region?: string | null
           scientific_name: string
+          serial_number?: string
           status?: Database["public"]["Enums"]["specimen_status"]
           updated_at?: string
         }
@@ -78,6 +80,7 @@ export type Database = {
           notes?: string | null
           region?: string | null
           scientific_name?: string
+          serial_number?: string
           status?: Database["public"]["Enums"]["specimen_status"]
           updated_at?: string
         }

@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { ArrowRight, FileText, Pencil, Printer } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { HerbariumLabel } from "@/components/HerbariumLabel";
+import { Barcode } from "@/components/Barcode";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -163,6 +164,7 @@ function SpecimenDetailPage() {
             </CardHeader>
             <CardContent>
               <DetailRow label={f("accession_number")} value={s.accession_number} />
+              <DetailRow label={f("serial_number")} value={s.serial_number} />
               <DetailRow label={f("scientific_name")} value={s.scientific_name} />
               <DetailRow label={f("family")} value={s.family} />
               <DetailRow label={f("local_name")} value={s.local_name} />
@@ -214,6 +216,21 @@ function SpecimenDetailPage() {
                 <Button onClick={() => mutation.mutate()} disabled={mutation.isPending}>
                   {t("updateDetermination")}
                 </Button>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">{t("barcode")}</CardTitle>
+                <p className="text-xs text-muted-foreground">{t("barcodeHint")}</p>
+              </CardHeader>
+              <CardContent className="flex flex-col items-center gap-2">
+                <div className="rounded-md border border-border bg-white p-3">
+                  <Barcode value={s.serial_number} height={48} width={1.8} fontSize={14} />
+                </div>
+                <p className="font-mono text-sm tracking-wider text-foreground" dir="ltr">
+                  {s.serial_number}
+                </p>
               </CardContent>
             </Card>
 

@@ -5,7 +5,9 @@ import type { SpecimenStatus } from "./specimen-status";
 export type Specimen = {
   id: string;
   accession_number: string;
+  serial_number: string;
   scientific_name: string;
+
   family: string;
   local_name: string | null;
   local_name_ar: string | null;
@@ -182,4 +184,13 @@ export async function bulkUpdateSpecimens(
     updated += 1;
   }
   return updated;
+}
+export async function fetchSpecimenBySerial(serial: string): Promise<Specimen | null> {
+  const { data, error } = await supabase
+    .from("herbarium_specimens")
+    .select("*")
+    .eq("serial_number", serial.trim().toUpperCase())
+    .maybeSingle();
+  if (error) throw new Error(error.message);
+  return (data as Specimen) ?? null;
 }

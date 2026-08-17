@@ -1,5 +1,7 @@
 import { formatDate, type Specimen } from "@/lib/specimens";
+import { Barcode } from "@/components/Barcode";
 import { DEFAULT_LABEL_SIZE, labelStyle, type LabelSize } from "@/lib/label-size";
+
 
 const DOTS = "....................................................................";
 
@@ -82,7 +84,13 @@ export function HerbariumLabel({
           <Row label="Collector (s):" value={specimen.collectors} fill />
           <Row label="Det.:" value={specimen.determination} fill />
           <Row label="Notes:" value={specimen.notes} fill />
+          {specimen.serial_number ? (
+            <div className="label-barcode">
+              <Barcode value={specimen.serial_number} height={26} width={1.1} fontSize={9} />
+            </div>
+          ) : null}
           <div className="label-accession">{specimen.accession_number}</div>
+
         </div>
       </div>
     </div>
