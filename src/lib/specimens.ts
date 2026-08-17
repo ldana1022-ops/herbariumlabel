@@ -5,7 +5,9 @@ import type { SpecimenStatus } from "./specimen-status";
 export type Specimen = {
   id: string;
   accession_number: string;
+  serial_number: string;
   scientific_name: string;
+
   family: string;
   local_name: string | null;
   local_name_ar: string | null;
