@@ -185,3 +185,12 @@ export async function bulkUpdateSpecimens(
   }
   return updated;
 }
+export async function fetchSpecimenBySerial(serial: string): Promise<Specimen | null> {
+  const { data, error } = await supabase
+    .from("herbarium_specimens")
+    .select("*")
+    .eq("serial_number", serial.trim().toUpperCase())
+    .maybeSingle();
+  if (error) throw new Error(error.message);
+  return (data as Specimen) ?? null;
+}
