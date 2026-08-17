@@ -146,6 +146,14 @@
   --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.551 0.027 264.364);
+  --status-incomplete: oklch(0.6 0.01 260);
+  --status-incomplete-foreground: oklch(0.15 0 0);
+  --status-progress: oklch(0.62 0.18 258);
+  --status-progress-foreground: oklch(0.14 0.02 260);
+  --status-review: oklch(0.85 0.16 87);
+  --status-review-foreground: oklch(0.2 0.03 60);
+  --status-completed: oklch(0.63 0.16 148);
+  --status-completed-foreground: oklch(0.14 0.02 150);
 }
 
 @layer base {
