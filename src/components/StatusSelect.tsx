@@ -23,7 +23,7 @@ export function StatusSelect({
   const { lang } = useI18n();
   const current = normalizeStatus(value);
   return (
-    <Select value={current} onValueChange={(v) => onChange(v as SpecimenStatus)} disabled={disabled}>
+    <Select value={current} onValueChange={(v) => onChange(v as SpecimenStatus)} disabled={disabled ?? false}>
       <SelectTrigger
         className={cn("h-8 min-w-[9.5rem] border-transparent", STATUS_META[current].badge, className)}
       >
