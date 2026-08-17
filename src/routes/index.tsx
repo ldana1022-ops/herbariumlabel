@@ -6,7 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useI18n } from "@/lib/i18n";
 import { exportSpecimensToExcel } from "@/lib/export-excel";
-import { fetchSpecimens, isDetermined, type Specimen } from "@/lib/specimens";
+import { fetchSpecimens, type Specimen } from "@/lib/specimens";
+import { normalizeStatus, STATUS_ORDER } from "@/lib/specimen-status";
+import { StatusBadge } from "@/components/StatusBadge";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -48,11 +50,14 @@ function countBy(list: Specimen[], key: (s: Specimen) => string) {
 }
 
 function Index() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const navigate = useNavigate();
   const { data = [], isLoading } = useQuery({ queryKey: ["specimens"], queryFn: fetchSpecimens });
 
-  const determined = data.filter(isDetermined).length;
+  const statusCounts = STATUS_ORDER.map((m) => ({
+    meta: m,
+    count: data.filter((s) => normalizeStatus(s.status) === m.value).length,
+  }));
   const cutoff = Date.now() - 30 * 24 * 60 * 60 * 1000;
   const recent = data.filter((s) => new Date(s.created_at).getTime() >= cutoff).length;
 
@@ -66,9 +71,10 @@ function Index() {
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <Stat label={t("total")} value={data.length} />
-          <Stat label={t("determined")} value={determined} />
-          <Stat label={t("undetermined")} value={data.length - determined} />
           <Stat label={t("recent")} value={recent} />
+          {statusCounts.map(({ meta, count }) => (
+            <Stat key={meta.value} label={lang === "en" ? meta.en : meta.ar} value={count} />
+          ))}
         </div>
 
         <Card>
