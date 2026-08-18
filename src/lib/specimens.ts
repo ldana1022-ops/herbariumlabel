@@ -194,3 +194,24 @@ export async function fetchSpecimenBySerial(serial: string): Promise<Specimen | 
   if (error) throw new Error(error.message);
   return (data as Specimen) ?? null;
 }
+
+export type PublicSpecimen = {
+  id: string;
+  serial_number: string;
+  scientific_name: string;
+  family: string | null;
+  locality: string | null;
+  region: string | null;
+  status: SpecimenStatus;
+};
+
+/** Limited, publicly readable summary used by the barcode scan page. */
+export async function fetchPublicSpecimenBySerial(serial: string): Promise<PublicSpecimen | null> {
+  const { data, error } = await supabase
+    .from("specimens_public")
+    .select("id, serial_number, scientific_name, family, locality, region, status")
+    .eq("serial_number", serial.trim().toUpperCase())
+    .maybeSingle();
+  if (error) throw new Error(error.message);
+  return (data as PublicSpecimen) ?? null;
+}

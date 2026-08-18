@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
-import { fetchSpecimenBySerial } from "@/lib/specimens";
+import { fetchPublicSpecimenBySerial } from "@/lib/specimens";
 
 export const Route = createFileRoute("/s/$serial")({
   ssr: false,
@@ -28,7 +28,7 @@ function SerialLookupPage() {
   const navigate = useNavigate();
   const { data, isLoading, error } = useQuery({
     queryKey: ["specimen-serial", serial],
-    queryFn: () => fetchSpecimenBySerial(serial),
+    queryFn: () => fetchPublicSpecimenBySerial(serial),
   });
 
   useEffect(() => {
