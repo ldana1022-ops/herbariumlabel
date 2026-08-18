@@ -20,7 +20,7 @@ import { fetchSpecimens, type Specimen } from "@/lib/specimens";
 import { toMm, useLabelSize } from "@/lib/label-size";
 import { exportLabelsToWord } from "@/lib/export-word";
 
-export const Route = createFileRoute("/print")({
+export const Route = createFileRoute("/_authenticated/print")({
   validateSearch: (search: Record<string, unknown>): { ids?: string } =>
     typeof search['ids'] === "string" ? { ids: search['ids'] as string } : {},
   head: () => ({

@@ -11,7 +11,7 @@ import { normalizeStatus, STATUS_ORDER } from "@/lib/specimen-status";
 import { countByRegion } from "@/lib/region";
 import { StatusBadge } from "@/components/StatusBadge";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/_authenticated/")({
   head: () => ({
     meta: [
       { title: "لوحة التحكم | نظام إدارة ملصقات المعشبة النباتية" },

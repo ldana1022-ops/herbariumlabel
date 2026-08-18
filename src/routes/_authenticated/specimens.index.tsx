@@ -42,7 +42,7 @@ import {
 import { StatusSelect } from "@/components/StatusSelect";
 import { normalizeStatus, STATUS_ORDER, type SpecimenStatus } from "@/lib/specimen-status";
 
-export const Route = createFileRoute("/specimens/")({
+export const Route = createFileRoute("/_authenticated/specimens/")({
   validateSearch: (search: Record<string, unknown>): { focus?: string } =>
     typeof search['focus'] === "string" ? { focus: search['focus'] as string } : {},
   head: () => ({
