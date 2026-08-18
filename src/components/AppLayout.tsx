@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Database, LayoutDashboard, Languages, Plus, Printer, Upload } from "lucide-react";
+import { Database, LayoutDashboard, Languages, LogOut, Plus, Printer, Upload } from "lucide-react";
 import type { ReactNode } from "react";
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
@@ -21,7 +21,7 @@ function NavLink({ to, icon, label }: { to: string; icon: ReactNode; label: stri
 
 export function AppLayout({ children }: { children: ReactNode }) {
   const { t, lang, setLang, dir } = useI18n();
-  const { can } = useAuth();
+  const { can, profile, isSuperAdmin, session, signOut } = useAuth();
 
   return (
     <div dir={dir} className="min-h-screen bg-muted/40 no-print-wrapper">
@@ -46,6 +46,22 @@ export function AppLayout({ children }: { children: ReactNode }) {
               <Languages className="size-4" />
               {lang === "ar" ? "English" : "العربية"}
             </Button>
+            {session ? (
+              <div className="flex items-center gap-2">
+                <div className="text-right leading-tight">
+                  <p className="text-xs font-medium text-foreground">
+                    {profile?.full_name ?? profile?.email ?? ""}
+                  </p>
+                  <p className="text-[11px] text-muted-foreground">
+                    {isSuperAdmin ? t("superAdmin") : t("user")}
+                  </p>
+                </div>
+                <Button variant="outline" size="sm" className="gap-2" onClick={() => void signOut()}>
+                  <LogOut className="size-4" />
+                  {t("signOut")}
+                </Button>
+              </div>
+            ) : null}
           </div>
         </div>
         <nav className="border-t border-border bg-card">

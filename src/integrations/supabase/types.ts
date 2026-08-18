@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      activity_log: {
+        Row: {
+          action: string
+          actor_id: string | null
+          actor_name: string | null
+          created_at: string
+          id: string
+          new_value: Json | null
+          previous_value: Json | null
+          record_id: string | null
+          record_label: string | null
+          session_info: string | null
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          actor_name?: string | null
+          created_at?: string
+          id?: string
+          new_value?: Json | null
+          previous_value?: Json | null
+          record_id?: string | null
+          record_label?: string | null
+          session_info?: string | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          actor_name?: string | null
+          created_at?: string
+          id?: string
+          new_value?: Json | null
+          previous_value?: Json | null
+          record_id?: string | null
+          record_label?: string | null
+          session_info?: string | null
+        }
+        Relationships: []
+      }
       herbarium_specimens: {
         Row: {
           accession_number: string
@@ -21,6 +60,7 @@ export type Database = {
           collection_date: string | null
           collectors: string | null
           created_at: string
+          created_by: string | null
           determination: string | null
           determination_date: string | null
           determined_by: string | null
@@ -37,6 +77,7 @@ export type Database = {
           serial_number: string
           status: Database["public"]["Enums"]["specimen_status"]
           updated_at: string
+          visibility: Database["public"]["Enums"]["specimen_visibility"]
         }
         Insert: {
           accession_number: string
@@ -44,6 +85,7 @@ export type Database = {
           collection_date?: string | null
           collectors?: string | null
           created_at?: string
+          created_by?: string | null
           determination?: string | null
           determination_date?: string | null
           determined_by?: string | null
@@ -60,6 +102,7 @@ export type Database = {
           serial_number?: string
           status?: Database["public"]["Enums"]["specimen_status"]
           updated_at?: string
+          visibility?: Database["public"]["Enums"]["specimen_visibility"]
         }
         Update: {
           accession_number?: string
@@ -67,6 +110,7 @@ export type Database = {
           collection_date?: string | null
           collectors?: string | null
           created_at?: string
+          created_by?: string | null
           determination?: string | null
           determination_date?: string | null
           determined_by?: string | null
@@ -83,6 +127,52 @@ export type Database = {
           serial_number?: string
           status?: Database["public"]["Enums"]["specimen_status"]
           updated_at?: string
+          visibility?: Database["public"]["Enums"]["specimen_visibility"]
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          action: string
+          actor_id: string | null
+          actor_name: string | null
+          body: string
+          created_at: string
+          id: string
+          read_at: string | null
+          record_id: string | null
+          record_label: string | null
+          request_id: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          actor_name?: string | null
+          body: string
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          record_id?: string | null
+          record_label?: string | null
+          request_id?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          actor_name?: string | null
+          body?: string
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          record_id?: string | null
+          record_label?: string | null
+          request_id?: string | null
+          title?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -92,6 +182,8 @@ export type Database = {
           email: string | null
           full_name: string | null
           id: string
+          is_active: boolean
+          last_login_at: string | null
           updated_at: string
         }
         Insert: {
@@ -99,6 +191,8 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id: string
+          is_active?: boolean
+          last_login_at?: string | null
           updated_at?: string
         }
         Update: {
@@ -106,7 +200,150 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id?: string
+          is_active?: boolean
+          last_login_at?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      requests: {
+        Row: {
+          assigned_to: string
+          created_at: string
+          created_by: string | null
+          due_date: string | null
+          id: string
+          message: string | null
+          request_type: string
+          specimen_id: string | null
+          status: Database["public"]["Enums"]["request_status"]
+          updated_at: string
+        }
+        Insert: {
+          assigned_to: string
+          created_at?: string
+          created_by?: string | null
+          due_date?: string | null
+          id?: string
+          message?: string | null
+          request_type: string
+          specimen_id?: string | null
+          status?: Database["public"]["Enums"]["request_status"]
+          updated_at?: string
+        }
+        Update: {
+          assigned_to?: string
+          created_at?: string
+          created_by?: string | null
+          due_date?: string | null
+          id?: string
+          message?: string | null
+          request_type?: string
+          specimen_id?: string | null
+          status?: Database["public"]["Enums"]["request_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "requests_specimen_id_fkey"
+            columns: ["specimen_id"]
+            isOneToOne: false
+            referencedRelation: "herbarium_specimens"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "requests_specimen_id_fkey"
+            columns: ["specimen_id"]
+            isOneToOne: false
+            referencedRelation: "specimens_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      specimen_access: {
+        Row: {
+          created_at: string
+          id: string
+          specimen_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          specimen_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          specimen_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "specimen_access_specimen_id_fkey"
+            columns: ["specimen_id"]
+            isOneToOne: false
+            referencedRelation: "herbarium_specimens"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "specimen_access_specimen_id_fkey"
+            columns: ["specimen_id"]
+            isOneToOne: false
+            referencedRelation: "specimens_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_permissions: {
+        Row: {
+          can_add: boolean
+          can_change_status: boolean
+          can_delete: boolean
+          can_edit: boolean
+          can_edit_labels: boolean
+          can_edit_samples: boolean
+          can_export: boolean
+          can_import: boolean
+          can_receive_requests: boolean
+          can_send_requests: boolean
+          created_at: string
+          data_scope: Database["public"]["Enums"]["data_scope"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          can_add?: boolean
+          can_change_status?: boolean
+          can_delete?: boolean
+          can_edit?: boolean
+          can_edit_labels?: boolean
+          can_edit_samples?: boolean
+          can_export?: boolean
+          can_import?: boolean
+          can_receive_requests?: boolean
+          can_send_requests?: boolean
+          created_at?: string
+          data_scope?: Database["public"]["Enums"]["data_scope"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          can_add?: boolean
+          can_change_status?: boolean
+          can_delete?: boolean
+          can_edit?: boolean
+          can_edit_labels?: boolean
+          can_edit_samples?: boolean
+          can_export?: boolean
+          can_import?: boolean
+          can_receive_requests?: boolean
+          can_send_requests?: boolean
+          created_at?: string
+          data_scope?: Database["public"]["Enums"]["data_scope"]
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -133,18 +370,50 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      specimens_public: {
+        Row: {
+          family: string | null
+          id: string | null
+          locality: string | null
+          region: string | null
+          scientific_name: string | null
+          serial_number: string | null
+          status: Database["public"]["Enums"]["specimen_status"] | null
+        }
+        Insert: {
+          family?: string | null
+          id?: string | null
+          locality?: string | null
+          region?: string | null
+          scientific_name?: string | null
+          serial_number?: string | null
+          status?: Database["public"]["Enums"]["specimen_status"] | null
+        }
+        Update: {
+          family?: string | null
+          id?: string | null
+          locality?: string | null
+          region?: string | null
+          scientific_name?: string | null
+          serial_number?: string | null
+          status?: Database["public"]["Enums"]["specimen_status"] | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       [_ in never]: never
     }
     Enums: {
       app_role: "admin" | "editor" | "viewer"
+      data_scope: "all" | "selected" | "own" | "admin_only"
+      request_status: "pending" | "in_progress" | "completed" | "rejected"
       specimen_status:
         | "incomplete"
         | "in_progress"
         | "pending_review"
         | "completed"
+      specimen_visibility: "everyone" | "admin_only" | "selected_users"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -273,12 +542,15 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "editor", "viewer"],
+      data_scope: ["all", "selected", "own", "admin_only"],
+      request_status: ["pending", "in_progress", "completed", "rejected"],
       specimen_status: [
         "incomplete",
         "in_progress",
         "pending_review",
         "completed",
       ],
+      specimen_visibility: ["everyone", "admin_only", "selected_users"],
     },
   },
 } as const

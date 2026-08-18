@@ -9,91 +9,122 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as PrintRouteImport } from './routes/print'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
+import { Route as AuthenticatedPrintRouteImport } from './routes/_authenticated/print'
 import { Route as SSerialRouteImport } from './routes/s.$serial'
-import { Route as SpecimensIndexRouteImport } from './routes/specimens.index'
-import { Route as SpecimensImportRouteImport } from './routes/specimens.import'
-import { Route as SpecimensNewRouteImport } from './routes/specimens.new'
-import { Route as SpecimensIdIndexRouteImport } from './routes/specimens.$id.index'
-import { Route as SpecimensIdEditRouteImport } from './routes/specimens.$id.edit'
+import { Route as AuthenticatedSpecimensIndexRouteImport } from './routes/_authenticated/specimens.index'
+import { Route as AuthenticatedSpecimensImportRouteImport } from './routes/_authenticated/specimens.import'
+import { Route as AuthenticatedSpecimensNewRouteImport } from './routes/_authenticated/specimens.new'
+import { Route as AuthenticatedSpecimensIdIndexRouteImport } from './routes/_authenticated/specimens.$id.index'
+import { Route as AuthenticatedSpecimensIdEditRouteImport } from './routes/_authenticated/specimens.$id.edit'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PrintRoute = PrintRouteImport.update({
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedPrintRoute = AuthenticatedPrintRouteImport.update({
   id: '/print',
   path: '/print',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const SSerialRoute = SSerialRouteImport.update({
   id: '/s/$serial',
   path: '/s/$serial',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SpecimensIndexRoute = SpecimensIndexRouteImport.update({
-  id: '/specimens/',
-  path: '/specimens/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SpecimensImportRoute = SpecimensImportRouteImport.update({
-  id: '/specimens/import',
-  path: '/specimens/import',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SpecimensNewRoute = SpecimensNewRouteImport.update({
-  id: '/specimens/new',
-  path: '/specimens/new',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SpecimensIdIndexRoute = SpecimensIdIndexRouteImport.update({
-  id: '/specimens/$id/',
-  path: '/specimens/$id/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SpecimensIdEditRoute = SpecimensIdEditRouteImport.update({
-  id: '/specimens/$id/edit',
-  path: '/specimens/$id/edit',
-  getParentRoute: () => rootRouteImport,
-} as any)
+const AuthenticatedSpecimensIndexRoute =
+  AuthenticatedSpecimensIndexRouteImport.update({
+    id: '/specimens/',
+    path: '/specimens/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedSpecimensImportRoute =
+  AuthenticatedSpecimensImportRouteImport.update({
+    id: '/specimens/import',
+    path: '/specimens/import',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedSpecimensNewRoute =
+  AuthenticatedSpecimensNewRouteImport.update({
+    id: '/specimens/new',
+    path: '/specimens/new',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedSpecimensIdIndexRoute =
+  AuthenticatedSpecimensIdIndexRouteImport.update({
+    id: '/specimens/$id/',
+    path: '/specimens/$id/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedSpecimensIdEditRoute =
+  AuthenticatedSpecimensIdEditRouteImport.update({
+    id: '/specimens/$id/edit',
+    path: '/specimens/$id/edit',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/print': typeof PrintRoute
+  '/': typeof AuthenticatedIndexRoute
+  '/auth': typeof AuthRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/print': typeof AuthenticatedPrintRoute
   '/s/$serial': typeof SSerialRoute
-  '/specimens/import': typeof SpecimensImportRoute
-  '/specimens/new': typeof SpecimensNewRoute
-  '/specimens/': typeof SpecimensIndexRoute
-  '/specimens/$id/edit': typeof SpecimensIdEditRoute
-  '/specimens/$id/': typeof SpecimensIdIndexRoute
+  '/specimens/import': typeof AuthenticatedSpecimensImportRoute
+  '/specimens/new': typeof AuthenticatedSpecimensNewRoute
+  '/specimens/': typeof AuthenticatedSpecimensIndexRoute
+  '/specimens/$id/edit': typeof AuthenticatedSpecimensIdEditRoute
+  '/specimens/$id/': typeof AuthenticatedSpecimensIdIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/print': typeof PrintRoute
+  '/auth': typeof AuthRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/print': typeof AuthenticatedPrintRoute
   '/s/$serial': typeof SSerialRoute
-  '/specimens/import': typeof SpecimensImportRoute
-  '/specimens/new': typeof SpecimensNewRoute
-  '/specimens': typeof SpecimensIndexRoute
-  '/specimens/$id/edit': typeof SpecimensIdEditRoute
-  '/specimens/$id': typeof SpecimensIdIndexRoute
+  '/': typeof AuthenticatedIndexRoute
+  '/specimens/import': typeof AuthenticatedSpecimensImportRoute
+  '/specimens/new': typeof AuthenticatedSpecimensNewRoute
+  '/specimens': typeof AuthenticatedSpecimensIndexRoute
+  '/specimens/$id/edit': typeof AuthenticatedSpecimensIdEditRoute
+  '/specimens/$id': typeof AuthenticatedSpecimensIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/print': typeof PrintRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/_authenticated/print': typeof AuthenticatedPrintRoute
   '/s/$serial': typeof SSerialRoute
-  '/specimens/import': typeof SpecimensImportRoute
-  '/specimens/new': typeof SpecimensNewRoute
-  '/specimens/': typeof SpecimensIndexRoute
-  '/specimens/$id/edit': typeof SpecimensIdEditRoute
-  '/specimens/$id/': typeof SpecimensIdIndexRoute
+  '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/_authenticated/specimens/import': typeof AuthenticatedSpecimensImportRoute
+  '/_authenticated/specimens/new': typeof AuthenticatedSpecimensNewRoute
+  '/_authenticated/specimens/': typeof AuthenticatedSpecimensIndexRoute
+  '/_authenticated/specimens/$id/edit': typeof AuthenticatedSpecimensIdEditRoute
+  '/_authenticated/specimens/$id/': typeof AuthenticatedSpecimensIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/auth'
+    | '/reset-password'
     | '/print'
     | '/s/$serial'
     | '/specimens/import'
@@ -103,9 +134,11 @@ export interface FileRouteTypes {
     | '/specimens/$id/'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/'
+    | '/auth'
+    | '/reset-password'
     | '/print'
     | '/s/$serial'
+    | '/'
     | '/specimens/import'
     | '/specimens/new'
     | '/specimens'
@@ -113,42 +146,62 @@ export interface FileRouteTypes {
     | '/specimens/$id'
   id:
     | '__root__'
-    | '/'
-    | '/print'
+    | '/_authenticated'
+    | '/auth'
+    | '/reset-password'
+    | '/_authenticated/print'
     | '/s/$serial'
-    | '/specimens/import'
-    | '/specimens/new'
-    | '/specimens/'
-    | '/specimens/$id/edit'
-    | '/specimens/$id/'
+    | '/_authenticated/'
+    | '/_authenticated/specimens/import'
+    | '/_authenticated/specimens/new'
+    | '/_authenticated/specimens/'
+    | '/_authenticated/specimens/$id/edit'
+    | '/_authenticated/specimens/$id/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  PrintRoute: typeof PrintRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   SSerialRoute: typeof SSerialRoute
-  SpecimensImportRoute: typeof SpecimensImportRoute
-  SpecimensNewRoute: typeof SpecimensNewRoute
-  SpecimensIndexRoute: typeof SpecimensIndexRoute
-  SpecimensIdEditRoute: typeof SpecimensIdEditRoute
-  SpecimensIdIndexRoute: typeof SpecimensIdIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/print': {
-      id: '/print'
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/': {
+      id: '/_authenticated/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/print': {
+      id: '/_authenticated/print'
       path: '/print'
       fullPath: '/print'
-      preLoaderRoute: typeof PrintRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedPrintRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/s/$serial': {
       id: '/s/$serial'
@@ -157,53 +210,72 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SSerialRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/specimens/': {
-      id: '/specimens/'
+    '/_authenticated/specimens/': {
+      id: '/_authenticated/specimens/'
       path: '/specimens'
       fullPath: '/specimens/'
-      preLoaderRoute: typeof SpecimensIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedSpecimensIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/specimens/import': {
-      id: '/specimens/import'
+    '/_authenticated/specimens/import': {
+      id: '/_authenticated/specimens/import'
       path: '/specimens/import'
       fullPath: '/specimens/import'
-      preLoaderRoute: typeof SpecimensImportRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedSpecimensImportRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/specimens/new': {
-      id: '/specimens/new'
+    '/_authenticated/specimens/new': {
+      id: '/_authenticated/specimens/new'
       path: '/specimens/new'
       fullPath: '/specimens/new'
-      preLoaderRoute: typeof SpecimensNewRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedSpecimensNewRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/specimens/$id/': {
-      id: '/specimens/$id/'
+    '/_authenticated/specimens/$id/': {
+      id: '/_authenticated/specimens/$id/'
       path: '/specimens/$id'
       fullPath: '/specimens/$id/'
-      preLoaderRoute: typeof SpecimensIdIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedSpecimensIdIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/specimens/$id/edit': {
-      id: '/specimens/$id/edit'
+    '/_authenticated/specimens/$id/edit': {
+      id: '/_authenticated/specimens/$id/edit'
       path: '/specimens/$id/edit'
       fullPath: '/specimens/$id/edit'
-      preLoaderRoute: typeof SpecimensIdEditRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedSpecimensIdEditRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedPrintRoute: typeof AuthenticatedPrintRoute
+  AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+  AuthenticatedSpecimensImportRoute: typeof AuthenticatedSpecimensImportRoute
+  AuthenticatedSpecimensNewRoute: typeof AuthenticatedSpecimensNewRoute
+  AuthenticatedSpecimensIndexRoute: typeof AuthenticatedSpecimensIndexRoute
+  AuthenticatedSpecimensIdEditRoute: typeof AuthenticatedSpecimensIdEditRoute
+  AuthenticatedSpecimensIdIndexRoute: typeof AuthenticatedSpecimensIdIndexRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedPrintRoute: AuthenticatedPrintRoute,
+  AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+  AuthenticatedSpecimensImportRoute: AuthenticatedSpecimensImportRoute,
+  AuthenticatedSpecimensNewRoute: AuthenticatedSpecimensNewRoute,
+  AuthenticatedSpecimensIndexRoute: AuthenticatedSpecimensIndexRoute,
+  AuthenticatedSpecimensIdEditRoute: AuthenticatedSpecimensIdEditRoute,
+  AuthenticatedSpecimensIdIndexRoute: AuthenticatedSpecimensIdIndexRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  PrintRoute: PrintRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   SSerialRoute: SSerialRoute,
-  SpecimensImportRoute: SpecimensImportRoute,
-  SpecimensNewRoute: SpecimensNewRoute,
-  SpecimensIndexRoute: SpecimensIndexRoute,
-  SpecimensIdEditRoute: SpecimensIdEditRoute,
-  SpecimensIdIndexRoute: SpecimensIdIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
