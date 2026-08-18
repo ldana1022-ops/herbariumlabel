@@ -222,9 +222,9 @@ export const updateUser = createServerFn({ method: "POST" })
       .maybeSingle();
     if (targetRole && data.isActive === false) throw new Error("CANNOT_DISABLE_SUPER_ADMIN");
 
-    const patch: Record<string, unknown> = {};
-    if (data.fullName !== undefined) patch['full_name'] = data.fullName;
-    if (data.isActive !== undefined) patch['is_active'] = data.isActive;
+    const patch: { full_name?: string; is_active?: boolean } = {};
+    if (data.fullName !== undefined) patch.full_name = data.fullName;
+    if (data.isActive !== undefined) patch.is_active = data.isActive;
     if (Object.keys(patch).length > 0) {
       const { error } = await supabaseAdmin.from("profiles").update(patch).eq("id", data.userId);
       if (error) throw new Error(error.message);
@@ -242,7 +242,7 @@ export const updateUser = createServerFn({ method: "POST" })
       action: data.isActive === undefined ? "edit_user" : data.isActive ? "enable_user" : "disable_user",
       record_label: profile?.email ?? data.userId,
       record_id: data.userId,
-      new_value: patch,
+      new_value: patch as Record<string, string | boolean>,
     });
     return { ok: true };
   });
