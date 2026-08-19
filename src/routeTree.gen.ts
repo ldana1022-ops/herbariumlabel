@@ -13,6 +13,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
+import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
 import { Route as AuthenticatedPrintRouteImport } from './routes/_authenticated/print'
 import { Route as SSerialRouteImport } from './routes/s.$serial'
 import { Route as AuthenticatedSpecimensIndexRouteImport } from './routes/_authenticated/specimens.index'
@@ -40,6 +41,12 @@ const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedNotificationsRoute =
+  AuthenticatedNotificationsRouteImport.update({
+    id: '/notifications',
+    path: '/notifications',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedPrintRoute = AuthenticatedPrintRouteImport.update({
   id: '/print',
   path: '/print',
@@ -85,6 +92,7 @@ export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/notifications': typeof AuthenticatedNotificationsRoute
   '/print': typeof AuthenticatedPrintRoute
   '/s/$serial': typeof SSerialRoute
   '/specimens/import': typeof AuthenticatedSpecimensImportRoute
@@ -96,6 +104,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/notifications': typeof AuthenticatedNotificationsRoute
   '/print': typeof AuthenticatedPrintRoute
   '/s/$serial': typeof SSerialRoute
   '/': typeof AuthenticatedIndexRoute
@@ -110,6 +119,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
   '/_authenticated/print': typeof AuthenticatedPrintRoute
   '/s/$serial': typeof SSerialRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
@@ -125,6 +135,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/reset-password'
+    | '/notifications'
     | '/print'
     | '/s/$serial'
     | '/specimens/import'
@@ -136,6 +147,7 @@ export interface FileRouteTypes {
   to:
     | '/auth'
     | '/reset-password'
+    | '/notifications'
     | '/print'
     | '/s/$serial'
     | '/'
@@ -149,6 +161,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/reset-password'
+    | '/_authenticated/notifications'
     | '/_authenticated/print'
     | '/s/$serial'
     | '/_authenticated/'
@@ -194,6 +207,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/notifications': {
+      id: '/_authenticated/notifications'
+      path: '/notifications'
+      fullPath: '/notifications'
+      preLoaderRoute: typeof AuthenticatedNotificationsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/print': {
@@ -249,6 +269,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
   AuthenticatedPrintRoute: typeof AuthenticatedPrintRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedSpecimensImportRoute: typeof AuthenticatedSpecimensImportRoute
@@ -259,6 +280,7 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
   AuthenticatedPrintRoute: AuthenticatedPrintRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedSpecimensImportRoute: AuthenticatedSpecimensImportRoute,
