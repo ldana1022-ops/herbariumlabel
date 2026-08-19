@@ -1,18 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { assertSuperAdmin, actorLabel } from "@/lib/admin.server";
 
-async function assertSuperAdmin(supabase: any, userId: string) {
-  const { data, error } = await supabase
-    .from("user_roles")
-    .select("role")
-    .eq("user_id", userId)
-    .eq("role", "admin")
-    .maybeSingle();
-  if (error) throw new Error(error.message);
-  if (!data) throw new Error("FORBIDDEN");
-  return true;
-}
 
 /** Creates the profile row on first sign-in and bootstraps the first Super Admin. */
 export const ensureAccount = createServerFn({ method: "POST" })
@@ -341,11 +331,19 @@ export const setUserRole = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
-async function actorLabel(admin: any, userId: string): Promise<string> {
-  const { data } = await admin
-    .from("profiles")
-    .select("full_name, email")
-    .eq("id", userId)
-    .maybeSingle();
-  return data?.full_name || data?.email || "System";
-}
+
+/** Active users directory (id + display name) for request assignment. */
+export const listDirectory = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async () => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data } = await supabaseAdmin
+      .from("profiles")
+      .select("id, full_name, email, is_active")
+      .eq("is_active", true)
+      .order("full_name", { ascending: true });
+    return (data ?? []).map((p: { id: string; full_name: string | null; email: string | null }) => ({
+      id: p.id,
+      name: p.full_name || p.email || p.id,
+    }));
+  });
