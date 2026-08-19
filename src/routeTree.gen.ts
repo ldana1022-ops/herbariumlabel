@@ -16,6 +16,7 @@ import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
 import { Route as AuthenticatedPrintRouteImport } from './routes/_authenticated/print'
 import { Route as SSerialRouteImport } from './routes/s.$serial'
+import { Route as AuthenticatedAdminActivityRouteImport } from './routes/_authenticated/admin.activity'
 import { Route as AuthenticatedSpecimensIndexRouteImport } from './routes/_authenticated/specimens.index'
 import { Route as AuthenticatedSpecimensImportRouteImport } from './routes/_authenticated/specimens.import'
 import { Route as AuthenticatedSpecimensNewRouteImport } from './routes/_authenticated/specimens.new'
@@ -57,6 +58,12 @@ const SSerialRoute = SSerialRouteImport.update({
   path: '/s/$serial',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedAdminActivityRoute =
+  AuthenticatedAdminActivityRouteImport.update({
+    id: '/admin/activity',
+    path: '/admin/activity',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedSpecimensIndexRoute =
   AuthenticatedSpecimensIndexRouteImport.update({
     id: '/specimens/',
@@ -95,6 +102,7 @@ export interface FileRoutesByFullPath {
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/print': typeof AuthenticatedPrintRoute
   '/s/$serial': typeof SSerialRoute
+  '/admin/activity': typeof AuthenticatedAdminActivityRoute
   '/specimens/import': typeof AuthenticatedSpecimensImportRoute
   '/specimens/new': typeof AuthenticatedSpecimensNewRoute
   '/specimens/': typeof AuthenticatedSpecimensIndexRoute
@@ -108,6 +116,7 @@ export interface FileRoutesByTo {
   '/print': typeof AuthenticatedPrintRoute
   '/s/$serial': typeof SSerialRoute
   '/': typeof AuthenticatedIndexRoute
+  '/admin/activity': typeof AuthenticatedAdminActivityRoute
   '/specimens/import': typeof AuthenticatedSpecimensImportRoute
   '/specimens/new': typeof AuthenticatedSpecimensNewRoute
   '/specimens': typeof AuthenticatedSpecimensIndexRoute
@@ -123,6 +132,7 @@ export interface FileRoutesById {
   '/_authenticated/print': typeof AuthenticatedPrintRoute
   '/s/$serial': typeof SSerialRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/_authenticated/admin/activity': typeof AuthenticatedAdminActivityRoute
   '/_authenticated/specimens/import': typeof AuthenticatedSpecimensImportRoute
   '/_authenticated/specimens/new': typeof AuthenticatedSpecimensNewRoute
   '/_authenticated/specimens/': typeof AuthenticatedSpecimensIndexRoute
@@ -138,6 +148,7 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/print'
     | '/s/$serial'
+    | '/admin/activity'
     | '/specimens/import'
     | '/specimens/new'
     | '/specimens/'
@@ -151,6 +162,7 @@ export interface FileRouteTypes {
     | '/print'
     | '/s/$serial'
     | '/'
+    | '/admin/activity'
     | '/specimens/import'
     | '/specimens/new'
     | '/specimens'
@@ -165,6 +177,7 @@ export interface FileRouteTypes {
     | '/_authenticated/print'
     | '/s/$serial'
     | '/_authenticated/'
+    | '/_authenticated/admin/activity'
     | '/_authenticated/specimens/import'
     | '/_authenticated/specimens/new'
     | '/_authenticated/specimens/'
@@ -230,6 +243,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SSerialRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/admin/activity': {
+      id: '/_authenticated/admin/activity'
+      path: '/admin/activity'
+      fullPath: '/admin/activity'
+      preLoaderRoute: typeof AuthenticatedAdminActivityRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/specimens/': {
       id: '/_authenticated/specimens/'
       path: '/specimens'
@@ -272,6 +292,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
   AuthenticatedPrintRoute: typeof AuthenticatedPrintRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+  AuthenticatedAdminActivityRoute: typeof AuthenticatedAdminActivityRoute
   AuthenticatedSpecimensImportRoute: typeof AuthenticatedSpecimensImportRoute
   AuthenticatedSpecimensNewRoute: typeof AuthenticatedSpecimensNewRoute
   AuthenticatedSpecimensIndexRoute: typeof AuthenticatedSpecimensIndexRoute
@@ -283,6 +304,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
   AuthenticatedPrintRoute: AuthenticatedPrintRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+  AuthenticatedAdminActivityRoute: AuthenticatedAdminActivityRoute,
   AuthenticatedSpecimensImportRoute: AuthenticatedSpecimensImportRoute,
   AuthenticatedSpecimensNewRoute: AuthenticatedSpecimensNewRoute,
   AuthenticatedSpecimensIndexRoute: AuthenticatedSpecimensIndexRoute,
