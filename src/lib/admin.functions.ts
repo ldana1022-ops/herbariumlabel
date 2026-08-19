@@ -349,3 +349,19 @@ async function actorLabel(admin: any, userId: string): Promise<string> {
     .maybeSingle();
   return data?.full_name || data?.email || "System";
 }
+
+/** Active users directory (id + display name) for request assignment. */
+export const listDirectory = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async () => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data } = await supabaseAdmin
+      .from("profiles")
+      .select("id, full_name, email, is_active")
+      .eq("is_active", true)
+      .order("full_name", { ascending: true });
+    return (data ?? []).map((p: { id: string; full_name: string | null; email: string | null }) => ({
+      id: p.id,
+      name: p.full_name || p.email || p.id,
+    }));
+  });
