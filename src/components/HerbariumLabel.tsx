@@ -1,5 +1,5 @@
 import { formatDate, type Specimen } from "@/lib/specimens";
-import { Barcode } from "@/components/Barcode";
+
 import { DEFAULT_LABEL_SIZE, labelStyle, type LabelSize } from "@/lib/label-size";
 
 
