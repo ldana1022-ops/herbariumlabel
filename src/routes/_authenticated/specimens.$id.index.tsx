@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { ArrowRight, FileText, Pencil, Printer } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { HerbariumLabel } from "@/components/HerbariumLabel";
-import { Barcode } from "@/components/Barcode";
+import { BarcodeSection } from "@/components/BarcodeSection";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -226,12 +226,10 @@ function SpecimenDetailPage() {
               </CardHeader>
               <CardContent className="flex flex-col items-center gap-2">
                 <div className="rounded-md border border-border bg-white p-3">
-                  <Barcode value={s.serial_number} height={48} width={1.8} fontSize={14} />
+                  <BarcodeSection serial={s.serial_number} />
                 </div>
-                <p className="font-mono text-sm tracking-wider text-foreground" dir="ltr">
-                  {s.serial_number}
-                </p>
               </CardContent>
+
             </Card>
 
             <Card>

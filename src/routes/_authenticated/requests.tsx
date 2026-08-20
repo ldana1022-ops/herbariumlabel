@@ -175,10 +175,10 @@ function RequestsPage() {
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label>{t("specimens")}</Label>
+              <Label>{t("database")}</Label>
               <Select value={specimenId} onValueChange={setSpecimenId}>
                 <SelectTrigger>
-                  <SelectValue placeholder={t("specimens")} />
+                  <SelectValue placeholder={t("database")} />
                 </SelectTrigger>
                 <SelectContent>
                   {specimens.slice(0, 200).map((s) => (
@@ -219,7 +219,7 @@ function RequestsPage() {
             <TableHeader>
               <TableRow>
                 <TableHead>{t("requestType")}</TableHead>
-                <TableHead>{t("specimens")}</TableHead>
+                <TableHead>{t("database")}</TableHead>
                 <TableHead>{t("assignedTo")}</TableHead>
                 <TableHead>{t("dueDate")}</TableHead>
                 <TableHead>{t("status")}</TableHead>
