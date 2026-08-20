@@ -226,12 +226,10 @@ function SpecimenDetailPage() {
               </CardHeader>
               <CardContent className="flex flex-col items-center gap-2">
                 <div className="rounded-md border border-border bg-white p-3">
-                  <Barcode value={s.serial_number} height={48} width={1.8} fontSize={14} />
+                  <BarcodeSection serial={s.serial_number} />
                 </div>
-                <p className="font-mono text-sm tracking-wider text-foreground" dir="ltr">
-                  {s.serial_number}
-                </p>
               </CardContent>
+
             </Card>
 
             <Card>
