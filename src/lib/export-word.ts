@@ -46,7 +46,6 @@ function labelHtml(s: Specimen, size: LabelSize) {
         ${row("Collector (s):", s.collectors ?? "", true)}
         ${row("Det.:", s.determination ?? "", true)}
         ${row("Notes:", s.notes ?? "", true)}
-        <p style="margin:4pt 0 0 0;text-align:right;font-family:Arial,sans-serif;font-size:${(6 * size.fontScale).toFixed(1)}pt;color:#333333;">${esc(s.accession_number)}</p>
       </td>
     </tr>
   </table>`;
