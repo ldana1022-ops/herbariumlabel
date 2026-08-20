@@ -342,4 +342,22 @@ body {
   .print-sheet {
     gap: var(--sheet-gap, 4mm);
   }
+
+  /* keep label + barcode group together, centred on the sheet */
+  .print-page {
+    width: auto !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100% !important;
+  }
+
+  .print-group {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
 }
+
