@@ -139,9 +139,12 @@ function humanizeError(message: string): string {
 }
 
 export async function createSpecimen(payload: SpecimenPayload): Promise<Specimen> {
+  // Empty accession numbers are filled by the database from the generated serial number.
+  const { accession_number, ...rest } = payload;
+  const insertPayload = accession_number ? payload : rest;
   const { data, error } = await supabase
     .from("herbarium_specimens")
-    .insert(payload)
+    .insert(insertPayload)
     .select()
     .single();
   if (error) throw new Error(humanizeError(error.message));
