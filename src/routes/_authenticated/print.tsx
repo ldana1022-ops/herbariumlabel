@@ -4,6 +4,8 @@ import { useMemo, useState } from "react";
 import { FileText, Printer } from "lucide-react";
 import { HerbariumLabel } from "@/components/HerbariumLabel";
 import { LabelSizeControls } from "@/components/LabelSizeControls";
+import { BarcodeSection } from "@/components/BarcodeSection";
+import { BarcodeSizeControls } from "@/components/BarcodeSizeControls";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,6 +20,7 @@ import {
 import { useI18n } from "@/lib/i18n";
 import { fetchSpecimens, type Specimen } from "@/lib/specimens";
 import { toMm, useLabelSize } from "@/lib/label-size";
+import { useBarcodeSize } from "@/lib/barcode-size";
 import { exportLabelsToWord } from "@/lib/export-word";
 
 export const Route = createFileRoute("/_authenticated/print")({
@@ -44,10 +47,14 @@ const PAPERS: Record<string, { w: number; h: number }> = {
   Letter: { w: 216, h: 279 },
 };
 
+type PrintMode = "labels" | "barcodes" | "both";
+
 function PrintPage() {
   const { ids = "" } = Route.useSearch();
   const { t, dir } = useI18n();
   const { size, setSize } = useLabelSize();
+  const barcode = useBarcodeSize();
+  const [mode, setMode] = useState<PrintMode>("both");
   const { data = [], isLoading } = useQuery({ queryKey: ["specimens"], queryFn: fetchSpecimens });
 
   const [paper, setPaper] = useState("A4");
@@ -114,12 +121,33 @@ function PrintPage() {
 
       <div className="mx-auto max-w-6xl space-y-5 px-4 py-6">
         <div className="print-hide grid gap-5 lg:grid-cols-2">
-          <LabelSizeControls size={size} onChange={setSize} />
+          {mode !== "barcodes" ? <LabelSizeControls size={size} onChange={setSize} /> : null}
+          {mode !== "labels" ? (
+            <BarcodeSizeControls
+              size={barcode.size}
+              onChange={barcode.setSize}
+              saved={barcode.saved}
+              onSave={barcode.saveSize}
+              onUpdateSaved={barcode.updateSaved}
+              onRemoveSaved={barcode.removeSaved}
+            />
+          ) : null}
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-base">{t("printSettings")}</CardTitle>
             </CardHeader>
             <CardContent className="grid gap-3 sm:grid-cols-2">
+              <div className="space-y-1.5 sm:col-span-2">
+                <Label>{t("printMode")}</Label>
+                <Select value={mode} onValueChange={(v) => setMode(v as PrintMode)}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="labels">{t("labelsOnly")}</SelectItem>
+                    <SelectItem value="barcodes">{t("barcodesOnly")}</SelectItem>
+                    <SelectItem value="both">{t("labelsAndBarcodes")}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
               <div className="space-y-1.5">
                 <Label>{t("paperSize")}</Label>
                 <Select value={paper} onValueChange={setPaper}>
@@ -211,7 +239,12 @@ function PrintPage() {
           >
             <div className="print-sheet" style={sheetVars}>
               {labels.map((s, i) => (
-                <HerbariumLabel key={`${s.id}-${i}`} specimen={s} size={size} />
+                <div className="print-group" key={`${s.id}-${i}`}>
+                  {mode !== "barcodes" ? <HerbariumLabel specimen={s} size={size} /> : null}
+                  {mode !== "labels" ? (
+                    <BarcodeSection serial={s.serial_number} size={barcode.size} />
+                  ) : null}
+                </div>
               ))}
             </div>
           </div>
