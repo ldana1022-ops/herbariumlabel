@@ -49,7 +49,8 @@ const optionalDate = z
   .transform((v) => (v && v.length > 0 ? v : null));
 
 export const specimenSchema = z.object({
-  accession_number: z.string().trim().min(1, "required").max(60),
+  // Auto-generated from the serial number by the database; kept optional for imports.
+  accession_number: z.string().trim().max(60).optional().transform((v) => v ?? ""),
   scientific_name: z.string().trim().min(1, "required").max(200),
   family: optionalText,
   local_name: optionalText,
@@ -138,9 +139,11 @@ function humanizeError(message: string): string {
 }
 
 export async function createSpecimen(payload: SpecimenPayload): Promise<Specimen> {
+  // accession_number is overwritten by the database trigger from the generated serial number.
+  const insertPayload = { ...payload, accession_number: payload.accession_number || "PENDING" };
   const { data, error } = await supabase
     .from("herbarium_specimens")
-    .insert(payload)
+    .insert(insertPayload)
     .select()
     .single();
   if (error) throw new Error(humanizeError(error.message));

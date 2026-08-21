@@ -16,7 +16,7 @@ type Props = {
 };
 
 const dataFields: Array<{ name: keyof SpecimenInput; type?: string; required?: boolean }> = [
-  { name: "accession_number", required: true },
+  // accession_number is generated automatically from the serial number — not editable.
   { name: "scientific_name", required: true },
   { name: "family" },
   { name: "local_name" },
