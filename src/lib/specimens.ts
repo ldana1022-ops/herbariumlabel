@@ -139,9 +139,8 @@ function humanizeError(message: string): string {
 }
 
 export async function createSpecimen(payload: SpecimenPayload): Promise<Specimen> {
-  // Empty accession numbers are filled by the database from the generated serial number.
-  const { accession_number, ...rest } = payload;
-  const insertPayload = accession_number ? payload : rest;
+  // accession_number is overwritten by the database trigger from the generated serial number.
+  const insertPayload = { ...payload, accession_number: payload.accession_number || "PENDING" };
   const { data, error } = await supabase
     .from("herbarium_specimens")
     .insert(insertPayload)
