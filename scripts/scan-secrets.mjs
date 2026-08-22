@@ -6,6 +6,7 @@
  */
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, extname } from "node:path";
+import { writeReport, truncate } from "./lib/report.mjs";
 
 const ROOTS = ["src", "scripts"];
 const EXTS = new Set([".ts", ".tsx", ".js", ".jsx", ".mjs", ".cjs", ".json"]);
@@ -55,11 +56,26 @@ for (const root of ROOTS) {
   }
 }
 
+const CHECK = "secret-scan";
+const NAME = "Hardcoded secret scan";
+
 if (findings.length > 0) {
   console.error("Potential secrets committed to source:\n");
   for (const f of findings) console.error("  " + f);
   console.error("\nMove these values to server-side secrets and read them inside handlers.");
+  writeReport(CHECK, {
+    name: NAME,
+    status: "fail",
+    summary: `${findings.length} credential-shaped literal(s) found in source.`,
+    findings,
+    details: truncate("Move these values to server-side secrets and read them inside handlers."),
+  });
   process.exit(1);
 }
 
 console.log("Secret scan: no hardcoded credentials found.");
+writeReport(CHECK, {
+  name: NAME,
+  status: "pass",
+  summary: "No hardcoded credentials found in src/ or scripts/.",
+});
