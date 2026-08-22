@@ -15,12 +15,31 @@ CI (`.github/workflows/security.yml`) runs on every push, every pull request, we
 The weekly schedule matters: advisories are published after code is written, so a
 repo with no commits can still become vulnerable.
 
+## Pull request reporting
+
+Each scanner writes a JSON report into `security-reports/` (git-ignored).
+`bun run security:summary` merges them into markdown, and CI then:
+
+- posts/updates a single sticky comment on the pull request (marker
+  `<!-- lovable-security-summary -->`, so re-runs edit the same comment instead of
+  spamming new ones),
+- publishes a `security/scan-summary` commit status check (success/failure) linking
+  to the workflow run,
+- writes the same table to the Actions job summary and uploads the raw reports as
+  the `security-reports` artifact.
+
+Scan steps use `continue-on-error` so every check reports its result; the job then
+fails if any check failed. Make `security/scan-summary` a required status check in
+branch protection to block merges on security failures.
+
 ## Running locally
 
 ```bash
 bun run audit             # high/critical dependency vulnerabilities
 bun run security:secrets  # hardcoded credentials in src/ and scripts/
+bun run security:summary  # render the combined markdown summary
 ```
+
 
 ## Fixing a dependency finding
 
