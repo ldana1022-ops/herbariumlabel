@@ -1,9 +1,22 @@
 import { Link } from "@tanstack/react-router";
-import { Database, LayoutDashboard, Languages, LogOut, Plus, Printer, Upload } from "lucide-react";
+import {
+  Bell,
+  ClipboardList,
+  Database,
+  History,
+  LayoutDashboard,
+  Languages,
+  LogOut,
+  Plus,
+  Printer,
+  Upload,
+  Users,
+} from "lucide-react";
 import type { ReactNode } from "react";
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
+import { NotificationBell } from "@/components/NotificationBell";
 
 function NavLink({ to, icon, label }: { to: string; icon: ReactNode; label: string }) {
   return (
@@ -48,6 +61,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
             </Button>
             {session ? (
               <div className="flex items-center gap-2">
+                <NotificationBell />
                 <div className="text-right leading-tight">
                   <p className="text-xs font-medium text-foreground">
                     {profile?.full_name ?? profile?.email ?? ""}
@@ -76,6 +90,26 @@ export function AppLayout({ children }: { children: ReactNode }) {
             ) : null}
             {can("print") ? (
               <NavLink to="/print" icon={<Printer className="size-4" />} label={t("printLabels")} />
+            ) : null}
+            {session ? (
+              <>
+                <NavLink
+                  to="/requests"
+                  icon={<ClipboardList className="size-4" />}
+                  label={t("requests")}
+                />
+                <NavLink to="/notifications" icon={<Bell className="size-4" />} label={t("notifications")} />
+              </>
+            ) : null}
+            {isSuperAdmin ? (
+              <>
+                <NavLink to="/admin/users" icon={<Users className="size-4" />} label={t("users")} />
+                <NavLink
+                  to="/admin/activity"
+                  icon={<History className="size-4" />}
+                  label={t("activityLog")}
+                />
+              </>
             ) : null}
           </div>
         </nav>

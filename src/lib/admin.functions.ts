@@ -347,3 +347,81 @@ export const listDirectory = createServerFn({ method: "POST" })
       name: p.full_name || p.email || p.id,
     }));
   });
+
+/** Saves the data scope and action permissions of a single user. */
+export const setPermissions = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator(
+    (input: {
+      userId: string;
+      dataScope: "all" | "selected" | "own" | "admin_only";
+      canAdd: boolean;
+      canEdit: boolean;
+      canDelete: boolean;
+      canImport: boolean;
+      canExport: boolean;
+      canEditSamples: boolean;
+      canEditLabels: boolean;
+      canChangeStatus: boolean;
+      canSendRequests: boolean;
+      canReceiveRequests: boolean;
+    }) =>
+      z
+        .object({
+          userId: z.string().uuid(),
+          dataScope: z.enum(["all", "selected", "own", "admin_only"]),
+          canAdd: z.boolean(),
+          canEdit: z.boolean(),
+          canDelete: z.boolean(),
+          canImport: z.boolean(),
+          canExport: z.boolean(),
+          canEditSamples: z.boolean(),
+          canEditLabels: z.boolean(),
+          canChangeStatus: z.boolean(),
+          canSendRequests: z.boolean(),
+          canReceiveRequests: z.boolean(),
+        })
+        .parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await assertSuperAdmin(context.supabase, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const row = {
+      user_id: data.userId,
+      data_scope: data.dataScope,
+      can_add: data.canAdd,
+      can_edit: data.canEdit,
+      can_delete: data.canDelete,
+      can_import: data.canImport,
+      can_export: data.canExport,
+      can_edit_samples: data.canEditSamples,
+      can_edit_labels: data.canEditLabels,
+      can_change_status: data.canChangeStatus,
+      can_send_requests: data.canSendRequests,
+      can_receive_requests: data.canReceiveRequests,
+    };
+
+    const { error } = await supabaseAdmin
+      .from("user_permissions")
+      .upsert(row, { onConflict: "user_id" });
+    if (error) throw new Error(error.message);
+
+    const actorName = await actorLabel(supabaseAdmin, context.userId);
+    await supabaseAdmin.from("activity_log").insert({
+      actor_id: context.userId,
+      actor_name: actorName,
+      action: "permission_changed",
+      record_id: data.userId,
+      new_value: row,
+    });
+    await supabaseAdmin.from("notifications").insert({
+      user_id: data.userId,
+      actor_id: context.userId,
+      actor_name: actorName,
+      action: "permission_changed",
+      title: "Permissions Updated",
+      body: `${actorName} updated your permissions`,
+    });
+    return { ok: true };
+  });

@@ -16,8 +16,10 @@ import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
 import { Route as AuthenticatedPrintRouteImport } from './routes/_authenticated/print'
 import { Route as AuthenticatedRequestsRouteImport } from './routes/_authenticated/requests'
+import { Route as PSerialRouteImport } from './routes/p.$serial'
 import { Route as SSerialRouteImport } from './routes/s.$serial'
 import { Route as AuthenticatedAdminActivityRouteImport } from './routes/_authenticated/admin.activity'
+import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin.users'
 import { Route as AuthenticatedSpecimensIndexRouteImport } from './routes/_authenticated/specimens.index'
 import { Route as AuthenticatedSpecimensImportRouteImport } from './routes/_authenticated/specimens.import'
 import { Route as AuthenticatedSpecimensNewRouteImport } from './routes/_authenticated/specimens.new'
@@ -59,6 +61,11 @@ const AuthenticatedRequestsRoute = AuthenticatedRequestsRouteImport.update({
   path: '/requests',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const PSerialRoute = PSerialRouteImport.update({
+  id: '/p/$serial',
+  path: '/p/$serial',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SSerialRoute = SSerialRouteImport.update({
   id: '/s/$serial',
   path: '/s/$serial',
@@ -70,6 +77,11 @@ const AuthenticatedAdminActivityRoute =
     path: '/admin/activity',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersRouteImport.update({
+  id: '/admin/users',
+  path: '/admin/users',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedSpecimensIndexRoute =
   AuthenticatedSpecimensIndexRouteImport.update({
     id: '/specimens/',
@@ -108,8 +120,10 @@ export interface FileRoutesByFullPath {
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/print': typeof AuthenticatedPrintRoute
   '/requests': typeof AuthenticatedRequestsRoute
+  '/p/$serial': typeof PSerialRoute
   '/s/$serial': typeof SSerialRoute
   '/admin/activity': typeof AuthenticatedAdminActivityRoute
+  '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/specimens/import': typeof AuthenticatedSpecimensImportRoute
   '/specimens/new': typeof AuthenticatedSpecimensNewRoute
   '/specimens/': typeof AuthenticatedSpecimensIndexRoute
@@ -122,9 +136,11 @@ export interface FileRoutesByTo {
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/print': typeof AuthenticatedPrintRoute
   '/requests': typeof AuthenticatedRequestsRoute
+  '/p/$serial': typeof PSerialRoute
   '/s/$serial': typeof SSerialRoute
   '/': typeof AuthenticatedIndexRoute
   '/admin/activity': typeof AuthenticatedAdminActivityRoute
+  '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/specimens/import': typeof AuthenticatedSpecimensImportRoute
   '/specimens/new': typeof AuthenticatedSpecimensNewRoute
   '/specimens': typeof AuthenticatedSpecimensIndexRoute
@@ -139,9 +155,11 @@ export interface FileRoutesById {
   '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
   '/_authenticated/print': typeof AuthenticatedPrintRoute
   '/_authenticated/requests': typeof AuthenticatedRequestsRoute
+  '/p/$serial': typeof PSerialRoute
   '/s/$serial': typeof SSerialRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/admin/activity': typeof AuthenticatedAdminActivityRoute
+  '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/specimens/import': typeof AuthenticatedSpecimensImportRoute
   '/_authenticated/specimens/new': typeof AuthenticatedSpecimensNewRoute
   '/_authenticated/specimens/': typeof AuthenticatedSpecimensIndexRoute
@@ -157,8 +175,10 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/print'
     | '/requests'
+    | '/p/$serial'
     | '/s/$serial'
     | '/admin/activity'
+    | '/admin/users'
     | '/specimens/import'
     | '/specimens/new'
     | '/specimens/'
@@ -171,9 +191,11 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/print'
     | '/requests'
+    | '/p/$serial'
     | '/s/$serial'
     | '/'
     | '/admin/activity'
+    | '/admin/users'
     | '/specimens/import'
     | '/specimens/new'
     | '/specimens'
@@ -187,9 +209,11 @@ export interface FileRouteTypes {
     | '/_authenticated/notifications'
     | '/_authenticated/print'
     | '/_authenticated/requests'
+    | '/p/$serial'
     | '/s/$serial'
     | '/_authenticated/'
     | '/_authenticated/admin/activity'
+    | '/_authenticated/admin/users'
     | '/_authenticated/specimens/import'
     | '/_authenticated/specimens/new'
     | '/_authenticated/specimens/'
@@ -201,6 +225,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  PSerialRoute: typeof PSerialRoute
   SSerialRoute: typeof SSerialRoute
 }
 
@@ -255,6 +280,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRequestsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/p/$serial': {
+      id: '/p/$serial'
+      path: '/p/$serial'
+      fullPath: '/p/$serial'
+      preLoaderRoute: typeof PSerialRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/s/$serial': {
       id: '/s/$serial'
       path: '/s/$serial'
@@ -267,6 +299,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/activity'
       fullPath: '/admin/activity'
       preLoaderRoute: typeof AuthenticatedAdminActivityRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/users': {
+      id: '/_authenticated/admin/users'
+      path: '/admin/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AuthenticatedAdminUsersRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/specimens/': {
@@ -313,6 +352,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedRequestsRoute: typeof AuthenticatedRequestsRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedAdminActivityRoute: typeof AuthenticatedAdminActivityRoute
+  AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
   AuthenticatedSpecimensImportRoute: typeof AuthenticatedSpecimensImportRoute
   AuthenticatedSpecimensNewRoute: typeof AuthenticatedSpecimensNewRoute
   AuthenticatedSpecimensIndexRoute: typeof AuthenticatedSpecimensIndexRoute
@@ -326,6 +366,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedRequestsRoute: AuthenticatedRequestsRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedAdminActivityRoute: AuthenticatedAdminActivityRoute,
+  AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
   AuthenticatedSpecimensImportRoute: AuthenticatedSpecimensImportRoute,
   AuthenticatedSpecimensNewRoute: AuthenticatedSpecimensNewRoute,
   AuthenticatedSpecimensIndexRoute: AuthenticatedSpecimensIndexRoute,
@@ -340,6 +381,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  PSerialRoute: PSerialRoute,
   SSerialRoute: SSerialRoute,
 }
 export const routeTree = rootRouteImport
