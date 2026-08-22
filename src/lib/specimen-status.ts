@@ -1,8 +1,8 @@
 export const SPECIMEN_STATUSES = [
   "incomplete",
   "in_progress",
-  "pending_review",
   "completed",
+  "printed",
 ] as const;
 
 export type SpecimenStatus = (typeof SPECIMEN_STATUSES)[number];
@@ -30,19 +30,19 @@ export const STATUS_META: Record<SpecimenStatus, StatusMeta> = {
     dot: "🔵",
     badge: "bg-status-progress text-status-progress-foreground",
   },
-  pending_review: {
-    value: "pending_review",
-    ar: "بانتظار المراجعة",
-    en: "Pending review",
-    dot: "🟡",
-    badge: "bg-status-review text-status-review-foreground",
-  },
   completed: {
     value: "completed",
     ar: "مكتملة",
     en: "Completed",
     dot: "🟢",
     badge: "bg-status-completed text-status-completed-foreground",
+  },
+  printed: {
+    value: "printed",
+    ar: "تم الطباعة",
+    en: "Printed",
+    dot: "🟡",
+    badge: "bg-status-review text-status-review-foreground",
   },
 };
 

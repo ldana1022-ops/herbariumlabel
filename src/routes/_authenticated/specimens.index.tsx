@@ -45,6 +45,7 @@ import {
   type Specimen,
 } from "@/lib/specimens";
 import { StatusSelect } from "@/components/StatusSelect";
+import { useEditableSpecimens } from "@/lib/edit-access";
 import { normalizeStatus, STATUS_ORDER, type SpecimenStatus } from "@/lib/specimen-status";
 
 export const Route = createFileRoute("/_authenticated/specimens/")({
@@ -75,10 +76,11 @@ function SpecimensPage() {
   const queryClient = useQueryClient();
   const { size } = useLabelSize();
   const { can } = useAuth();
-  const canEdit = can("edit");
+  const { canEditSpecimen, isSuperAdmin, hasAnyEditable } = useEditableSpecimens();
   const canImport = can("import");
-  const canDelete = can("delete");
+  const canDelete = isSuperAdmin;
   const { data = [], isLoading } = useQuery({ queryKey: ["specimens"], queryFn: fetchSpecimens });
+
 
   const [q, setQ] = useState("");
   const [family, setFamily] = useState(ALL);
@@ -92,6 +94,7 @@ function SpecimensPage() {
   const [bulkField, setBulkField] = useState("");
   const [bulkValue, setBulkValue] = useState("");
   const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
+  const editableSelected = selected.filter((id) => canEditSpecimen(id));
 
   const unique = (fn: (s: Specimen) => string | null) =>
     [...new Set(data.map(fn).filter((v): v is string => Boolean(v)))].sort();
@@ -226,7 +229,7 @@ function SpecimensPage() {
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-xl font-semibold text-foreground">{t("database")}</h2>
           <div className="flex flex-wrap gap-2">
-            {canEdit ? (
+            {can("add") ? (
             <Button asChild size="sm">
               <Link to="/specimens/new">
                 <Plus className="size-4" />
@@ -280,6 +283,14 @@ function SpecimensPage() {
             </Button>
           </div>
         </div>
+
+        {!isSuperAdmin ? (
+          <p className="rounded-md border border-border bg-muted/40 p-3 text-xs text-muted-foreground">
+            {t("readOnlyNotice")}
+          </p>
+        ) : null}
+
+
 
         <Card>
           <CardHeader className="pb-3">
@@ -371,22 +382,32 @@ function SpecimensPage() {
           ) : null}
         </div>
 
-        {selected.length > 0 && (canEdit || canDelete) ? (
+        {selected.length > 0 && (hasAnyEditable || canDelete) ? (
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-base">
                 {t("bulkActions")} — {selected.length} {t("selected")}
               </CardTitle>
+              {hasAnyEditable && editableSelected.length < selected.length ? (
+                <p className="text-xs text-muted-foreground">{t("readOnlyNotice")}</p>
+              ) : null}
             </CardHeader>
             <CardContent className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
-              {canEdit ? (
+              {hasAnyEditable ? (
                 <div className="space-y-1.5">
                   <Label>{t("bulkChangeStatus")}</Label>
                   <Select
                     value=""
-                    onValueChange={(v) =>
-                      bulkStatusMutation.mutate({ ids: selected, status: v as SpecimenStatus })
-                    }
+                    onValueChange={(v) => {
+                      if (editableSelected.length === 0) {
+                        toast.error(t("noEditRights"));
+                        return;
+                      }
+                      bulkStatusMutation.mutate({
+                        ids: editableSelected,
+                        status: v as SpecimenStatus,
+                      });
+                    }}
                     disabled={bulkStatusMutation.isPending}
                   >
                     <SelectTrigger>
@@ -402,7 +423,8 @@ function SpecimensPage() {
                   </Select>
                 </div>
               ) : null}
-              {canEdit ? (
+              {hasAnyEditable ? (
+
                 <>
                   <div className="space-y-1.5">
                     <Label>{t("bulkUpdateField")}</Label>
@@ -432,7 +454,7 @@ function SpecimensPage() {
                 </>
               ) : null}
               <div className="flex flex-wrap items-end gap-2">
-                {canEdit ? (
+                {hasAnyEditable ? (
                   <Button
                     size="sm"
                     disabled={bulkFieldMutation.isPending}
@@ -441,8 +463,12 @@ function SpecimensPage() {
                         toast.error(t("bulkValueRequired"));
                         return;
                       }
+                      if (editableSelected.length === 0) {
+                        toast.error(t("noEditRights"));
+                        return;
+                      }
                       bulkFieldMutation.mutate({
-                        ids: selected,
+                        ids: editableSelected,
                         field: bulkField as BulkEditableField,
                         value: bulkValue,
                       });
@@ -451,6 +477,7 @@ function SpecimensPage() {
                     {t("bulkApply")}
                   </Button>
                 ) : null}
+
                 {canDelete ? (
                   <Button
                     size="sm"
@@ -541,7 +568,7 @@ function SpecimensPage() {
                     <td className="p-2">
                       <StatusSelect
                         value={s.status}
-                        disabled={!canEdit || statusMutation.isPending}
+                        disabled={!canEditSpecimen(s.id) || statusMutation.isPending}
                         onChange={(status) => statusMutation.mutate({ id: s.id, status })}
                       />
                     </td>
@@ -552,13 +579,14 @@ function SpecimensPage() {
                             <Eye className="size-4" />
                           </Link>
                         </Button>
-                        {canEdit ? (
+                        {canEditSpecimen(s.id) ? (
                         <Button asChild size="icon" variant="ghost" title={t("edit")}>
                           <Link to="/specimens/$id/edit" params={{ id: s.id }}>
                             <Pencil className="size-4" />
                           </Link>
                         </Button>
                         ) : null}
+
                         <Button asChild size="icon" variant="ghost" title={t("printLabel")}>
                           <Link to="/print" search={{ ids: s.id }}>
                             <Printer className="size-4" />

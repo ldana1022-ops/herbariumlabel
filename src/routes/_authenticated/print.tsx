@@ -20,10 +20,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useI18n } from "@/lib/i18n";
-import { fetchSpecimens, type Specimen } from "@/lib/specimens";
+import { bulkUpdateStatus, fetchSpecimens, type Specimen } from "@/lib/specimens";
 import { toMm, useLabelSize } from "@/lib/label-size";
 import { useBarcodeSize } from "@/lib/barcode-size";
 import { useBarcodeText } from "@/lib/barcode-text";
+import { useRealtimeSync } from "@/lib/realtime";
 import { BarcodeTextControls } from "@/components/BarcodeTextControls";
 import {
   CUSTOM_PAPER,
@@ -56,6 +57,7 @@ export const Route = createFileRoute("/_authenticated/print")({
 function PrintPage() {
   const { ids = "" } = Route.useSearch();
   const { t, dir } = useI18n();
+  useRealtimeSync(true);
   const { size, setSize } = useLabelSize();
   const barcode = useBarcodeSize();
   const barcodeText = useBarcodeText();
@@ -82,12 +84,23 @@ function PrintPage() {
       await recordPrints(
         selectedLabels.map((s) => ({ id: s.id, serial_number: s.serial_number })),
       );
+      // Best-effort status sync: only allowed for specimens the user may update.
+      try {
+        await bulkUpdateStatus(
+          selectedLabels.map((s) => s.id),
+          "printed",
+        );
+      } catch {
+        /* read-only specimens keep their current status */
+      }
       await queryClient.invalidateQueries({ queryKey: ["specimen-prints"] });
+      await queryClient.invalidateQueries({ queryKey: ["specimens"] });
       toast.success(t("printRecorded"));
     } catch (err) {
       toast.error(err instanceof Error ? err.message : String(err));
     }
   };
+
 
   const paperSize = resolvePaperMm(settings);
   const pageCss = `@page { size: ${paperSize.w}mm ${paperSize.h}mm ${orientation}; margin: ${margin}mm; }`;

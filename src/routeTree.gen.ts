@@ -20,7 +20,6 @@ import { Route as AuthenticatedRequestsRouteImport } from './routes/_authenticat
 import { Route as PSerialRouteImport } from './routes/p.$serial'
 import { Route as SSerialRouteImport } from './routes/s.$serial'
 import { Route as AuthenticatedAdminActivityRouteImport } from './routes/_authenticated/admin.activity'
-import { Route as AuthenticatedAdminSessionRouteImport } from './routes/_authenticated/admin.session'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin.users'
 import { Route as AuthenticatedSpecimensIndexRouteImport } from './routes/_authenticated/specimens.index'
 import { Route as AuthenticatedSpecimensImportRouteImport } from './routes/_authenticated/specimens.import'
@@ -84,12 +83,6 @@ const AuthenticatedAdminActivityRoute =
     path: '/admin/activity',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedAdminSessionRoute =
-  AuthenticatedAdminSessionRouteImport.update({
-    id: '/admin/session',
-    path: '/admin/session',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
 const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersRouteImport.update({
   id: '/admin/users',
   path: '/admin/users',
@@ -137,7 +130,6 @@ export interface FileRoutesByFullPath {
   '/p/$serial': typeof PSerialRoute
   '/s/$serial': typeof SSerialRoute
   '/admin/activity': typeof AuthenticatedAdminActivityRoute
-  '/admin/session': typeof AuthenticatedAdminSessionRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/specimens/import': typeof AuthenticatedSpecimensImportRoute
   '/specimens/new': typeof AuthenticatedSpecimensNewRoute
@@ -156,7 +148,6 @@ export interface FileRoutesByTo {
   '/s/$serial': typeof SSerialRoute
   '/': typeof AuthenticatedIndexRoute
   '/admin/activity': typeof AuthenticatedAdminActivityRoute
-  '/admin/session': typeof AuthenticatedAdminSessionRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/specimens/import': typeof AuthenticatedSpecimensImportRoute
   '/specimens/new': typeof AuthenticatedSpecimensNewRoute
@@ -177,7 +168,6 @@ export interface FileRoutesById {
   '/s/$serial': typeof SSerialRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/admin/activity': typeof AuthenticatedAdminActivityRoute
-  '/_authenticated/admin/session': typeof AuthenticatedAdminSessionRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/specimens/import': typeof AuthenticatedSpecimensImportRoute
   '/_authenticated/specimens/new': typeof AuthenticatedSpecimensNewRoute
@@ -198,7 +188,6 @@ export interface FileRouteTypes {
     | '/p/$serial'
     | '/s/$serial'
     | '/admin/activity'
-    | '/admin/session'
     | '/admin/users'
     | '/specimens/import'
     | '/specimens/new'
@@ -217,7 +206,6 @@ export interface FileRouteTypes {
     | '/s/$serial'
     | '/'
     | '/admin/activity'
-    | '/admin/session'
     | '/admin/users'
     | '/specimens/import'
     | '/specimens/new'
@@ -237,7 +225,6 @@ export interface FileRouteTypes {
     | '/s/$serial'
     | '/_authenticated/'
     | '/_authenticated/admin/activity'
-    | '/_authenticated/admin/session'
     | '/_authenticated/admin/users'
     | '/_authenticated/specimens/import'
     | '/_authenticated/specimens/new'
@@ -334,13 +321,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminActivityRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/admin/session': {
-      id: '/_authenticated/admin/session'
-      path: '/admin/session'
-      fullPath: '/admin/session'
-      preLoaderRoute: typeof AuthenticatedAdminSessionRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/admin/users': {
       id: '/_authenticated/admin/users'
       path: '/admin/users'
@@ -392,7 +372,6 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedRequestsRoute: typeof AuthenticatedRequestsRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedAdminActivityRoute: typeof AuthenticatedAdminActivityRoute
-  AuthenticatedAdminSessionRoute: typeof AuthenticatedAdminSessionRoute
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
   AuthenticatedSpecimensImportRoute: typeof AuthenticatedSpecimensImportRoute
   AuthenticatedSpecimensNewRoute: typeof AuthenticatedSpecimensNewRoute
@@ -407,7 +386,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedRequestsRoute: AuthenticatedRequestsRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedAdminActivityRoute: AuthenticatedAdminActivityRoute,
-  AuthenticatedAdminSessionRoute: AuthenticatedAdminSessionRoute,
   AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
   AuthenticatedSpecimensImportRoute: AuthenticatedSpecimensImportRoute,
   AuthenticatedSpecimensNewRoute: AuthenticatedSpecimensNewRoute,

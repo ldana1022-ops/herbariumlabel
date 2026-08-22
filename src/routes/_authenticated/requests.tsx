@@ -7,8 +7,9 @@ import { ChevronDown, ChevronUp, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { listDirectory } from "@/lib/admin.functions";
 import { useAuth } from "@/lib/auth";
+import { useRealtimeSync } from "@/lib/realtime";
 import { useI18n } from "@/lib/i18n";
-import { fetchSpecimens } from "@/lib/specimens";
+import { bulkUpdateStatus, fetchSpecimens } from "@/lib/specimens";
 import { Barcode } from "@/components/Barcode";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -80,6 +81,7 @@ const MAX_SAMPLES_PER_REQUEST = 200;
 
 function RequestsPage() {
   const { t, lang } = useI18n();
+  useRealtimeSync(true);
   const { user, can, isSuperAdmin } = useAuth();
   const queryClient = useQueryClient();
   const directory = useServerFn(listDirectory);
@@ -218,6 +220,22 @@ function RequestsPage() {
     onSuccess: () => {
       toast.success(t("requestUpdated"));
       void queryClient.invalidateQueries({ queryKey: ["requests"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const completeRequest = useMutation({
+    mutationFn: async ({ id, specimenIds }: { id: string; specimenIds: string[] }) => {
+      // Mark the samples first: edit rights end as soon as the request closes.
+      if (specimenIds.length > 0) await bulkUpdateStatus(specimenIds, "completed");
+      const { error } = await supabase.from("requests").update({ status: "completed" }).eq("id", id);
+      if (error) throw new Error(error.message);
+    },
+    onSuccess: () => {
+      toast.success(t("requestCompleted"));
+      void queryClient.invalidateQueries({ queryKey: ["requests"] });
+      void queryClient.invalidateQueries({ queryKey: ["specimens"] });
+      void queryClient.invalidateQueries({ queryKey: ["editable-specimens"] });
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -426,23 +444,37 @@ function RequestsPage() {
                       <TableCell className="whitespace-nowrap text-sm">{r.due_date ?? "—"}</TableCell>
                       <TableCell>
                         {editable ? (
-                          <Select
-                            value={r.status}
-                            onValueChange={(v) =>
-                              updateStatus.mutate({ id: r.id, status: v as RequestStatus })
-                            }
-                          >
-                            <SelectTrigger className="h-8 w-36 text-xs">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {(Object.keys(STATUS_KEYS) as RequestStatus[]).map((s) => (
-                                <SelectItem key={s} value={s}>
-                                  {t(STATUS_KEYS[s])}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                          <div className="flex flex-col gap-1">
+                            <Select
+                              value={r.status}
+                              onValueChange={(v) =>
+                                updateStatus.mutate({ id: r.id, status: v as RequestStatus })
+                              }
+                            >
+                              <SelectTrigger className="h-8 w-36 text-xs">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {(Object.keys(STATUS_KEYS) as RequestStatus[]).map((s) => (
+                                  <SelectItem key={s} value={s}>
+                                    {t(STATUS_KEYS[s])}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            {r.status !== "completed" && r.status !== "rejected" ? (
+                              <Button
+                                size="sm"
+                                className="h-7 text-xs"
+                                disabled={completeRequest.isPending}
+                                onClick={() =>
+                                  completeRequest.mutate({ id: r.id, specimenIds: sampleIds })
+                                }
+                              >
+                                {t("completeRequestSamples")}
+                              </Button>
+                            ) : null}
+                          </div>
                         ) : (
                           <span
                             className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_CLASS[r.status]}`}
@@ -451,6 +483,7 @@ function RequestsPage() {
                           </span>
                         )}
                       </TableCell>
+
                       <TableCell className="whitespace-nowrap text-sm">
                         {new Date(r.created_at).toLocaleDateString(locale)}
                       </TableCell>

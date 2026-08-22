@@ -10,17 +10,17 @@ import {
   Plus,
   Printer,
   ScanLine,
-  ShieldCheck,
   Upload,
   Users,
 } from "lucide-react";
 import type { ReactNode } from "react";
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
+import { useRealtimeSync } from "@/lib/realtime";
 import { Button } from "@/components/ui/button";
 import { NotificationBell } from "@/components/NotificationBell";
 import { BackButton } from "@/components/BackButton";
-import { SessionTimeoutDialog } from "@/components/SessionTimeoutDialog";
+
 
 function NavLink({ to, icon, label }: { to: string; icon: ReactNode; label: string }) {
   return (
@@ -39,6 +39,7 @@ function NavLink({ to, icon, label }: { to: string; icon: ReactNode; label: stri
 export function AppLayout({ children }: { children: ReactNode }) {
   const { t, lang, setLang, dir } = useI18n();
   const { can, profile, isSuperAdmin, session, signOut } = useAuth();
+  useRealtimeSync(Boolean(session));
 
   return (
     <div dir={dir} className="min-h-screen bg-muted/40 no-print-wrapper">
@@ -86,7 +87,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
           <div className="mx-auto flex max-w-7xl flex-wrap gap-1 px-2 py-1.5 sm:px-4">
             <NavLink to="/" icon={<LayoutDashboard className="size-4" />} label={t("dashboard")} />
             <NavLink to="/specimens" icon={<Database className="size-4" />} label={t("database")} />
-            {can("edit") ? (
+            {can("add") ? (
               <NavLink to="/specimens/new" icon={<Plus className="size-4" />} label={t("newSpecimen")} />
             ) : null}
             {can("import") ? (
@@ -104,13 +105,9 @@ export function AppLayout({ children }: { children: ReactNode }) {
                   label={t("requests")}
                 />
                 <NavLink to="/notifications" icon={<Bell className="size-4" />} label={t("notifications")} />
-                <NavLink
-                  to="/admin/session"
-                  icon={<ShieldCheck className="size-4" />}
-                  label={t("sessionSettings")}
-                />
               </>
             ) : null}
+
             {isSuperAdmin ? (
               <>
                 <NavLink to="/admin/users" icon={<Users className="size-4" />} label={t("users")} />
@@ -130,7 +127,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
         </div>
         {children}
       </main>
-      {session ? <SessionTimeoutDialog /> : null}
+      
       <footer className="border-t border-border bg-card py-4 text-center text-xs text-muted-foreground">
         {t("org")}
       </footer>
