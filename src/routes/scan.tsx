@@ -26,6 +26,25 @@ export const Route = createFileRoute("/scan")({
 
 const NCVCH_RE = /^NCVCH\d{4,8}$/i;
 
+/**
+ * Accepts what people actually type or scan: full serial, lowercase,
+ * spaces/dashes, a bare number, or a scanned URL containing the serial.
+ * Returns a canonical NCVCH###### serial, or null when unusable.
+ */
+export function normalizeSerial(input: string): string | null {
+  let value = (input || "").trim().toUpperCase();
+  if (!value) return null;
+  // A scanned URL such as .../p/NCVCH000001
+  const fromUrl = value.match(/NCVCH\s*-?\s*(\d{1,8})/);
+  if (fromUrl?.[1]) value = `NCVCH${fromUrl[1]}`;
+  value = value.replace(/[\s\-_.]/g, "");
+  if (/^\d{1,8}$/.test(value)) value = `NCVCH${value}`;
+  const m = value.match(/^NCVCH(\d{1,8})$/);
+  if (!m?.[1]) return null;
+  const digits = m[1].length < 6 ? m[1].padStart(6, "0") : m[1];
+  return `NCVCH${digits}`;
+}
+
 function ScanPage() {
   const { t, dir } = useI18n();
   const navigate = useNavigate();
@@ -53,10 +72,10 @@ function ScanPage() {
           aspectRatio: 2,
         },
         (decodedText: string) => {
-          const clean = decodedText.trim().toUpperCase();
-          if (NCVCH_RE.test(clean)) {
+          const clean = normalizeSerial(decodedText);
+          if (clean) {
             setDetected(true);
-            stopScan();
+            void stopScan();
             navigate({ to: "/p/$serial", params: { serial: clean } });
           }
         },
@@ -96,8 +115,10 @@ function ScanPage() {
 
   function handleManualSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const clean = manual.trim().toUpperCase();
-    if (NCVCH_RE.test(clean)) {
+    const clean = normalizeSerial(manual);
+    if (clean) {
+      setManualError(false);
+      void stopScan();
       navigate({ to: "/p/$serial", params: { serial: clean } });
     } else {
       setManualError(true);
