@@ -309,6 +309,36 @@ export type Database = {
           },
         ]
       }
+      session_settings: {
+        Row: {
+          absolute_timeout_hours: number
+          allow_remember_me: boolean
+          created_at: string
+          id: boolean
+          idle_timeout_minutes: number
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          absolute_timeout_hours?: number
+          allow_remember_me?: boolean
+          created_at?: string
+          id?: boolean
+          idle_timeout_minutes?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          absolute_timeout_hours?: number
+          allow_remember_me?: boolean
+          created_at?: string
+          id?: boolean
+          idle_timeout_minutes?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       specimen_access: {
         Row: {
           created_at: string
@@ -464,6 +494,30 @@ export type Database = {
           created_at?: string
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_session_prefs: {
+        Row: {
+          created_at: string
+          idle_timeout_minutes: number | null
+          remember_me: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          idle_timeout_minutes?: number | null
+          remember_me?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          idle_timeout_minutes?: number | null
+          remember_me?: boolean
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
