@@ -222,6 +222,22 @@ function RequestsPage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const completeRequest = useMutation({
+    mutationFn: async ({ id, specimenIds }: { id: string; specimenIds: string[] }) => {
+      // Mark the samples first: edit rights end as soon as the request closes.
+      if (specimenIds.length > 0) await bulkUpdateStatus(specimenIds, "completed");
+      const { error } = await supabase.from("requests").update({ status: "completed" }).eq("id", id);
+      if (error) throw new Error(error.message);
+    },
+    onSuccess: () => {
+      toast.success(t("requestCompleted"));
+      void queryClient.invalidateQueries({ queryKey: ["requests"] });
+      void queryClient.invalidateQueries({ queryKey: ["specimens"] });
+      void queryClient.invalidateQueries({ queryKey: ["editable-specimens"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
   const nameOf = (id: string | null) => users.find((u) => u.id === id)?.name ?? "—";
   const locale = lang === "ar" ? "ar-SA" : "en-GB";
 
