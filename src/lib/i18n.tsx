@@ -72,6 +72,7 @@ const dict = {
   selected: { ar: "محدد", en: "selected" },
   noResults: { ar: "لا توجد عينات مطابقة", en: "No matching specimens" },
   loading: { ar: "جارٍ التحميل...", en: "Loading..." },
+  back: { ar: "رجوع", en: "Back" },
   backToList: { ar: "العودة إلى القائمة", en: "Back to list" },
   required: { ar: "هذا الحقل مطلوب", en: "This field is required" },
   invalidLat: { ar: "خط عرض غير صحيح (-90 إلى 90)", en: "Invalid latitude (-90 to 90)" },
