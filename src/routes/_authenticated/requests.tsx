@@ -243,13 +243,19 @@ function RequestsPage() {
                   <SelectValue placeholder={t("assignedTo")} />
                 </SelectTrigger>
                 <SelectContent>
-                  {users
-                    .filter((u) => u.id !== user?.id)
-                    .map((u) => (
-                      <SelectItem key={u.id} value={u.id}>
-                        {u.name}
-                      </SelectItem>
-                    ))}
+                  {users.filter((u) => u.id !== user?.id).length === 0 ? (
+                    <div className="px-3 py-2 text-xs text-muted-foreground">
+                      {t("noRecipients")}
+                    </div>
+                  ) : (
+                    users
+                      .filter((u) => u.id !== user?.id)
+                      .map((u) => (
+                        <SelectItem key={u.id} value={u.id}>
+                          {u.name}
+                        </SelectItem>
+                      ))
+                  )}
                 </SelectContent>
               </Select>
             </div>
