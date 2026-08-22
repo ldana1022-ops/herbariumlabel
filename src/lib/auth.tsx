@@ -2,11 +2,7 @@ import { createContext, useContext, useEffect, useMemo, useState, type ReactNode
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
-import {
-  clearSessionBookkeeping,
-  dropPersistentToken,
-  mirrorSessionToken,
-} from "@/lib/session-storage";
+
 
 export type Permission =
   | "view"
