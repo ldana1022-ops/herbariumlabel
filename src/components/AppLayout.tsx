@@ -104,13 +104,9 @@ export function AppLayout({ children }: { children: ReactNode }) {
                   label={t("requests")}
                 />
                 <NavLink to="/notifications" icon={<Bell className="size-4" />} label={t("notifications")} />
-                <NavLink
-                  to="/admin/session"
-                  icon={<ShieldCheck className="size-4" />}
-                  label={t("sessionSettings")}
-                />
               </>
             ) : null}
+
             {isSuperAdmin ? (
               <>
                 <NavLink to="/admin/users" icon={<Users className="size-4" />} label={t("users")} />
