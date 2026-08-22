@@ -23,6 +23,14 @@ import { useI18n } from "@/lib/i18n";
 import { fetchSpecimens, type Specimen } from "@/lib/specimens";
 import { toMm, useLabelSize } from "@/lib/label-size";
 import { useBarcodeSize } from "@/lib/barcode-size";
+import {
+  CUSTOM_PAPER,
+  PAPERS,
+  resolvePaperMm,
+  usePrintSettings,
+  type PaperUnit,
+  type PrintMode,
+} from "@/lib/print-settings";
 import { exportLabelsToWord } from "@/lib/export-word";
 import { BackButton } from "@/components/BackButton";
 
@@ -43,30 +51,16 @@ export const Route = createFileRoute("/_authenticated/print")({
   component: PrintPage,
 });
 
-const PAPERS: Record<string, { w: number; h: number }> = {
-  A4: { w: 210, h: 297 },
-  A5: { w: 148, h: 210 },
-  A3: { w: 297, h: 420 },
-  Letter: { w: 216, h: 279 },
-};
-
-type PrintMode = "labels" | "barcodes" | "both";
-
 function PrintPage() {
   const { ids = "" } = Route.useSearch();
   const { t, dir } = useI18n();
   const { size, setSize } = useLabelSize();
   const barcode = useBarcodeSize();
-  const [mode, setMode] = useState<PrintMode>("both");
+  const { settings, update } = usePrintSettings();
+  const { mode, paper, orientation, margin, cols, gap, copies, customPaper } = settings;
   const queryClient = useQueryClient();
   const { data = [], isLoading } = useQuery({ queryKey: ["specimens"], queryFn: fetchSpecimens });
 
-  const [paper, setPaper] = useState("A4");
-  const [orientation, setOrientation] = useState<"portrait" | "landscape">("portrait");
-  const [margin, setMargin] = useState(8);
-  const [cols, setCols] = useState(2);
-  const [gap, setGap] = useState(4);
-  const [copies, setCopies] = useState(1);
 
   const idList = ids
     .split(",")
@@ -92,7 +86,7 @@ function PrintPage() {
     }
   };
 
-  const paperSize = PAPERS[paper] ?? PAPERS['A4']!;
+  const paperSize = resolvePaperMm(settings);
   const pageCss = `@page { size: ${paperSize.w}mm ${paperSize.h}mm ${orientation}; margin: ${margin}mm; }`;
   const sheetVars = {
     ["--sheet-cols" as string]: String(cols),
@@ -159,7 +153,7 @@ function PrintPage() {
             <CardContent className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-1.5 sm:col-span-2">
                 <Label>{t("printMode")}</Label>
-                <Select value={mode} onValueChange={(v) => setMode(v as PrintMode)}>
+                <Select value={mode} onValueChange={(v) => update({ mode: v as PrintMode })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="labels">{t("labelsOnly")}</SelectItem>
@@ -170,20 +164,87 @@ function PrintPage() {
               </div>
               <div className="space-y-1.5">
                 <Label>{t("paperSize")}</Label>
-                <Select value={paper} onValueChange={setPaper}>
+                <Select value={paper} onValueChange={(v) => update({ paper: v })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     {Object.keys(PAPERS).map((p) => (
                       <SelectItem key={p} value={p}>{p}</SelectItem>
                     ))}
+                    <SelectItem value={CUSTOM_PAPER}>{t("customSize")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
+              {paper === CUSTOM_PAPER ? (
+                <>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="paper-w">
+                      {t("paperSize")} — {t("width")} ({customPaper.unit})
+                    </Label>
+                    <Input
+                      id="paper-w"
+                      type="number"
+                      min={20}
+                      step="0.1"
+                      dir="ltr"
+                      value={customPaper.width}
+                      onChange={(e) =>
+                        update({
+                          customPaper: { ...customPaper, width: Number(e.target.value) || 0 },
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="paper-h">
+                      {t("paperSize")} — {t("height")} ({customPaper.unit})
+                    </Label>
+                    <Input
+                      id="paper-h"
+                      type="number"
+                      min={20}
+                      step="0.1"
+                      dir="ltr"
+                      value={customPaper.height}
+                      onChange={(e) =>
+                        update({
+                          customPaper: { ...customPaper, height: Number(e.target.value) || 0 },
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-1.5 sm:col-span-2">
+                    <Label>{t("unit")}</Label>
+                    <Select
+                      value={customPaper.unit}
+                      onValueChange={(v) => {
+                        const unit = v as PaperUnit;
+                        if (unit === customPaper.unit) return;
+                        const factor = unit === "cm" ? 0.1 : 10;
+                        update({
+                          customPaper: {
+                            unit,
+                            width: Number((customPaper.width * factor).toFixed(2)),
+                            height: Number((customPaper.height * factor).toFixed(2)),
+                          },
+                        });
+                      }}
+                    >
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="mm">mm</SelectItem>
+                        <SelectItem value="cm">cm</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </>
+              ) : null}
               <div className="space-y-1.5">
                 <Label>{t("orientation")}</Label>
                 <Select
                   value={orientation}
-                  onValueChange={(v) => setOrientation(v as "portrait" | "landscape")}
+                  onValueChange={(v) =>
+                    update({ orientation: v as "portrait" | "landscape" })
+                  }
                 >
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
@@ -200,7 +261,7 @@ function PrintPage() {
                   min={0}
                   dir="ltr"
                   value={margin}
-                  onChange={(e) => setMargin(Number(e.target.value) || 0)}
+                  onChange={(e) => update({ margin: Number(e.target.value) || 0 })}
                 />
               </div>
               <div className="space-y-1.5">
@@ -212,7 +273,7 @@ function PrintPage() {
                   max={6}
                   dir="ltr"
                   value={cols}
-                  onChange={(e) => setCols(Math.max(1, Number(e.target.value) || 1))}
+                  onChange={(e) => update({ cols: Math.max(1, Number(e.target.value) || 1) })}
                 />
               </div>
               <div className="space-y-1.5">
@@ -223,7 +284,7 @@ function PrintPage() {
                   min={0}
                   dir="ltr"
                   value={gap}
-                  onChange={(e) => setGap(Number(e.target.value) || 0)}
+                  onChange={(e) => update({ gap: Number(e.target.value) || 0 })}
                 />
               </div>
               <div className="space-y-1.5">
@@ -235,7 +296,7 @@ function PrintPage() {
                   max={20}
                   dir="ltr"
                   value={copies}
-                  onChange={(e) => setCopies(Math.max(1, Number(e.target.value) || 1))}
+                  onChange={(e) => update({ copies: Math.max(1, Number(e.target.value) || 1) })}
                 />
               </div>
             </CardContent>
