@@ -149,6 +149,13 @@ function PrintPage() {
               onRemoveSaved={barcode.removeSaved}
             />
           ) : null}
+          {mode !== "labels" ? (
+            <BarcodeTextControls
+              settings={barcodeText.settings}
+              onChange={barcodeText.update}
+              onReset={barcodeText.reset}
+            />
+          ) : null}
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-base">{t("printSettings")}</CardTitle>
