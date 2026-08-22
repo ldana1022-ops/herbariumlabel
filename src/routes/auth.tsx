@@ -39,7 +39,7 @@ function AuthPage() {
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [busy, setBusy] = useState(false);
-  const [needsVerification, setNeedsVerification] = useState(false);
+
 
   const checks = checkPassword(password);
 
