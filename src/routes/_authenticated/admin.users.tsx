@@ -80,7 +80,10 @@ type UserRow = {
   created_at: string;
   role: "super_admin" | "user";
   permissions: PermsRow;
+  email_confirmed: boolean;
+  banned: boolean;
 };
+
 
 type Draft = {
   dataScope: DataScope;
