@@ -10,7 +10,7 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "audit": "bun audit --audit-level=high",
+    "audit": "bun scripts/audit.mjs",
     "security:secrets": "bun scripts/scan-secrets.mjs"
   },
   "dependencies": {
