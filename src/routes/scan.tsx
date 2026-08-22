@@ -1,15 +1,9 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useRef, useState, lazy, Suspense } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useI18n } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { ScanLine, Camera, CameraOff, Keyboard } from "lucide-react";
-
-// html5-qrcode uses browser APIs; load it client-side only.
-const Html5QrcodeLazy = lazy(async () => {
-  const mod = await import("html5-qrcode");
-  return { default: mod.Html5Qrcode };
-});
 
 export const Route = createFileRoute("/scan")({
   ssr: false,
