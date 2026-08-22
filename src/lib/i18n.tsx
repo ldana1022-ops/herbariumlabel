@@ -222,7 +222,7 @@ const dict = {
   effectiveIdleTimeout: { ar: "المدة المطبقة فعليًا", en: "Effective timeout" },
   rememberMe: { ar: "تذكرني", en: "Remember me" },
   rememberMeHint: {
-    ar: "ع",
+    ar: "\n",
     en: "\n",
   },
   sessionSettingsSaved: { ar: "تم حفظ إعدادات الجلسة", en: "Session settings saved" },
