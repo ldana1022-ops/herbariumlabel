@@ -178,8 +178,9 @@ function UsersPage() {
     onError: fail,
   });
 
-
+  const toggleActive = useMutation({
     mutationFn: (row: UserRow) => update({ data: { userId: row.id, isActive: !row.is_active } }),
+
     onSuccess: () => {
       toast.success(t("userUpdated"));
       refresh();
