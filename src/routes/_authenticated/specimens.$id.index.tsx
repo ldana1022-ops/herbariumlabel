@@ -54,6 +54,7 @@ function SpecimenDetailPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { size } = useLabelSize();
+  const barcodeText = useBarcodeText();
   const { data, isLoading } = useQuery({
     queryKey: ["specimen", id],
     queryFn: () => fetchSpecimen(id),
