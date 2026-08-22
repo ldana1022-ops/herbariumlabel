@@ -212,9 +212,12 @@ export async function bulkUpdateField(
 ): Promise<number> {
   if (ids.length === 0) throw new Error("NO_SELECTION");
   const trimmed = value.trim();
+  const patch = { [field]: trimmed.length > 0 ? trimmed : null } as Partial<
+    Record<BulkEditableField, string | null>
+  >;
   const { data, error } = await supabase
     .from("herbarium_specimens")
-    .update({ [field]: trimmed.length > 0 ? trimmed : null })
+    .update(patch)
     .in("id", ids)
     .select("id");
   if (error) throw new Error(humanizeError(error.message));
