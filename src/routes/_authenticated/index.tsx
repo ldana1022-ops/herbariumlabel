@@ -54,6 +54,16 @@ function Index() {
   const { t, lang } = useI18n();
   const navigate = useNavigate();
   const { data = [], isLoading } = useQuery({ queryKey: ["specimens"], queryFn: fetchSpecimens });
+  const { data: prints = [] } = useQuery({
+    queryKey: ["specimen-prints"],
+    queryFn: fetchPrintRecords,
+  });
+
+  const printedMap = new Map(prints.map((p) => [p.specimen_id, p]));
+  // Printed specimens, plus completed ones that were printed at some point.
+  const printedList = data
+    .filter((s) => printedMap.has(s.id) || normalizeStatus(s.status) === "completed")
+    .sort((a, b) => a.serial_number.localeCompare(b.serial_number));
 
   const statusCounts = STATUS_ORDER.map((m) => ({
     meta: m,
