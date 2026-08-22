@@ -127,10 +127,12 @@ function UsersPage() {
   const resetPw = useServerFn(resetUserPassword);
   const savePerms = useServerFn(setPermissions);
   const changeRole = useServerFn(setUserRole);
+  const resend = useServerFn(resendInvite);
 
   const [openId, setOpenId] = useState<string | null>(null);
   const [draft, setDraft] = useState<Draft | null>(null);
-  const [form, setForm] = useState({ email: "", fullName: "", password: "" });
+  const [form, setForm] = useState({ email: "", fullName: "", superAdmin: false });
+  const [newPerms, setNewPerms] = useState<Draft>(toDraft(null));
 
   const { data: users = [], isLoading } = useQuery({
     queryKey: ["admin-users"],
@@ -139,23 +141,44 @@ function UsersPage() {
   });
 
   const refresh = () => void queryClient.invalidateQueries({ queryKey: ["admin-users"] });
-  const fail = (e: unknown) => toast.error((e as Error).message || t("noPermission"));
+  const fail = (e: unknown) => {
+    const msg = (e as Error).message || "";
+    if (msg.includes("EMAIL_EXISTS")) return void toast.error(t("emailAlreadyUsed"));
+    toast.error(msg || t("noPermission"));
+  };
 
   const createMut = useMutation({
     mutationFn: async () => {
       if (!isValidEmail(form.email)) throw new Error(t("invalidEmailFormat"));
-      if (!isStrongPassword(form.password)) throw new Error(t("weakPassword"));
-      return create({ data: { email: form.email, fullName: form.fullName, password: form.password } });
+      return (await create({
+        data: {
+          email: form.email,
+          fullName: form.fullName,
+          superAdmin: form.superAdmin,
+          permissions: newPerms,
+        },
+      })) as unknown as UserRow;
     },
-    onSuccess: () => {
+    onSuccess: (row) => {
       toast.success(t("userCreated"));
-      setForm({ email: "", fullName: "", password: "" });
+      // Show the new account immediately, without waiting for a refetch.
+      queryClient.setQueryData<UserRow[]>(["admin-users"], (prev) =>
+        prev ? [...prev.filter((u) => u.id !== row.id), row] : [row],
+      );
+      setForm({ email: "", fullName: "", superAdmin: false });
+      setNewPerms(toDraft(null));
       refresh();
     },
     onError: fail,
   });
 
-  const toggleActive = useMutation({
+  const resendMut = useMutation({
+    mutationFn: (row: UserRow) => resend({ data: { userId: row.id } }),
+    onSuccess: () => toast.success(t("inviteSent")),
+    onError: fail,
+  });
+
+
     mutationFn: (row: UserRow) => update({ data: { userId: row.id, isActive: !row.is_active } }),
     onSuccess: () => {
       toast.success(t("userUpdated"));
