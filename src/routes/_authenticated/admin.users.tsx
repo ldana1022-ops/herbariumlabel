@@ -274,47 +274,90 @@ function UsersPage() {
           </CardHeader>
           <CardContent>
             <form
-              className="grid gap-3 sm:grid-cols-4"
+              className="space-y-4"
               onSubmit={(e) => {
                 e.preventDefault();
                 createMut.mutate();
               }}
             >
-              <div className="space-y-1">
-                <Label htmlFor="new-name">{t("name")}</Label>
-                <Input
-                  id="new-name"
-                  value={form.fullName}
-                  onChange={(e) => setForm({ ...form, fullName: e.target.value })}
-                  required
-                />
+              <div className="grid gap-3 sm:grid-cols-3">
+                <div className="space-y-1">
+                  <Label htmlFor="new-name">{t("name")}</Label>
+                  <Input
+                    id="new-name"
+                    value={form.fullName}
+                    onChange={(e) => setForm({ ...form, fullName: e.target.value })}
+                    required
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label htmlFor="new-email">{t("email")}</Label>
+                  <Input
+                    id="new-email"
+                    type="email"
+                    value={form.email}
+                    onChange={(e) => setForm({ ...form, email: e.target.value })}
+                    required
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label htmlFor="new-role">{t("role")}</Label>
+                  <Select
+                    value={form.superAdmin ? "super_admin" : "user"}
+                    onValueChange={(v) => setForm({ ...form, superAdmin: v === "super_admin" })}
+                  >
+                    <SelectTrigger id="new-role">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="user">{t("user")}</SelectItem>
+                      <SelectItem value="super_admin">{t("superAdmin")}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
-              <div className="space-y-1">
-                <Label htmlFor="new-email">{t("email")}</Label>
-                <Input
-                  id="new-email"
-                  type="email"
-                  value={form.email}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  required
-                />
+
+              <div className="space-y-1 sm:max-w-xs">
+                <Label>{t("dataPermissions")}</Label>
+                <Select
+                  value={newPerms.dataScope}
+                  onValueChange={(v) => setNewPerms({ ...newPerms, dataScope: v as DataScope })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">{t("scopeAll")}</SelectItem>
+                    <SelectItem value="selected">{t("scopeSelected")}</SelectItem>
+                    <SelectItem value="own">{t("scopeOwn")}</SelectItem>
+                    <SelectItem value="admin_only">{t("scopeAdminOnly")}</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
-              <div className="space-y-1">
-                <Label htmlFor="new-pw">{t("password")}</Label>
-                <Input
-                  id="new-pw"
-                  type="password"
-                  value={form.password}
-                  onChange={(e) => setForm({ ...form, password: e.target.value })}
-                  required
-                />
+
+              <div className="space-y-2">
+                <Label>{t("actionPermissions")}</Label>
+                <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                  {actionFields.map((field) => (
+                    <label key={`new-${field.key}`} className="flex items-center gap-2 text-sm">
+                      <Checkbox
+                        checked={Boolean(newPerms[field.key])}
+                        onCheckedChange={(v) => setNewPerms({ ...newPerms, [field.key]: Boolean(v) })}
+                      />
+                      <span>{field.label}</span>
+                    </label>
+                  ))}
+                </div>
               </div>
-              <div className="flex items-end">
-                <Button type="submit" disabled={createMut.isPending} className="w-full">
+
+              <div className="flex flex-wrap items-center gap-3">
+                <Button type="submit" disabled={createMut.isPending}>
                   {t("addUser")}
                 </Button>
+                <p className="text-xs text-muted-foreground">{t("inviteUserHint")}</p>
               </div>
             </form>
+
           </CardContent>
         </Card>
 
