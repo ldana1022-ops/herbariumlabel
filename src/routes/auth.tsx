@@ -308,6 +308,15 @@ function AuthPage() {
               ) : null}
             </div>
 
+            {needsVerification && mode !== "forgot" ? (
+              <div className="mt-4 rounded-md border border-border bg-muted/40 p-3 text-center">
+                <p className="text-xs text-muted-foreground">{t("emailNotConfirmed")}</p>
+                <Button type="button" variant="outline" size="sm" className="mt-2" disabled={busy} onClick={resendVerification}>
+                  {t("resendVerification")}
+                </Button>
+              </div>
+            ) : null}
+
             <p className="mt-4 text-xs leading-relaxed text-muted-foreground">{t("firstUserAdminHint")}</p>
           </CardContent>
         </Card>
