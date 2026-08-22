@@ -8,7 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { listDirectory } from "@/lib/admin.functions";
 import { useAuth } from "@/lib/auth";
 import { useI18n } from "@/lib/i18n";
-import { fetchSpecimens } from "@/lib/specimens";
+import { bulkUpdateStatus, fetchSpecimens } from "@/lib/specimens";
 import { Barcode } from "@/components/Barcode";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
