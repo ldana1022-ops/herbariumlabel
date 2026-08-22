@@ -243,7 +243,7 @@ export const createUser = createServerFn({ method: "POST" })
       .select("id")
       .ilike("email", data.email)
       .maybeSingle();
-    if (dupProfile) throw new Error("EMAIL_EXISTS");
+    if (dupProfile) return { error: "EMAIL_EXISTS" as const };
 
     const siteUrl = process.env["SITE_URL"] ?? process.env["VITE_PUBLIC_SITE_URL"] ?? null;
     const { data: invited, error } = await supabaseAdmin.auth.admin.inviteUserByEmail(data.email, {
@@ -254,13 +254,13 @@ export const createUser = createServerFn({ method: "POST" })
     if (error || !invited?.user) {
       const msg = (error?.message ?? "").toLowerCase();
       if (msg.includes("already been registered") || msg.includes("already exists")) {
-        throw new Error("EMAIL_EXISTS");
+        return { error: "EMAIL_EXISTS" as const };
       }
-      throw new Error(error?.message ?? "CREATE_FAILED");
+      return { error: (error?.message ?? "CREATE_FAILED") as string };
     }
 
     const userId = invited.user.id;
-    if (existingAuth.has(userId)) throw new Error("EMAIL_EXISTS");
+    if (existingAuth.has(userId)) return { error: "EMAIL_EXISTS" as const };
 
     await supabaseAdmin
       .from("profiles")
@@ -298,11 +298,13 @@ export const createUser = createServerFn({ method: "POST" })
       .maybeSingle();
 
     return {
-      ...(profile ?? { id: userId, email: data.email, full_name: data.fullName, is_active: true }),
-      role: data.superAdmin ? "super_admin" : "user",
-      permissions: savedPerms ?? null,
-      email_confirmed: false,
-      banned: false,
+      user: {
+        ...(profile ?? { id: userId, email: data.email, full_name: data.fullName, is_active: true }),
+        role: data.superAdmin ? "super_admin" : "user",
+        permissions: savedPerms ?? null,
+        email_confirmed: false,
+        banned: false,
+      },
     };
   });
 
