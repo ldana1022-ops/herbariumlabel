@@ -16,12 +16,9 @@ if (!existsSync(LOCK)) {
   process.exit(1);
 }
 
-/** bun.lock is JSONC: strip comments and trailing commas. */
+/** bun.lock is JSON with trailing commas allowed. */
 function parseLock(text) {
-  const noComments = text
-    .replace(/(^|[^:])\/\/.*$/gm, "$1")
-    .replace(/\/\*[\s\S]*?\*\//g, "");
-  return JSON.parse(noComments.replace(/,(\s*[}\]])/g, "$1"));
+  return JSON.parse(text.replace(/,(\s*[}\]])/g, "$1"));
 }
 
 const lock = parseLock(readFileSync(LOCK, "utf8"));
