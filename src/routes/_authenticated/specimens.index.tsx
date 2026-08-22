@@ -602,6 +602,31 @@ function SpecimensPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <AlertDialog open={bulkDeleteOpen} onOpenChange={setBulkDeleteOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("bulkConfirmDelete")}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("bulkConfirmDeleteBody").replace("{n}", String(selected.length))}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (selected.length === 0) {
+                  toast.error(t("noSelection"));
+                  return;
+                }
+                bulkDeleteMutation.mutate(selected);
+              }}
+            >
+              {t("delete")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </AppLayout>
   );
 }
