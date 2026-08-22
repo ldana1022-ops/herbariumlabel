@@ -245,6 +245,32 @@ function AuthPage() {
                 </div>
               ) : null}
 
+              {mode === "signup" ? (
+                <div className="rounded-md border border-border bg-muted/40 p-3">
+                  <p className="mb-2 text-xs font-medium text-foreground">{t("passwordRequirements")}</p>
+                  <ul className="space-y-1 text-xs">
+                    {(
+                      [
+                        ["pwLength", checks.length],
+                        ["pwUpper", checks.upper],
+                        ["pwLower", checks.lower],
+                        ["pwDigit", checks.digit],
+                        ["pwSymbol", checks.symbol],
+                        ["pwNotCommon", checks.notCommon],
+                      ] as const
+                    ).map(([key, ok]) => (
+                      <li
+                        key={key}
+                        className={ok ? "flex items-center gap-1.5 text-primary" : "flex items-center gap-1.5 text-muted-foreground"}
+                      >
+                        {ok ? <Check className="size-3.5" /> : <X className="size-3.5" />}
+                        <span>{t(key)}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
+
               <Button type="submit" className="w-full" disabled={busy}>
                 {busy ? <Loader2 className="size-4 animate-spin" /> : null}
                 {mode === "signin" ? t("signIn") : mode === "signup" ? t("signUp") : t("sendResetLink")}
