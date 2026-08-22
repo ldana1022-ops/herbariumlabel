@@ -153,7 +153,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       signOut: async () => {
         await queryClient.cancelQueries();
         queryClient.clear();
-        clearSessionBookkeeping();
+        
         await supabase.auth.signOut();
       },
     };
