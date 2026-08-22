@@ -75,6 +75,19 @@ function PrintPage() {
     [selectedLabels, copies],
   );
 
+  const handlePrint = async () => {
+    window.print();
+    try {
+      await recordPrints(
+        selectedLabels.map((s) => ({ id: s.id, serial_number: s.serial_number })),
+      );
+      await queryClient.invalidateQueries({ queryKey: ["specimen-prints"] });
+      toast.success(t("printRecorded"));
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : String(err));
+    }
+  };
+
   const paperSize = PAPERS[paper] ?? PAPERS['A4']!;
   const pageCss = `@page { size: ${paperSize.w}mm ${paperSize.h}mm ${orientation}; margin: ${margin}mm; }`;
   const sheetVars = {
