@@ -7,6 +7,7 @@ import { ChevronDown, ChevronUp, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { listDirectory } from "@/lib/admin.functions";
 import { useAuth } from "@/lib/auth";
+import { useRealtimeSync } from "@/lib/realtime";
 import { useI18n } from "@/lib/i18n";
 import { bulkUpdateStatus, fetchSpecimens } from "@/lib/specimens";
 import { Barcode } from "@/components/Barcode";

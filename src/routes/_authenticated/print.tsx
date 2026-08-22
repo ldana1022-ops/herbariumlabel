@@ -24,6 +24,7 @@ import { bulkUpdateStatus, fetchSpecimens, type Specimen } from "@/lib/specimens
 import { toMm, useLabelSize } from "@/lib/label-size";
 import { useBarcodeSize } from "@/lib/barcode-size";
 import { useBarcodeText } from "@/lib/barcode-text";
+import { useRealtimeSync } from "@/lib/realtime";
 import { BarcodeTextControls } from "@/components/BarcodeTextControls";
 import {
   CUSTOM_PAPER,
