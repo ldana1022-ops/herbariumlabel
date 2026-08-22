@@ -23,6 +23,8 @@ import { useI18n } from "@/lib/i18n";
 import { fetchSpecimens, type Specimen } from "@/lib/specimens";
 import { toMm, useLabelSize } from "@/lib/label-size";
 import { useBarcodeSize } from "@/lib/barcode-size";
+import { useBarcodeText } from "@/lib/barcode-text";
+import { BarcodeTextControls } from "@/components/BarcodeTextControls";
 import {
   CUSTOM_PAPER,
   PAPERS,
