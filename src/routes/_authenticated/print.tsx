@@ -1,5 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { recordPrints } from "@/lib/prints";
 import { useMemo, useState } from "react";
 import { FileText, Printer } from "lucide-react";
 import { HerbariumLabel } from "@/components/HerbariumLabel";
@@ -55,6 +57,7 @@ function PrintPage() {
   const { size, setSize } = useLabelSize();
   const barcode = useBarcodeSize();
   const [mode, setMode] = useState<PrintMode>("both");
+  const queryClient = useQueryClient();
   const { data = [], isLoading } = useQuery({ queryKey: ["specimens"], queryFn: fetchSpecimens });
 
   const [paper, setPaper] = useState("A4");
@@ -74,6 +77,19 @@ function PrintPage() {
     () => Array.from({ length: Math.max(1, copies) }).flatMap(() => selectedLabels),
     [selectedLabels, copies],
   );
+
+  const handlePrint = async () => {
+    window.print();
+    try {
+      await recordPrints(
+        selectedLabels.map((s) => ({ id: s.id, serial_number: s.serial_number })),
+      );
+      await queryClient.invalidateQueries({ queryKey: ["specimen-prints"] });
+      toast.success(t("printRecorded"));
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : String(err));
+    }
+  };
 
   const paperSize = PAPERS[paper] ?? PAPERS['A4']!;
   const pageCss = `@page { size: ${paperSize.w}mm ${paperSize.h}mm ${orientation}; margin: ${margin}mm; }`;
@@ -100,7 +116,7 @@ function PrintPage() {
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Button onClick={() => window.print()} disabled={labels.length === 0}>
+            <Button onClick={handlePrint} disabled={labels.length === 0}>
               <Printer className="size-4" />
               {t("print")}
             </Button>
