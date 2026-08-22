@@ -601,3 +601,21 @@ export const setPermissions = createServerFn({ method: "POST" })
     });
     return { ok: true };
   });
+
+/** Records an automatic sign out (idle or maximum session age) without sensitive fields. */
+export const recordAutoLogout = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { reason: "idle" | "absolute" }) =>
+    z.object({ reason: z.enum(["idle", "absolute"]) }).parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const actorName = await actorLabel(supabaseAdmin, context.userId);
+    await supabaseAdmin.from("activity_log").insert({
+      actor_id: context.userId,
+      actor_name: actorName,
+      action: data.reason === "idle" ? "auto_logout_idle" : "auto_logout_max_session",
+      record_id: context.userId,
+    });
+    return { ok: true };
+  });
