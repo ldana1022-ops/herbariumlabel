@@ -15,6 +15,7 @@ import { useI18n } from "@/lib/i18n";
 import { exportLabelsToWord } from "@/lib/export-word";
 import { useLabelSize } from "@/lib/label-size";
 import { useBarcodeText } from "@/lib/barcode-text";
+import { useEditableSpecimens } from "@/lib/edit-access";
 import type { SpecimenStatus } from "@/lib/specimen-status";
 import {
   fetchSpecimen,
@@ -55,6 +56,8 @@ function SpecimenDetailPage() {
   const queryClient = useQueryClient();
   const { size } = useLabelSize();
   const barcodeText = useBarcodeText();
+  const { canEditSpecimen } = useEditableSpecimens();
+  const editable = canEditSpecimen(id);
   const { data, isLoading } = useQuery({
     queryKey: ["specimen", id],
     queryFn: () => fetchSpecimen(id),
@@ -131,15 +134,18 @@ function SpecimenDetailPage() {
           <div className="flex flex-wrap gap-2">
             <StatusSelect
               value={s.status}
-              disabled={statusMutation.isPending}
+              disabled={!editable || statusMutation.isPending}
               onChange={(status) => statusMutation.mutate(status)}
             />
-            <Button asChild size="sm" variant="outline">
-              <Link to="/specimens/$id/edit" params={{ id: s.id }}>
-                <Pencil className="size-4" />
-                {t("edit")}
-              </Link>
-            </Button>
+            {editable ? (
+              <Button asChild size="sm" variant="outline">
+                <Link to="/specimens/$id/edit" params={{ id: s.id }}>
+                  <Pencil className="size-4" />
+                  {t("edit")}
+                </Link>
+              </Button>
+            ) : null}
+
             <Button asChild size="sm">
               <Link to="/print" search={{ ids: s.id }}>
                 <Printer className="size-4" />
@@ -186,13 +192,16 @@ function SpecimenDetailPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="text-base">{t("determinationSection")}</CardTitle>
-                <p className="text-xs text-muted-foreground">{t("determinationHint")}</p>
+                <p className="text-xs text-muted-foreground">
+                  {editable ? t("determinationHint") : t("readOnlyNotice")}
+                </p>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="space-y-1.5">
                   <Label htmlFor="determination">{f("determination")}</Label>
                   <Input
                     id="determination"
+                    disabled={!editable}
                     value={det.determination}
                     onChange={(e) => setDet({ ...det, determination: e.target.value })}
                   />
@@ -201,6 +210,7 @@ function SpecimenDetailPage() {
                   <Label htmlFor="determined_by">{f("determined_by")}</Label>
                   <Input
                     id="determined_by"
+                    disabled={!editable}
                     value={det.determined_by}
                     onChange={(e) => setDet({ ...det, determined_by: e.target.value })}
                   />
@@ -211,15 +221,17 @@ function SpecimenDetailPage() {
                     id="determination_date"
                     type="date"
                     dir="ltr"
+                    disabled={!editable}
                     value={det.determination_date}
                     onChange={(e) => setDet({ ...det, determination_date: e.target.value })}
                   />
                 </div>
-                <Button onClick={() => mutation.mutate()} disabled={mutation.isPending}>
+                <Button onClick={() => mutation.mutate()} disabled={!editable || mutation.isPending}>
                   {t("updateDetermination")}
                 </Button>
               </CardContent>
             </Card>
+
 
             <Card>
               <CardHeader>
