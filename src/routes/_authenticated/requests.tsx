@@ -442,23 +442,37 @@ function RequestsPage() {
                       <TableCell className="whitespace-nowrap text-sm">{r.due_date ?? "—"}</TableCell>
                       <TableCell>
                         {editable ? (
-                          <Select
-                            value={r.status}
-                            onValueChange={(v) =>
-                              updateStatus.mutate({ id: r.id, status: v as RequestStatus })
-                            }
-                          >
-                            <SelectTrigger className="h-8 w-36 text-xs">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {(Object.keys(STATUS_KEYS) as RequestStatus[]).map((s) => (
-                                <SelectItem key={s} value={s}>
-                                  {t(STATUS_KEYS[s])}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                          <div className="flex flex-col gap-1">
+                            <Select
+                              value={r.status}
+                              onValueChange={(v) =>
+                                updateStatus.mutate({ id: r.id, status: v as RequestStatus })
+                              }
+                            >
+                              <SelectTrigger className="h-8 w-36 text-xs">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {(Object.keys(STATUS_KEYS) as RequestStatus[]).map((s) => (
+                                  <SelectItem key={s} value={s}>
+                                    {t(STATUS_KEYS[s])}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            {r.status !== "completed" && r.status !== "rejected" ? (
+                              <Button
+                                size="sm"
+                                className="h-7 text-xs"
+                                disabled={completeRequest.isPending}
+                                onClick={() =>
+                                  completeRequest.mutate({ id: r.id, specimenIds: sampleIds })
+                                }
+                              >
+                                {t("completeRequestSamples")}
+                              </Button>
+                            ) : null}
+                          </div>
                         ) : (
                           <span
                             className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_CLASS[r.status]}`}
@@ -467,6 +481,7 @@ function RequestsPage() {
                           </span>
                         )}
                       </TableCell>
+
                       <TableCell className="whitespace-nowrap text-sm">
                         {new Date(r.created_at).toLocaleDateString(locale)}
                       </TableCell>
