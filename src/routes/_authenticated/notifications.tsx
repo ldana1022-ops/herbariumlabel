@@ -5,6 +5,7 @@ import { useI18n } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatWhen, useNotifications } from "@/components/NotificationBell";
+import { BackButton } from "@/components/BackButton";
 
 export const Route = createFileRoute("/_authenticated/notifications")({
   head: () => ({
@@ -40,6 +41,7 @@ function NotificationsPage() {
 
   return (
     <div className="space-y-4">
+      <BackButton />
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="text-lg font-semibold">{t("notifications")}</h2>
         <Button

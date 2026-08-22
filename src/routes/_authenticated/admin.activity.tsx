@@ -7,6 +7,7 @@ import { useI18n } from "@/lib/i18n";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import {
+import { BackButton } from "@/components/BackButton";
   Table,
   TableBody,
   TableCell,
@@ -79,6 +80,7 @@ function ActivityPage() {
 
   return (
     <div className="space-y-4">
+      <BackButton />
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="text-lg font-semibold">{t("activityLog")}</h2>
         <Input

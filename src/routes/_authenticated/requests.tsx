@@ -21,6 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
+import { BackButton } from "@/components/BackButton";
   Table,
   TableBody,
   TableCell,
@@ -149,6 +150,7 @@ function RequestsPage() {
 
   return (
     <div className="space-y-4">
+      <BackButton />
       <h2 className="text-lg font-semibold">{t("requests")}</h2>
 
       {can("sendRequests") ? (

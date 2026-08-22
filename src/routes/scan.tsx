@@ -4,6 +4,7 @@ import { useI18n } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScanLine, Camera, CameraOff, Keyboard } from "lucide-react";
+import { BackButton } from "@/components/BackButton";
 
 export const Route = createFileRoute("/scan")({
   ssr: false,
@@ -105,6 +106,7 @@ function ScanPage() {
 
   return (
     <div dir={dir} className="mx-auto max-w-lg space-y-4 px-4 py-6">
+      <BackButton fallbackTo={null} />
       <div className="flex items-center gap-3">
         <div className="flex size-10 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground">
           <ScanLine className="size-5" />

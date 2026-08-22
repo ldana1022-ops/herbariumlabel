@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { fetchPublicSpecimenBySerial } from "@/lib/specimens";
 import { statusLabel } from "@/lib/specimen-status";
+import { BackButton } from "@/components/BackButton";
 
 export const Route = createFileRoute("/p/$serial")({
   ssr: false,
@@ -58,6 +59,7 @@ function PublicSpecimenPage() {
   return (
     <div dir={dir} className="min-h-screen bg-muted/40 px-4 py-8">
       <div className="mx-auto max-w-lg space-y-4">
+        <BackButton fallbackTo={null} />
         <div className="flex items-start gap-3">
           <div className="flex size-10 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground">
             <span className="text-xs font-bold tracking-tight">NCVC</span>
