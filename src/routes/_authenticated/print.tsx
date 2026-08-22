@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { recordPrints } from "@/lib/prints";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { FileText, Printer } from "lucide-react";
 import { HerbariumLabel } from "@/components/HerbariumLabel";
 import { LabelSizeControls } from "@/components/LabelSizeControls";
