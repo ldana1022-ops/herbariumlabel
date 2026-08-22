@@ -44,6 +44,7 @@ export function LabelSizeControls({
           <Select
             value={activePreset}
             onValueChange={(v) => {
+              if (v === CUSTOM) return;
               const preset = LABEL_PRESETS.find((p) => p.id === v);
               if (preset) {
                 onChange({ ...size, width: preset.width, height: preset.height, unit: preset.unit });
@@ -52,14 +53,13 @@ export function LabelSizeControls({
           >
             <SelectTrigger><SelectValue /></SelectTrigger>
             <SelectContent>
-              {activePreset === CUSTOM ? (
-                <SelectItem value={CUSTOM}>{t("custom")}</SelectItem>
-              ) : null}
               {LABEL_PRESETS.map((p) => (
                 <SelectItem key={p.id} value={p.id}>{p.label}</SelectItem>
               ))}
+              <SelectItem value={CUSTOM}>{t("customSize")}</SelectItem>
             </SelectContent>
           </Select>
+
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="label-w">{t("width")}</Label>
