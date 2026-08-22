@@ -309,36 +309,6 @@ export type Database = {
           },
         ]
       }
-      session_settings: {
-        Row: {
-          absolute_timeout_hours: number
-          allow_remember_me: boolean
-          created_at: string
-          id: boolean
-          idle_timeout_minutes: number
-          updated_at: string
-          updated_by: string | null
-        }
-        Insert: {
-          absolute_timeout_hours?: number
-          allow_remember_me?: boolean
-          created_at?: string
-          id?: boolean
-          idle_timeout_minutes?: number
-          updated_at?: string
-          updated_by?: string | null
-        }
-        Update: {
-          absolute_timeout_hours?: number
-          allow_remember_me?: boolean
-          created_at?: string
-          id?: boolean
-          idle_timeout_minutes?: number
-          updated_at?: string
-          updated_by?: string | null
-        }
-        Relationships: []
-      }
       specimen_access: {
         Row: {
           created_at: string
