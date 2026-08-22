@@ -1,13 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
+import { ChevronDown, ChevronUp, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { listDirectory } from "@/lib/admin.functions";
 import { useAuth } from "@/lib/auth";
 import { useI18n } from "@/lib/i18n";
 import { fetchSpecimens } from "@/lib/specimens";
+import { Barcode } from "@/components/Barcode";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -48,6 +50,7 @@ type RequestStatus = "pending" | "in_progress" | "completed" | "rejected";
 
 type RequestRow = {
   id: string;
+  request_number: string;
   specimen_id: string | null;
   assigned_to: string;
   created_by: string | null;
@@ -72,6 +75,9 @@ const STATUS_CLASS: Record<RequestStatus, string> = {
   rejected: "bg-destructive/10 text-destructive",
 };
 
+/** Upper bound so one request can never blow up a page render. */
+const MAX_SAMPLES_PER_REQUEST = 200;
+
 function RequestsPage() {
   const { t, lang } = useI18n();
   const { user, can, isSuperAdmin } = useAuth();
@@ -79,10 +85,12 @@ function RequestsPage() {
   const directory = useServerFn(listDirectory);
 
   const [assignedTo, setAssignedTo] = useState("");
-  const [specimenId, setSpecimenId] = useState("");
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [specimenSearch, setSpecimenSearch] = useState("");
   const [requestType, setRequestType] = useState("");
   const [dueDate, setDueDate] = useState("");
   const [message, setMessage] = useState("");
+  const [expanded, setExpanded] = useState<string | null>(null);
 
   const { data: requests = [], isLoading } = useQuery({
     queryKey: ["requests"],
@@ -96,6 +104,19 @@ function RequestsPage() {
     },
   });
 
+  // Request ↔ specimen links (RLS only returns rows of requests the user may see).
+  const { data: links = [] } = useQuery({
+    queryKey: ["request_samples"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("request_samples")
+        .select("request_id, specimen_id, created_at")
+        .order("created_at", { ascending: true });
+      if (error) throw new Error(error.message);
+      return data ?? [];
+    },
+  });
+
   const { data: users = [] } = useQuery({
     queryKey: ["directory"],
     queryFn: () => directory({ data: undefined }),
@@ -106,25 +127,85 @@ function RequestsPage() {
     queryFn: fetchSpecimens,
   });
 
+  const specimenById = useMemo(
+    () => new Map(specimens.map((s) => [s.id, s])),
+    [specimens],
+  );
+
+  const samplesByRequest = useMemo(() => {
+    const map = new Map<string, string[]>();
+    for (const link of links) {
+      const list = map.get(link.request_id) ?? [];
+      if (!list.includes(link.specimen_id)) list.push(link.specimen_id);
+      map.set(link.request_id, list);
+    }
+    // Legacy single-specimen requests keep working even without a link row.
+    for (const r of requests) {
+      if (!map.has(r.id) && r.specimen_id) map.set(r.id, [r.specimen_id]);
+    }
+    return map;
+  }, [links, requests]);
+
+  const searchResults = useMemo(() => {
+    const q = specimenSearch.trim().toLowerCase();
+    const base = q
+      ? specimens.filter(
+          (s) =>
+            s.serial_number.toLowerCase().includes(q) ||
+            s.scientific_name.toLowerCase().includes(q) ||
+            (s.family ?? "").toLowerCase().includes(q),
+        )
+      : specimens;
+    return base.slice(0, 50);
+  }, [specimens, specimenSearch]);
+
+  const toggleSpecimen = (id: string) => {
+    setSelectedIds((prev) => {
+      if (prev.includes(id)) return prev.filter((x) => x !== id);
+      if (prev.length >= MAX_SAMPLES_PER_REQUEST) {
+        toast.error(t("samplesCount"));
+        return prev;
+      }
+      return [...prev, id];
+    });
+  };
+
   const create = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.from("requests").insert({
-        assigned_to: assignedTo,
-        created_by: user?.id ?? null,
-        specimen_id: specimenId || null,
-        request_type: requestType.trim(),
-        message: message.trim() || null,
-        due_date: dueDate || null,
-      });
+      const { data, error } = await supabase
+        .from("requests")
+        .insert({
+          assigned_to: assignedTo,
+          created_by: user?.id ?? null,
+          // Keep the legacy column populated for single-specimen requests.
+          specimen_id: selectedIds.length === 1 ? selectedIds[0]! : null,
+          request_type: requestType.trim(),
+          message: message.trim() || null,
+          due_date: dueDate || null,
+        })
+        .select("id")
+        .single();
       if (error) throw new Error(error.message);
+
+      if (selectedIds.length > 0) {
+        // Deduplicated by the unique (request_id, specimen_id) constraint too.
+        const unique = Array.from(new Set(selectedIds));
+        const { error: linkError } = await supabase
+          .from("request_samples")
+          .insert(unique.map((specimen_id) => ({ request_id: data.id, specimen_id })));
+        if (linkError) throw new Error(linkError.message);
+      }
     },
     onSuccess: () => {
       toast.success(t("requestCreated"));
-      setSpecimenId("");
+      setSelectedIds([]);
+      setSpecimenSearch("");
       setRequestType("");
       setDueDate("");
       setMessage("");
       void queryClient.invalidateQueries({ queryKey: ["requests"] });
+      void queryClient.invalidateQueries({ queryKey: ["request_samples"] });
+      void queryClient.invalidateQueries({ queryKey: ["notifications"] });
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -142,10 +223,6 @@ function RequestsPage() {
   });
 
   const nameOf = (id: string | null) => users.find((u) => u.id === id)?.name ?? "—";
-  const specimenOf = (id: string | null) => {
-    const s = specimens.find((x) => x.id === id);
-    return s ? `${s.serial_number} — ${s.scientific_name}` : "—";
-  };
   const locale = lang === "ar" ? "ar-SA" : "en-GB";
 
   return (
@@ -177,24 +254,79 @@ function RequestsPage() {
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label>{t("database")}</Label>
-              <Select value={specimenId} onValueChange={setSpecimenId}>
-                <SelectTrigger>
-                  <SelectValue placeholder={t("database")} />
-                </SelectTrigger>
-                <SelectContent>
-                  {specimens.slice(0, 200).map((s) => (
-                    <SelectItem key={s.id} value={s.id}>
-                      {s.serial_number} — {s.scientific_name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-1.5">
               <Label>{t("requestType")}</Label>
               <Input value={requestType} onChange={(e) => setRequestType(e.target.value)} />
             </div>
+
+            <div className="space-y-1.5 sm:col-span-2">
+              <Label>{t("selectSamples")}</Label>
+              <Input
+                value={specimenSearch}
+                onChange={(e) => setSpecimenSearch(e.target.value)}
+                placeholder={t("searchSample")}
+              />
+              <div className="max-h-56 overflow-y-auto rounded-md border border-border">
+                {searchResults.length === 0 ? (
+                  <p className="p-3 text-xs text-muted-foreground">{t("noResults")}</p>
+                ) : (
+                  searchResults.map((s) => {
+                    const checked = selectedIds.includes(s.id);
+                    return (
+                      <button
+                        key={s.id}
+                        type="button"
+                        onClick={() => toggleSpecimen(s.id)}
+                        className={`flex w-full items-center gap-2 border-b border-border px-3 py-2 text-start text-sm last:border-0 hover:bg-secondary ${
+                          checked ? "bg-secondary" : ""
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          readOnly
+                          tabIndex={-1}
+                          className="size-4 shrink-0 accent-primary"
+                        />
+                        <span className="font-mono text-xs">{s.serial_number}</span>
+                        <span className="truncate italic">{s.scientific_name}</span>
+                      </button>
+                    );
+                  })
+                )}
+              </div>
+
+              <div className="space-y-1 pt-1">
+                <p className="text-xs font-medium text-muted-foreground">
+                  {t("selectedSamples")} ({selectedIds.length})
+                </p>
+                {selectedIds.length === 0 ? (
+                  <p className="text-xs text-muted-foreground">{t("noSamplesSelected")}</p>
+                ) : (
+                  <div className="flex flex-wrap gap-1.5">
+                    {selectedIds.map((id) => {
+                      const s = specimenById.get(id);
+                      return (
+                        <span
+                          key={id}
+                          className="inline-flex items-center gap-1 rounded-full bg-secondary px-2 py-1 text-xs"
+                        >
+                          <span className="font-mono">{s?.serial_number ?? id.slice(0, 8)}</span>
+                          <button
+                            type="button"
+                            aria-label={t("removeSample")}
+                            onClick={() => toggleSpecimen(id)}
+                            className="text-muted-foreground hover:text-destructive"
+                          >
+                            <X className="size-3" />
+                          </button>
+                        </span>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            </div>
+
             <div className="space-y-1.5">
               <Label>{t("dueDate")}</Label>
               <Input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
@@ -220,9 +352,11 @@ function RequestsPage() {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead>{t("requestNumber")}</TableHead>
                 <TableHead>{t("requestType")}</TableHead>
-                <TableHead>{t("database")}</TableHead>
+                <TableHead>{t("requestFrom")}</TableHead>
                 <TableHead>{t("assignedTo")}</TableHead>
+                <TableHead>{t("requestSamples")}</TableHead>
                 <TableHead>{t("dueDate")}</TableHead>
                 <TableHead>{t("status")}</TableHead>
                 <TableHead>{t("date")}</TableHead>
@@ -231,30 +365,58 @@ function RequestsPage() {
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="py-8 text-center text-sm text-muted-foreground">
+                  <TableCell colSpan={8} className="py-8 text-center text-sm text-muted-foreground">
                     …
                   </TableCell>
                 </TableRow>
               ) : requests.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="py-8 text-center text-sm text-muted-foreground">
+                  <TableCell colSpan={8} className="py-8 text-center text-sm text-muted-foreground">
                     {t("noRequests")}
                   </TableCell>
                 </TableRow>
               ) : (
-                requests.map((r) => {
+                requests.flatMap((r) => {
                   const editable =
                     isSuperAdmin || (r.assigned_to === user?.id && can("receiveRequests"));
-                  return (
+                  const sampleIds = samplesByRequest.get(r.id) ?? [];
+                  const isOpen = expanded === r.id;
+                  const rows = [
                     <TableRow key={r.id}>
+                      <TableCell className="whitespace-nowrap font-mono text-xs">
+                        {r.request_number}
+                      </TableCell>
                       <TableCell className="text-sm">
                         <p className="font-medium">{r.request_type}</p>
                         {r.message ? (
                           <p className="text-xs text-muted-foreground">{r.message}</p>
                         ) : null}
                       </TableCell>
-                      <TableCell className="text-sm">{specimenOf(r.specimen_id)}</TableCell>
-                      <TableCell className="whitespace-nowrap text-sm">{nameOf(r.assigned_to)}</TableCell>
+                      <TableCell className="whitespace-nowrap text-sm">
+                        {nameOf(r.created_by)}
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap text-sm">
+                        {nameOf(r.assigned_to)}
+                      </TableCell>
+                      <TableCell className="text-sm">
+                        {sampleIds.length === 0 ? (
+                          "—"
+                        ) : (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-7 gap-1 text-xs"
+                            onClick={() => setExpanded(isOpen ? null : r.id)}
+                          >
+                            {sampleIds.length}
+                            {isOpen ? (
+                              <ChevronUp className="size-3" />
+                            ) : (
+                              <ChevronDown className="size-3" />
+                            )}
+                          </Button>
+                        )}
+                      </TableCell>
                       <TableCell className="whitespace-nowrap text-sm">{r.due_date ?? "—"}</TableCell>
                       <TableCell>
                         {editable ? (
@@ -286,8 +448,44 @@ function RequestsPage() {
                       <TableCell className="whitespace-nowrap text-sm">
                         {new Date(r.created_at).toLocaleDateString(locale)}
                       </TableCell>
-                    </TableRow>
-                  );
+                    </TableRow>,
+                  ];
+
+                  if (isOpen && sampleIds.length > 0) {
+                    rows.push(
+                      <TableRow key={`${r.id}-samples`} className="bg-muted/30">
+                        <TableCell colSpan={8} className="p-3">
+                          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                            {sampleIds.map((id) => {
+                              const s = specimenById.get(id);
+                              return (
+                                <div
+                                  key={id}
+                                  className="rounded-md border border-border bg-card p-2 text-sm"
+                                >
+                                  <p className="font-mono text-xs">
+                                    {s?.serial_number ?? "—"}
+                                  </p>
+                                  <p className="italic">{s?.scientific_name ?? "—"}</p>
+                                  {s?.serial_number ? (
+                                    <Barcode
+                                      value={s.serial_number}
+                                      widthMm={40}
+                                      heightMm={10}
+                                      displayValue
+                                      className="mt-1"
+                                    />
+                                  ) : null}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </TableCell>
+                      </TableRow>,
+                    );
+                  }
+
+                  return rows;
                 })
               )}
             </TableBody>
