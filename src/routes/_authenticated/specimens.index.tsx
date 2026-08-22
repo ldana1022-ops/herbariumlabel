@@ -284,6 +284,14 @@ function SpecimensPage() {
           </div>
         </div>
 
+        {!isSuperAdmin ? (
+          <p className="rounded-md border border-border bg-muted/40 p-3 text-xs text-muted-foreground">
+            {t("readOnlyNotice")}
+          </p>
+        ) : null}
+
+
+
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-base">{t("filters")}</CardTitle>
