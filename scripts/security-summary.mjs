@@ -14,8 +14,9 @@ const MARKER = "<!-- lovable-security-summary -->";
 
 const reports = existsSync(REPORT_DIR)
   ? readdirSync(REPORT_DIR)
-      .filter((f) => f.endsWith(".json"))
+      .filter((f) => f.endsWith(".json") && !f.endsWith(".cdx.json"))
       .map((f) => JSON.parse(readFileSync(join(REPORT_DIR, f), "utf8")))
+      .filter((r) => typeof r?.name === "string" && typeof r?.status === "string")
       .sort((a, b) => a.name.localeCompare(b.name))
   : [];
 
