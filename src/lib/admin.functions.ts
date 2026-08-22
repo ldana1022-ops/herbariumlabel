@@ -488,20 +488,40 @@ export const setUserRole = createServerFn({ method: "POST" })
   });
 
 
-/** Active users directory (id + display name) for request assignment. */
+/**
+ * Active users permitted to receive requests (id + display name), for request
+ * assignment. Includes active super admins (who can always receive) and any
+ * active user whose permissions grant can_receive_requests.
+ */
 export const listDirectory = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async () => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data } = await supabaseAdmin
-      .from("profiles")
-      .select("id, full_name, email, is_active")
-      .eq("is_active", true)
-      .order("full_name", { ascending: true });
-    return (data ?? []).map((p: { id: string; full_name: string | null; email: string | null }) => ({
-      id: p.id,
-      name: p.full_name || p.email || p.id,
-    }));
+
+    const [{ data: profiles }, { data: roles }, { data: perms }] = await Promise.all([
+      supabaseAdmin
+        .from("profiles")
+        .select("id, full_name, email, is_active")
+        .eq("is_active", true)
+        .order("full_name", { ascending: true }),
+      supabaseAdmin.from("user_roles").select("user_id, role").eq("role", "admin"),
+      supabaseAdmin.from("user_permissions").select("user_id, can_receive_requests"),
+    ]);
+
+    const adminIds = new Set((roles ?? []).map((r: { user_id: string }) => r.user_id));
+    const permMap = new Map(
+      (perms ?? []).map((p: { user_id: string; can_receive_requests: boolean | null }) => [
+        p.user_id,
+        p.can_receive_requests ?? true,
+      ]),
+    );
+
+    return (profiles ?? [])
+      .filter((p: { id: string }) => adminIds.has(p.id) || permMap.get(p.id) !== false)
+      .map((p: { id: string; full_name: string | null; email: string | null }) => ({
+        id: p.id,
+        name: p.full_name || p.email || p.id,
+      }));
   });
 
 /** Saves the data scope and action permissions of a single user. */

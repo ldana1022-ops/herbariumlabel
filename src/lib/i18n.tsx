@@ -304,7 +304,11 @@ const dict = {
   allowedUsers: { ar: "المستخدمون المصرح لهم", en: "Allowed users" },
   createRequest: { ar: "إنشاء طلب", en: "Create request" },
   requestType: { ar: "نوع الطلب", en: "Request" },
-  assignedTo: { ar: "المستخدم", en: "User" },
+  assignedTo: { ar: "المستلم", en: "Recipient" },
+  noRecipients: {
+    ar: "لا يوجد مستخدمون آخرون مسموح لهم باستقبال الطلبات حاليًا. أنشئ حسابًا جديدًا من إدارة المستخدمين.",
+    en: "No other permitted recipients exist yet. Create another account from User management.",
+  },
   dueDate: { ar: "تاريخ الاستحقاق", en: "Due date" },
   requestCreated: { ar: "تم إرسال الطلب", en: "Request sent" },
   requestUpdated: { ar: "تم تحديث الطلب", en: "Request updated" },
