@@ -222,8 +222,8 @@ const dict = {
   effectiveIdleTimeout: { ar: "المدة المطبقة فعليًا", en: "Effective timeout" },
   rememberMe: { ar: "تذكرني", en: "Remember me" },
   rememberMeHint: {
-    ar: "عند عدم التحديد تنتهي الجلسة بإغلاق المتصفح (أكثر أمانًا).",
-    en: "When off, the session ends when the browser closes (more secure).",
+    ar: "ع",
+    en: "\n",
   },
   sessionSettingsSaved: { ar: "تم حفظ إعدادات الجلسة", en: "Session settings saved" },
   sessionSettingsError: { ar: "تعذّر حفظ إعدادات الجلسة", en: "Could not save session settings" },
