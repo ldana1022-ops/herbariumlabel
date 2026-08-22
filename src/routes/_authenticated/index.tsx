@@ -87,6 +87,7 @@ function Index() {
           {statusCounts.map(({ meta, count }) => (
             <Stat key={meta.value} label={lang === "en" ? meta.en : meta.ar} value={count} />
           ))}
+          <Stat label={t("printedCount")} value={printedList.length} />
         </div>
 
         <Card>
