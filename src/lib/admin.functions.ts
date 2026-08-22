@@ -138,16 +138,69 @@ export const logEvent = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+const permsSchema = z.object({
+  dataScope: z.enum(["all", "selected", "own", "admin_only"]),
+  canAdd: z.boolean(),
+  canEdit: z.boolean(),
+  canDelete: z.boolean(),
+  canImport: z.boolean(),
+  canExport: z.boolean(),
+  canEditSamples: z.boolean(),
+  canEditLabels: z.boolean(),
+  canChangeStatus: z.boolean(),
+  canSendRequests: z.boolean(),
+  canReceiveRequests: z.boolean(),
+});
+
+type PermsInput = z.infer<typeof permsSchema>;
+
+function permsRow(userId: string, p: PermsInput) {
+  return {
+    user_id: userId,
+    data_scope: p.dataScope,
+    can_add: p.canAdd,
+    can_edit: p.canEdit,
+    can_delete: p.canDelete,
+    can_import: p.canImport,
+    can_export: p.canExport,
+    can_edit_samples: p.canEditSamples,
+    can_edit_labels: p.canEditLabels,
+    can_change_status: p.canChangeStatus,
+    can_send_requests: p.canSendRequests,
+    can_receive_requests: p.canReceiveRequests,
+  };
+}
+
+/** Reads verification/ban state straight from the real auth accounts. */
+async function authIndex(admin: any) {
+  const map = new Map<string, { emailConfirmed: boolean; banned: boolean; invitedAt: string | null }>();
+  for (let page = 1; page <= 10; page += 1) {
+    const { data, error } = await admin.auth.admin.listUsers({ page, perPage: 200 });
+    if (error) break;
+    const users = data?.users ?? [];
+    for (const u of users) {
+      map.set(u.id, {
+        emailConfirmed: Boolean(u.email_confirmed_at),
+        banned: Boolean(u.banned_until && new Date(u.banned_until) > new Date()),
+        invitedAt: u.invited_at ?? null,
+      });
+    }
+    if (users.length < 200) break;
+  }
+  return map;
+}
+
 export const listUsers = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     await assertSuperAdmin(context.supabase, context.userId);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-    const [{ data: profiles }, { data: roles }, { data: perms }] = await Promise.all([
+    const [{ data: profiles }, { data: roles }, { data: perms }, auth] = await Promise.all([
       supabaseAdmin.from("profiles").select("*").order("created_at", { ascending: true }),
       supabaseAdmin.from("user_roles").select("user_id, role"),
       supabaseAdmin.from("user_permissions").select("*"),
+      authIndex(supabaseAdmin),
     ]);
 
     return (profiles ?? []).map((p: any) => ({
@@ -156,38 +209,131 @@ export const listUsers = createServerFn({ method: "POST" })
         ? "super_admin"
         : "user",
       permissions: (perms ?? []).find((x: any) => x.user_id === p.id) ?? null,
+      email_confirmed: auth.get(p.id)?.emailConfirmed ?? false,
+      banned: auth.get(p.id)?.banned ?? false,
     }));
   });
 
+/**
+ * Creates a real authentication account for the email the admin entered and
+ * sends the invite/verification email. Role and permissions are stored in the
+ * same call so the new account is usable immediately.
+ */
 export const createUser = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { email: string; password: string; fullName: string }) =>
-    z
-      .object({
-        email: z.string().trim().email().max(255),
-        password: z.string().min(8).max(72),
-        fullName: z.string().trim().min(1).max(120),
-      })
-      .parse(input),
+  .inputValidator(
+    (input: { email: string; fullName: string; superAdmin: boolean; permissions: PermsInput }) =>
+      z
+        .object({
+          email: z.string().trim().toLowerCase().email().max(255),
+          fullName: z.string().trim().min(1).max(120),
+          superAdmin: z.boolean(),
+          permissions: permsSchema,
+        })
+        .parse(input),
   )
   .handler(async ({ data, context }) => {
     await assertSuperAdmin(context.supabase, context.userId);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-    const { data: created, error } = await supabaseAdmin.auth.admin.createUser({
-      email: data.email,
-      password: data.password,
-      email_confirm: true,
-      user_metadata: { full_name: data.fullName },
+    // Reject duplicates before touching the auth API.
+    const existingAuth = await authIndex(supabaseAdmin);
+    const { data: dupProfile } = await supabaseAdmin
+      .from("profiles")
+      .select("id")
+      .ilike("email", data.email)
+      .maybeSingle();
+    if (dupProfile) throw new Error("EMAIL_EXISTS");
+
+    const siteUrl = process.env["SITE_URL"] ?? process.env["VITE_PUBLIC_SITE_URL"] ?? null;
+    const { data: invited, error } = await supabaseAdmin.auth.admin.inviteUserByEmail(data.email, {
+      data: { full_name: data.fullName },
+      ...(siteUrl ? { redirectTo: `${siteUrl}/auth` } : {}),
     });
-    if (error || !created.user) throw new Error(error?.message ?? "CREATE_FAILED");
+
+    if (error || !invited?.user) {
+      const msg = (error?.message ?? "").toLowerCase();
+      if (msg.includes("already been registered") || msg.includes("already exists")) {
+        throw new Error("EMAIL_EXISTS");
+      }
+      throw new Error(error?.message ?? "CREATE_FAILED");
+    }
+
+    const userId = invited.user.id;
+    if (existingAuth.has(userId)) throw new Error("EMAIL_EXISTS");
 
     await supabaseAdmin
       .from("profiles")
-      .upsert({ id: created.user.id, email: data.email, full_name: data.fullName });
+      .upsert({ id: userId, email: data.email, full_name: data.fullName, is_active: true });
 
-    return { id: created.user.id };
+    if (data.superAdmin) {
+      await supabaseAdmin
+        .from("user_roles")
+        .upsert({ user_id: userId, role: "admin" }, { onConflict: "user_id,role" });
+    }
+
+    await supabaseAdmin
+      .from("user_permissions")
+      .upsert(permsRow(userId, data.permissions), { onConflict: "user_id" });
+
+    const actorName = await actorLabel(supabaseAdmin, context.userId);
+    await supabaseAdmin.from("activity_log").insert({
+      actor_id: context.userId,
+      actor_name: actorName,
+      action: "create_user",
+      record_label: data.email,
+      record_id: userId,
+      new_value: { role: data.superAdmin ? "super_admin" : "user", ...permsRow(userId, data.permissions) },
+    });
+
+    const { data: profile } = await supabaseAdmin
+      .from("profiles")
+      .select("*")
+      .eq("id", userId)
+      .maybeSingle();
+    const { data: savedPerms } = await supabaseAdmin
+      .from("user_permissions")
+      .select("*")
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    return {
+      ...(profile ?? { id: userId, email: data.email, full_name: data.fullName, is_active: true }),
+      role: data.superAdmin ? "super_admin" : "user",
+      permissions: savedPerms ?? null,
+      email_confirmed: false,
+      banned: false,
+    };
   });
+
+/** Re-sends the invite / verification email to a user who has not activated yet. */
+export const resendInvite = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { userId: string }) => z.object({ userId: z.string().uuid() }).parse(input))
+  .handler(async ({ data, context }) => {
+    await assertSuperAdmin(context.supabase, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const { data: profile } = await supabaseAdmin
+      .from("profiles")
+      .select("email")
+      .eq("id", data.userId)
+      .maybeSingle();
+    if (!profile?.email) throw new Error("USER_NOT_FOUND");
+
+    const { error } = await supabaseAdmin.auth.admin.inviteUserByEmail(profile.email);
+    if (error) throw new Error(error.message);
+
+    await supabaseAdmin.from("activity_log").insert({
+      actor_id: context.userId,
+      actor_name: await actorLabel(supabaseAdmin, context.userId),
+      action: "resend_invite",
+      record_label: profile.email,
+      record_id: data.userId,
+    });
+    return { ok: true };
+  });
+
 
 export const updateUser = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
