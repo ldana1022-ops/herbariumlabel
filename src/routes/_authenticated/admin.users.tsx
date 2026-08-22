@@ -138,7 +138,7 @@ function UsersPage() {
 
   const createMut = useMutation({
     mutationFn: async () => {
-      if (!isValidEmail(form.email)) throw new Error(t("invalidEmail"));
+      if (!isValidEmail(form.email)) throw new Error(t("invalidEmailFormat"));
       if (!isStrongPassword(form.password)) throw new Error(t("weakPassword"));
       return create({ data: { email: form.email, fullName: form.fullName, password: form.password } });
     },
