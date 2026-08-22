@@ -3,6 +3,9 @@ name: Security
 on:
   push:
     branches: ["**"]
+    tags: ["v*"]
+  release:
+    types: [published]
   pull_request:
   schedule:
     # Weekly re-scan so newly published advisories are caught even without commits
@@ -130,6 +133,40 @@ jobs:
 
       - name: Production build
         run: bun run build
+
+  release-sbom:
+    name: Attach SBOM to release
+    if: github.event_name == 'release' || startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - run: bun install --frozen-lockfile
+
+      - name: Generate SBOM (CycloneDX)
+        run: bun run sbom
+
+      - name: Name the SBOM after the release tag
+        id: asset
+        run: |
+          TAG="${{ github.event.release.tag_name || github.ref_name }}"
+          NAME="sbom-${TAG}.cdx.json"
+          cp security-reports/sbom.cdx.json "security-reports/${NAME}"
+          echo "path=security-reports/${NAME}" >> "$GITHUB_OUTPUT"
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+
+      - name: Upload SBOM as a release asset
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.asset.outputs.tag }}
+          files: ${{ steps.asset.outputs.path }}
+          fail_on_unmatched_files: true
 
   codeql:
     name: CodeQL analysis

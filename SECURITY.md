@@ -42,6 +42,10 @@ direct-vs-transitive marker). CI regenerates it on every push/PR and uploads it 
 in the PR summary comment. The file works with CycloneDX tooling such as Dependency-Track
 and `grype sbom:sbom.cdx.json`.
 
+When a release is published (or a `v*` tag is pushed), the `release-sbom` job regenerates the
+SBOM and attaches it to that GitHub Release as `sbom-<tag>.cdx.json`, so every shipped version
+has a permanent, downloadable inventory alongside the per-PR artifacts.
+
 ## Running locally
 
 ```bash
