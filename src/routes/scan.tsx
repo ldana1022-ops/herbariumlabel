@@ -24,7 +24,6 @@ export const Route = createFileRoute("/scan")({
   component: ScanPage,
 });
 
-const NCVCH_RE = /^NCVCH\d{4,8}$/i;
 
 /**
  * Accepts what people actually type or scan: full serial, lowercase,
