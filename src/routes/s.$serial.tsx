@@ -27,14 +27,21 @@ function SerialLookupPage() {
   const { serial } = useParams({ from: "/s/$serial" });
   const { t } = useI18n();
   const navigate = useNavigate();
+  const { session, loading: authLoading } = useAuth();
   const { data, isLoading, error } = useQuery({
     queryKey: ["specimen-serial", serial],
     queryFn: () => fetchPublicSpecimenBySerial(serial),
   });
 
   useEffect(() => {
+    if (authLoading) return;
+    // Signed-in users get the full record; guests get the public summary page.
+    if (!session) {
+      navigate({ to: "/p/$serial", params: { serial }, replace: true });
+      return;
+    }
     if (data) navigate({ to: "/specimens/$id", params: { id: data.id }, replace: true });
-  }, [data, navigate]);
+  }, [authLoading, data, navigate, serial, session]);
 
   return (
     <AppLayout>
