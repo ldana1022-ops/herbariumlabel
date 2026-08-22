@@ -154,6 +154,53 @@ const dict = {
     ar: "\n",
     en: "\n",
   },
+  accountCreatedVerify: {
+    ar: "تم إنشاء الحساب، يرجى التحقق من بريدك الإلكتروني.",
+    en: "Account created. Please check your email to verify it.",
+  },
+  emailNotConfirmed: {
+    ar: "البريد الإلكتروني غير موثق. يرجى تأكيد بريدك قبل تسجيل الدخول.",
+    en: "Email is not verified. Please confirm your email before signing in.",
+  },
+  invalidCredentials: {
+    ar: "البريد الإلكتروني أو كلمة المرور غير صحيحة.",
+    en: "Email or password is incorrect.",
+  },
+  weakPassword: {
+    ar: "كلمة المرور ضعيفة، يرجى اختيار كلمة مرور أقوى.",
+    en: "Password is too weak. Please choose a stronger password.",
+  },
+  emailAlreadyUsed: {
+    ar: "البريد الإلكتروني مستخدم مسبقًا.",
+    en: "This email is already registered.",
+  },
+  invalidEmailFormat: {
+    ar: "صيغة البريد الإلكتروني غير صحيحة، مثال: name@example.com",
+    en: "Invalid email format, e.g. name@example.com",
+  },
+  verificationResent: {
+    ar: "تم إرسال رسالة التحقق مرة أخرى.",
+    en: "Verification email sent again.",
+  },
+  emailConfirmedSuccess: {
+    ar: "تم تأكيد البريد الإلكتروني بنجاح.",
+    en: "Email verified successfully.",
+  },
+  resendVerification: {
+    ar: "إعادة إرسال رسالة التحقق",
+    en: "Resend verification email",
+  },
+  tooManyRequests: {
+    ar: "عدد المحاولات كبير، يرجى المحاولة بعد قليل.",
+    en: "Too many attempts. Please try again shortly.",
+  },
+  passwordRequirements: { ar: "متطلبات كلمة المرور", en: "Password requirements" },
+  pwLength: { ar: "8 أحرف على الأقل", en: "At least 8 characters" },
+  pwUpper: { ar: "حرف كبير (A-Z)", en: "An uppercase letter (A-Z)" },
+  pwLower: { ar: "حرف صغير (a-z)", en: "A lowercase letter (a-z)" },
+  pwDigit: { ar: "رقم (0-9)", en: "A number (0-9)" },
+  pwSymbol: { ar: "رمز خاص مثل ! @ # $ %", en: "A special character like ! @ # $ %" },
+  pwNotCommon: { ar: "ليست كلمة مرور شائعة", en: "Not a common password" },
   users: { ar: "إدارة المستخدمين", en: "User management" },
   role: { ar: "الصلاحية", en: "Role" },
   roleUpdated: { ar: "تم تحديث الصلاحية", en: "Role updated" },
