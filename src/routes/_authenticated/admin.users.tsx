@@ -157,9 +157,14 @@ function UsersPage() {
           superAdmin: form.superAdmin,
           permissions: newPerms,
         },
-      })) as unknown as UserRow;
+      })) as unknown as { user?: UserRow; error?: string };
     },
-    onSuccess: (row) => {
+    onSuccess: (res) => {
+      if (res?.error || !res?.user) {
+        fail(new Error(res?.error ?? "CREATE_FAILED"));
+        return;
+      }
+      const row = res.user;
       toast.success(t("userCreated"));
       // Show the new account immediately, without waiting for a refetch.
       queryClient.setQueryData<UserRow[]>(["admin-users"], (prev) =>
@@ -171,6 +176,7 @@ function UsersPage() {
     },
     onError: fail,
   });
+
 
   const resendMut = useMutation({
     mutationFn: (row: UserRow) => resend({ data: { userId: row.id } }),
