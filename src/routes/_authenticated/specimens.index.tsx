@@ -157,6 +157,40 @@ function SpecimensPage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const notifyBulk = (key: "bulkDeleted" | "bulkStatusUpdated" | "bulkFieldUpdated", affected: number, total: number) => {
+    queryClient.invalidateQueries({ queryKey: ["specimens"] });
+    toast.success(t(key).replace("{n}", String(affected)));
+    if (affected < total) {
+      toast.warning(
+        t("bulkPartial").replace("{n}", String(affected)).replace("{total}", String(total)),
+      );
+    }
+  };
+
+  const bulkStatusMutation = useMutation({
+    mutationFn: ({ ids, status }: { ids: string[]; status: SpecimenStatus }) =>
+      bulkUpdateStatus(ids, status).then((n) => ({ n, total: ids.length })),
+    onSuccess: ({ n, total }) => notifyBulk("bulkStatusUpdated", n, total),
+    onError: (e: Error) => toast.error(e.message === "NO_SELECTION" ? t("noSelection") : e.message),
+  });
+
+  const bulkFieldMutation = useMutation({
+    mutationFn: ({ ids, field, value }: { ids: string[]; field: BulkEditableField; value: string }) =>
+      bulkUpdateField(ids, field, value).then((n) => ({ n, total: ids.length })),
+    onSuccess: ({ n, total }) => notifyBulk("bulkFieldUpdated", n, total),
+    onError: (e: Error) => toast.error(e.message === "NO_SELECTION" ? t("noSelection") : e.message),
+  });
+
+  const bulkDeleteMutation = useMutation({
+    mutationFn: (ids: string[]) => bulkDeleteSpecimens(ids).then((n) => ({ n, total: ids.length })),
+    onSuccess: ({ n, total }) => {
+      notifyBulk("bulkDeleted", n, total);
+      setSelected([]);
+      setBulkDeleteOpen(false);
+    },
+    onError: (e: Error) => toast.error(e.message === "NO_SELECTION" ? t("noSelection") : e.message),
+  });
+
   const allVisibleSelected = filtered.length > 0 && filtered.every((s) => selected.includes(s.id));
 
   const clearFilters = () => {
