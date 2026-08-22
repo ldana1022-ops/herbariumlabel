@@ -23,6 +23,8 @@ import { useI18n } from "@/lib/i18n";
 import { fetchSpecimens, type Specimen } from "@/lib/specimens";
 import { toMm, useLabelSize } from "@/lib/label-size";
 import { useBarcodeSize } from "@/lib/barcode-size";
+import { useBarcodeText } from "@/lib/barcode-text";
+import { BarcodeTextControls } from "@/components/BarcodeTextControls";
 import {
   CUSTOM_PAPER,
   PAPERS,
@@ -56,6 +58,7 @@ function PrintPage() {
   const { t, dir } = useI18n();
   const { size, setSize } = useLabelSize();
   const barcode = useBarcodeSize();
+  const barcodeText = useBarcodeText();
   const { settings, update } = usePrintSettings();
   const { mode, paper, orientation, margin, cols, gap, copies, customPaper } = settings;
   const queryClient = useQueryClient();
@@ -144,6 +147,13 @@ function PrintPage() {
               onSave={barcode.saveSize}
               onUpdateSaved={barcode.updateSaved}
               onRemoveSaved={barcode.removeSaved}
+            />
+          ) : null}
+          {mode !== "labels" ? (
+            <BarcodeTextControls
+              settings={barcodeText.settings}
+              onChange={barcodeText.update}
+              onReset={barcodeText.reset}
             />
           ) : null}
           <Card>
@@ -323,7 +333,11 @@ function PrintPage() {
                 <div className="print-group" key={`${s.id}-${i}`}>
                   {mode !== "barcodes" ? <HerbariumLabel specimen={s} size={size} /> : null}
                   {mode !== "labels" ? (
-                    <BarcodeSection serial={s.serial_number} size={barcode.size} />
+                    <BarcodeSection
+                      serial={s.serial_number}
+                      size={barcode.size}
+                      text={barcodeText.settings}
+                    />
                   ) : null}
                 </div>
               ))}

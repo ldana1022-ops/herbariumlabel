@@ -14,6 +14,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useI18n } from "@/lib/i18n";
 import { exportLabelsToWord } from "@/lib/export-word";
 import { useLabelSize } from "@/lib/label-size";
+import { useBarcodeText } from "@/lib/barcode-text";
 import type { SpecimenStatus } from "@/lib/specimen-status";
 import {
   fetchSpecimen,
@@ -53,6 +54,7 @@ function SpecimenDetailPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { size } = useLabelSize();
+  const barcodeText = useBarcodeText();
   const { data, isLoading } = useQuery({
     queryKey: ["specimen", id],
     queryFn: () => fetchSpecimen(id),
@@ -226,7 +228,7 @@ function SpecimenDetailPage() {
               </CardHeader>
               <CardContent className="flex flex-col items-center gap-2">
                 <div className="rounded-md border border-border bg-white p-3">
-                  <BarcodeSection serial={s.serial_number} />
+                  <BarcodeSection serial={s.serial_number} text={barcodeText.settings} />
                 </div>
               </CardContent>
 
