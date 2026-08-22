@@ -33,10 +33,15 @@ import { exportSpecimensToExcel } from "@/lib/export-excel";
 import { exportLabelsToWord } from "@/lib/export-word";
 import { useLabelSize } from "@/lib/label-size";
 import {
+  BULK_EDITABLE_FIELDS,
+  bulkDeleteSpecimens,
+  bulkUpdateField,
+  bulkUpdateStatus,
   deleteSpecimen,
   fetchSpecimens,
   formatDate,
   updateSpecimenStatus,
+  type BulkEditableField,
   type Specimen,
 } from "@/lib/specimens";
 import { StatusSelect } from "@/components/StatusSelect";
@@ -84,6 +89,9 @@ function SpecimensPage() {
   const [to, setTo] = useState("");
   const [selected, setSelected] = useState<string[]>([]);
   const [pendingDelete, setPendingDelete] = useState<Specimen | null>(null);
+  const [bulkField, setBulkField] = useState("");
+  const [bulkValue, setBulkValue] = useState("");
+  const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
 
   const unique = (fn: (s: Specimen) => string | null) =>
     [...new Set(data.map(fn).filter((v): v is string => Boolean(v)))].sort();
@@ -147,6 +155,40 @@ function SpecimensPage() {
       setPendingDelete(null);
     },
     onError: (e: Error) => toast.error(e.message),
+  });
+
+  const notifyBulk = (key: "bulkDeleted" | "bulkStatusUpdated" | "bulkFieldUpdated", affected: number, total: number) => {
+    queryClient.invalidateQueries({ queryKey: ["specimens"] });
+    toast.success(t(key).replace("{n}", String(affected)));
+    if (affected < total) {
+      toast.warning(
+        t("bulkPartial").replace("{n}", String(affected)).replace("{total}", String(total)),
+      );
+    }
+  };
+
+  const bulkStatusMutation = useMutation({
+    mutationFn: ({ ids, status }: { ids: string[]; status: SpecimenStatus }) =>
+      bulkUpdateStatus(ids, status).then((n) => ({ n, total: ids.length })),
+    onSuccess: ({ n, total }) => notifyBulk("bulkStatusUpdated", n, total),
+    onError: (e: Error) => toast.error(e.message === "NO_SELECTION" ? t("noSelection") : e.message),
+  });
+
+  const bulkFieldMutation = useMutation({
+    mutationFn: ({ ids, field, value }: { ids: string[]; field: BulkEditableField; value: string }) =>
+      bulkUpdateField(ids, field, value).then((n) => ({ n, total: ids.length })),
+    onSuccess: ({ n, total }) => notifyBulk("bulkFieldUpdated", n, total),
+    onError: (e: Error) => toast.error(e.message === "NO_SELECTION" ? t("noSelection") : e.message),
+  });
+
+  const bulkDeleteMutation = useMutation({
+    mutationFn: (ids: string[]) => bulkDeleteSpecimens(ids).then((n) => ({ n, total: ids.length })),
+    onSuccess: ({ n, total }) => {
+      notifyBulk("bulkDeleted", n, total);
+      setSelected([]);
+      setBulkDeleteOpen(false);
+    },
+    onError: (e: Error) => toast.error(e.message === "NO_SELECTION" ? t("noSelection") : e.message),
   });
 
   const allVisibleSelected = filtered.length > 0 && filtered.every((s) => selected.includes(s.id));
@@ -329,6 +371,106 @@ function SpecimensPage() {
           ) : null}
         </div>
 
+        {selected.length > 0 && (canEdit || canDelete) ? (
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base">
+                {t("bulkActions")} — {selected.length} {t("selected")}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
+              {canEdit ? (
+                <div className="space-y-1.5">
+                  <Label>{t("bulkChangeStatus")}</Label>
+                  <Select
+                    value=""
+                    onValueChange={(v) =>
+                      bulkStatusMutation.mutate({ ids: selected, status: v as SpecimenStatus })
+                    }
+                    disabled={bulkStatusMutation.isPending}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder={t("bulkChangeStatus")} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {STATUS_ORDER.map((m) => (
+                        <SelectItem key={m.value} value={m.value}>
+                          {lang === "en" ? m.en : m.ar}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              ) : null}
+              {canEdit ? (
+                <>
+                  <div className="space-y-1.5">
+                    <Label>{t("bulkUpdateField")}</Label>
+                    <Select value={bulkField} onValueChange={setBulkField}>
+                      <SelectTrigger>
+                        <SelectValue placeholder={t("bulkChooseField")} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {BULK_EDITABLE_FIELDS.map((field) => (
+                          <SelectItem key={field} value={field}>
+                            {f(field)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="bulk-value">{t("bulkNewValue")}</Label>
+                    <Input
+                      id="bulk-value"
+                      value={bulkValue}
+                      onChange={(e) => setBulkValue(e.target.value)}
+                      dir={bulkField === "determination_date" ? "ltr" : undefined}
+                      type={bulkField === "determination_date" ? "date" : "text"}
+                    />
+                  </div>
+                </>
+              ) : null}
+              <div className="flex flex-wrap items-end gap-2">
+                {canEdit ? (
+                  <Button
+                    size="sm"
+                    disabled={bulkFieldMutation.isPending}
+                    onClick={() => {
+                      if (!bulkField) {
+                        toast.error(t("bulkValueRequired"));
+                        return;
+                      }
+                      bulkFieldMutation.mutate({
+                        ids: selected,
+                        field: bulkField as BulkEditableField,
+                        value: bulkValue,
+                      });
+                    }}
+                  >
+                    {t("bulkApply")}
+                  </Button>
+                ) : null}
+                {canDelete ? (
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    disabled={bulkDeleteMutation.isPending}
+                    onClick={() => setBulkDeleteOpen(true)}
+                  >
+                    <Trash2 className="size-4" />
+                    {t("bulkDelete")}
+                  </Button>
+                ) : null}
+                <Button size="sm" variant="ghost" onClick={() => setSelected([])}>
+                  {t("clearSelection")}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        ) : null}
+
+
         <div className="overflow-x-auto rounded-md border border-border bg-card">
           <table className="w-full min-w-[1400px] border-collapse text-sm">
             <thead className="bg-secondary">
@@ -454,6 +596,31 @@ function SpecimensPage() {
             <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => pendingDelete && deleteMutation.mutate(pendingDelete.id)}
+            >
+              {t("delete")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={bulkDeleteOpen} onOpenChange={setBulkDeleteOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("bulkConfirmDelete")}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("bulkConfirmDeleteBody").replace("{n}", String(selected.length))}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (selected.length === 0) {
+                  toast.error(t("noSelection"));
+                  return;
+                }
+                bulkDeleteMutation.mutate(selected);
+              }}
             >
               {t("delete")}
             </AlertDialogAction>
