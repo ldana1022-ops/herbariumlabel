@@ -57,6 +57,7 @@ function PrintPage() {
   const { size, setSize } = useLabelSize();
   const barcode = useBarcodeSize();
   const [mode, setMode] = useState<PrintMode>("both");
+  const queryClient = useQueryClient();
   const { data = [], isLoading } = useQuery({ queryKey: ["specimens"], queryFn: fetchSpecimens });
 
   const [paper, setPaper] = useState("A4");
