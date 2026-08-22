@@ -56,6 +56,7 @@ export const Route = createFileRoute("/_authenticated/print")({
 function PrintPage() {
   const { ids = "" } = Route.useSearch();
   const { t, dir } = useI18n();
+  useRealtimeSync(true);
   const { size, setSize } = useLabelSize();
   const barcode = useBarcodeSize();
   const barcodeText = useBarcodeText();

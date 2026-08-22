@@ -80,6 +80,7 @@ const MAX_SAMPLES_PER_REQUEST = 200;
 
 function RequestsPage() {
   const { t, lang } = useI18n();
+  useRealtimeSync(true);
   const { user, can, isSuperAdmin } = useAuth();
   const queryClient = useQueryClient();
   const directory = useServerFn(listDirectory);
