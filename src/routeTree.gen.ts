@@ -16,6 +16,7 @@ import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
 import { Route as AuthenticatedPrintRouteImport } from './routes/_authenticated/print'
 import { Route as AuthenticatedRequestsRouteImport } from './routes/_authenticated/requests'
+import { Route as PSerialRouteImport } from './routes/p.$serial'
 import { Route as SSerialRouteImport } from './routes/s.$serial'
 import { Route as AuthenticatedAdminActivityRouteImport } from './routes/_authenticated/admin.activity'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin.users'
@@ -59,6 +60,11 @@ const AuthenticatedRequestsRoute = AuthenticatedRequestsRouteImport.update({
   id: '/requests',
   path: '/requests',
   getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const PSerialRoute = PSerialRouteImport.update({
+  id: '/p/$serial',
+  path: '/p/$serial',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const SSerialRoute = SSerialRouteImport.update({
   id: '/s/$serial',
@@ -114,6 +120,7 @@ export interface FileRoutesByFullPath {
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/print': typeof AuthenticatedPrintRoute
   '/requests': typeof AuthenticatedRequestsRoute
+  '/p/$serial': typeof PSerialRoute
   '/s/$serial': typeof SSerialRoute
   '/admin/activity': typeof AuthenticatedAdminActivityRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
@@ -129,6 +136,7 @@ export interface FileRoutesByTo {
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/print': typeof AuthenticatedPrintRoute
   '/requests': typeof AuthenticatedRequestsRoute
+  '/p/$serial': typeof PSerialRoute
   '/s/$serial': typeof SSerialRoute
   '/': typeof AuthenticatedIndexRoute
   '/admin/activity': typeof AuthenticatedAdminActivityRoute
@@ -147,6 +155,7 @@ export interface FileRoutesById {
   '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
   '/_authenticated/print': typeof AuthenticatedPrintRoute
   '/_authenticated/requests': typeof AuthenticatedRequestsRoute
+  '/p/$serial': typeof PSerialRoute
   '/s/$serial': typeof SSerialRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/admin/activity': typeof AuthenticatedAdminActivityRoute
@@ -166,6 +175,7 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/print'
     | '/requests'
+    | '/p/$serial'
     | '/s/$serial'
     | '/admin/activity'
     | '/admin/users'
@@ -181,6 +191,7 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/print'
     | '/requests'
+    | '/p/$serial'
     | '/s/$serial'
     | '/'
     | '/admin/activity'
@@ -198,6 +209,7 @@ export interface FileRouteTypes {
     | '/_authenticated/notifications'
     | '/_authenticated/print'
     | '/_authenticated/requests'
+    | '/p/$serial'
     | '/s/$serial'
     | '/_authenticated/'
     | '/_authenticated/admin/activity'
@@ -213,6 +225,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  PSerialRoute: typeof PSerialRoute
   SSerialRoute: typeof SSerialRoute
 }
 
@@ -266,6 +279,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/requests'
       preLoaderRoute: typeof AuthenticatedRequestsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/p/$serial': {
+      id: '/p/$serial'
+      path: '/p/$serial'
+      fullPath: '/p/$serial'
+      preLoaderRoute: typeof PSerialRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/s/$serial': {
       id: '/s/$serial'
@@ -361,6 +381,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  PSerialRoute: PSerialRoute,
   SSerialRoute: SSerialRoute,
 }
 export const routeTree = rootRouteImport
