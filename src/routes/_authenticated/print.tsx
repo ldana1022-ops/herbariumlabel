@@ -100,7 +100,7 @@ function PrintPage() {
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Button onClick={() => window.print()} disabled={labels.length === 0}>
+            <Button onClick={handlePrint} disabled={labels.length === 0}>
               <Printer className="size-4" />
               {t("print")}
             </Button>
