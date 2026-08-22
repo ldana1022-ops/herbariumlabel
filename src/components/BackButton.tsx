@@ -1,15 +1,18 @@
-import { useEffect, useRef, useState } from "react";
 import { useNavigate, useRouter, useRouterState } from "@tanstack/react-router";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
 
-/** Number of in-app navigations made during this session (module scope = survives route swaps). */
-let inAppDepth = 0;
+/**
+ * History index of the first page loaded in this session. Anything above it was
+ * reached by in-app navigation, so it is safe to step back to.
+ */
+let baselineIndex: number | null = null;
 
 /**
- * Unified back control: steps back through in-app history without a reload,
- * and falls back to the dashboard when there is nothing to go back to.
+ * Unified back control: steps back through in-app history without a reload and
+ * without ever looping, and falls back to the dashboard when there is no
+ * previous in-app page (or hides itself when `fallbackTo` is `null`).
  */
 export function BackButton({
   fallbackTo = "/",
@@ -23,19 +26,13 @@ export function BackButton({
   const router = useRouter();
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const lastPath = useRef<string | null>(null);
-  const [depth, setDepth] = useState(inAppDepth);
+  const index = useRouterState({
+    select: (s) => (s.location.state as { __TSR_index?: number } | undefined)?.__TSR_index ?? 0,
+  });
 
-  useEffect(() => {
-    if (lastPath.current !== null && lastPath.current !== pathname) {
-      inAppDepth += 1;
-    }
-    lastPath.current = pathname;
-    setDepth(inAppDepth);
-  }, [pathname]);
+  if (baselineIndex === null || index < baselineIndex) baselineIndex = index;
+  const canGoBack = index > baselineIndex;
 
-  const canGoBack = depth > 0;
-  // Never render on the dashboard when there is no previous in-app page.
   if (!canGoBack && (fallbackTo === null || pathname === fallbackTo)) return null;
 
   const Icon = dir === "rtl" ? ArrowRight : ArrowLeft;
@@ -47,9 +44,7 @@ export function BackButton({
       size="sm"
       className={className ? `gap-2 ${className}` : "gap-2"}
       onClick={() => {
-        if (inAppDepth > 0) {
-          inAppDepth -= 1;
-          setDepth(inAppDepth);
+        if (canGoBack) {
           router.history.back();
           return;
         }
