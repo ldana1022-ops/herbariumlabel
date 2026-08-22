@@ -45,6 +45,7 @@ import {
   type Specimen,
 } from "@/lib/specimens";
 import { StatusSelect } from "@/components/StatusSelect";
+import { useEditableSpecimens } from "@/lib/edit-access";
 import { normalizeStatus, STATUS_ORDER, type SpecimenStatus } from "@/lib/specimen-status";
 
 export const Route = createFileRoute("/_authenticated/specimens/")({
@@ -75,10 +76,11 @@ function SpecimensPage() {
   const queryClient = useQueryClient();
   const { size } = useLabelSize();
   const { can } = useAuth();
-  const canEdit = can("edit");
+  const { canEditSpecimen, isSuperAdmin, hasAnyEditable } = useEditableSpecimens();
   const canImport = can("import");
-  const canDelete = can("delete");
+  const canDelete = isSuperAdmin;
   const { data = [], isLoading } = useQuery({ queryKey: ["specimens"], queryFn: fetchSpecimens });
+
 
   const [q, setQ] = useState("");
   const [family, setFamily] = useState(ALL);
