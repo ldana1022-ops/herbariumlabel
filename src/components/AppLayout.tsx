@@ -10,17 +10,17 @@ import {
   Plus,
   Printer,
   ScanLine,
-  ShieldCheck,
   Upload,
   Users,
 } from "lucide-react";
 import type { ReactNode } from "react";
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
+import { useRealtimeSync } from "@/lib/realtime";
 import { Button } from "@/components/ui/button";
 import { NotificationBell } from "@/components/NotificationBell";
 import { BackButton } from "@/components/BackButton";
-import { SessionTimeoutDialog } from "@/components/SessionTimeoutDialog";
+
 
 function NavLink({ to, icon, label }: { to: string; icon: ReactNode; label: string }) {
   return (
