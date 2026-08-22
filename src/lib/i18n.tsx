@@ -296,6 +296,14 @@ const dict = {
   signInToContinue: { ar: "سجّل الدخول للوصول إلى السجل الكامل", en: "Sign in to view the full record" },
   message: { ar: "الرسالة", en: "Message" },
   name: { ar: "الاسم", en: "Name" },
+  scanTitle: { ar: "مسح الباركود", en: "Scan Barcode" },
+  scanHint: { ar: "وجّه كاميرا الهاتف نحو الباركود لفتح بيانات العينة تلقائيًا.", en: "Point your phone camera at a barcode to open the specimen automatically." },
+  scanStart: { ar: "بدء المسح", en: "Start Scanning" },
+  scanStop: { ar: "إيقاف", en: "Stop" },
+  scanError: { ar: "تعذّر الوصول إلى الكاميرا. تأكد من منح الإذن واستخدام HTTPS.", en: "Could not access the camera. Make sure camera permission is granted and you are using HTTPS." },
+  scanNotFound: { ar: "لم يُعثر على باركود مطابق. حاول مرة أخرى.", en: "No matching barcode found. Try again." },
+  scanDetected: { ar: "تم التعرف على الباركود، جارٍ الفتح…", en: "Barcode detected, opening…" },
+  scanEnterManual: { ar: "أو أدخل الرقم يدويًا", en: "Or enter serial manually" },
 } as const;
 
 export type TKey = keyof typeof dict;
