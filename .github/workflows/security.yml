@@ -44,6 +44,19 @@ jobs:
         continue-on-error: true
         run: bun run security:secrets
 
+      - name: Generate SBOM (CycloneDX)
+        id: sbom
+        run: bun run sbom
+
+      - name: Upload SBOM artifact
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sbom-${{ github.event.pull_request.number || github.sha }}
+          path: security-reports/sbom.cdx.json
+          if-no-files-found: error
+          retention-days: 90
+
       - name: Build summary from scan reports
         id: summary
         run: bun run security:summary

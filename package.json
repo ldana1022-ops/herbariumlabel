@@ -12,7 +12,8 @@
     "format": "prettier --write .",
     "audit": "bun scripts/audit.mjs",
     "security:secrets": "bun scripts/scan-secrets.mjs",
-    "security:summary": "bun scripts/security-summary.mjs"
+    "security:summary": "bun scripts/security-summary.mjs",
+    "sbom": "bun scripts/sbom.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
