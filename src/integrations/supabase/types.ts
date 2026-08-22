@@ -567,6 +567,7 @@ export type Database = {
         | "in_progress"
         | "pending_review"
         | "completed"
+        | "printed"
       specimen_visibility: "everyone" | "admin_only" | "selected_users"
     }
     CompositeTypes: {
@@ -703,6 +704,7 @@ export const Constants = {
         "in_progress",
         "pending_review",
         "completed",
+        "printed",
       ],
       specimen_visibility: ["everyone", "admin_only", "selected_users"],
     },
