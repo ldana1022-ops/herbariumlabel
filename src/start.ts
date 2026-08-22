@@ -3,7 +3,7 @@ import { createStart, createCsrfMiddleware, createMiddleware } from "@tanstack/r
 import { attachSupabaseAuth } from "./integrations/supabase/auth-attacher";
 import { renderErrorPage } from "./lib/error-page";
 
-const isAbortError = (error: unknown) =>
+const isAbortError = (error: unknown): boolean =>
   error != null &&
   typeof error === "object" &&
   ((error as { name?: string }).name === "AbortError" ||
