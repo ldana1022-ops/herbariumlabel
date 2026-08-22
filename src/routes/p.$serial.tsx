@@ -1,5 +1,8 @@
 import { createFileRoute, Link, useParams } from "@tanstack/react-router";
+import { useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { logPublicSpecimenView } from "@/lib/public-views.functions";
 import { useI18n } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -36,6 +39,16 @@ function Row({ label, value }: { label: string; value: string }) {
 function PublicSpecimenPage() {
   const { serial } = useParams({ from: "/p/$serial" });
   const { t, f, lang, dir } = useI18n();
+
+  const logView = useServerFn(logPublicSpecimenView);
+  const logged = useRef<string | null>(null);
+
+  // Log the visit once per serial; nothing sensitive is sent.
+  useEffect(() => {
+    if (!serial || logged.current === serial) return;
+    logged.current = serial;
+    void logView({ data: { serial } }).catch(() => undefined);
+  }, [serial, logView]);
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["public-specimen", serial],
