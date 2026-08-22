@@ -9,6 +9,7 @@ import {
   LogOut,
   Plus,
   Printer,
+  ScanLine,
   Upload,
   Users,
 } from "lucide-react";
