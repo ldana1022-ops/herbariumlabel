@@ -151,8 +151,8 @@ const dict = {
   haveAccount: { ar: "لديك حساب؟ تسجيل الدخول", en: "Already have an account? Sign in" },
   checkEmail: { ar: "تحقق من بريدك الإلكتروني لتأكيد الحساب", en: "Check your email to confirm the account" },
   firstUserAdminHint: {
-    ar: "أول مستخدم يسجّل في النظام يحصل على صلاحية مدير النظام، ويكون المستخدمون التالون بصلاحية مطّلع حتى يرفعها المدير.",
-    en: "The first registered user becomes administrator; later users start as viewers until an admin upgrades them.",
+    ar: "\n",
+    en: "\n",
   },
   users: { ar: "إدارة المستخدمين", en: "User management" },
   role: { ar: "الصلاحية", en: "Role" },
