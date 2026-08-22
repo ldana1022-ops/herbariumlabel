@@ -268,7 +268,7 @@ const dict = {
   resendInvite: { ar: "إعادة إرسال الدعوة", en: "Resend invite" },
   inviteSent: { ar: "تم إرسال الدعوة إلى البريد الإلكتروني", en: "Invite sent to the email address" },
   inviteUserHint: {
-    ar: "يتم إنشاء حساب حقيقي وإرسال رسالة تفعيل إلى البريد، ويحدد المستخدم كلمة المروره بنفسه.",
+    ar: "يتم إنشاء حساب حقيقي وإرسال رسالة تفعيل إلى البريد، ويحدد المستخدم كلمة المرور بنفسه.",
     en: "A real account is created and an activation email is sent; the user sets their own password.",
   },
   accountState: { ar: "حالة الحساب", en: "Account state" },
