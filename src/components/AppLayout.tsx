@@ -9,6 +9,7 @@ import {
   LogOut,
   Plus,
   Printer,
+  ScanLine,
   Upload,
   Users,
 } from "lucide-react";
@@ -91,6 +92,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
             {can("print") ? (
               <NavLink to="/print" icon={<Printer className="size-4" />} label={t("printLabels")} />
             ) : null}
+            <NavLink to="/scan" icon={<ScanLine className="size-4" />} label={t("scanTitle")} />
             {session ? (
               <>
                 <NavLink
