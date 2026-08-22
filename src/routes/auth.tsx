@@ -77,26 +77,18 @@ function AuthPage() {
     return error.message ?? t("invalidCredentials");
   };
 
-  const resendVerification = async () => {
-    if (!isValidEmail(email)) {
-      toast.error(t("invalidEmailFormat"));
+  const finishSignIn = async (fullNameValue?: string) => {
+    const result = await ensureAccount({ data: fullNameValue ? { fullName: fullNameValue } : {} });
+    if (!result.isActive) {
+      await supabase.auth.signOut();
+      toast.error(t("accountDisabled"));
       return;
     }
-    setBusy(true);
-    try {
-      const { error } = await supabase.auth.resend({
-        type: "signup",
-        email: email.trim().toLowerCase(),
-        options: { emailRedirectTo: `${window.location.origin}/auth` },
-      });
-      if (error) throw error;
-      toast.success(t("verificationResent"));
-    } catch (error) {
-      toast.error(describeError(error as Error));
-    } finally {
-      setBusy(false);
-    }
+    await recordLogin({ data: undefined as never });
+    toast.success(t("signedIn"));
+    navigate({ to: "/", replace: true });
   };
+
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
