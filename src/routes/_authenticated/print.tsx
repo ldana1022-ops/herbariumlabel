@@ -58,6 +58,7 @@ function PrintPage() {
   const { t, dir } = useI18n();
   const { size, setSize } = useLabelSize();
   const barcode = useBarcodeSize();
+  const barcodeText = useBarcodeText();
   const { settings, update } = usePrintSettings();
   const { mode, paper, orientation, margin, cols, gap, copies, customPaper } = settings;
   const queryClient = useQueryClient();
