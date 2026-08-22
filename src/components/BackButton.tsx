@@ -11,7 +11,14 @@ let inAppDepth = 0;
  * Unified back control: steps back through in-app history without a reload,
  * and falls back to the dashboard when there is nothing to go back to.
  */
-export function BackButton() {
+export function BackButton({
+  fallbackTo = "/",
+  className,
+}: {
+  /** Where to go when there is no in-app history. `null` hides the button instead. */
+  fallbackTo?: string | null;
+  className?: string;
+} = {}) {
   const { t, dir } = useI18n();
   const router = useRouter();
   const navigate = useNavigate();
@@ -29,7 +36,7 @@ export function BackButton() {
 
   const canGoBack = depth > 0;
   // Never render on the dashboard when there is no previous in-app page.
-  if (pathname === "/" && !canGoBack) return null;
+  if (!canGoBack && (fallbackTo === null || pathname === fallbackTo)) return null;
 
   const Icon = dir === "rtl" ? ArrowRight : ArrowLeft;
 
@@ -38,7 +45,7 @@ export function BackButton() {
       type="button"
       variant="outline"
       size="sm"
-      className="gap-2"
+      className={className ? `gap-2 ${className}` : "gap-2"}
       onClick={() => {
         if (inAppDepth > 0) {
           inAppDepth -= 1;
@@ -46,7 +53,7 @@ export function BackButton() {
           router.history.back();
           return;
         }
-        void navigate({ to: "/" });
+        if (fallbackTo) void navigate({ to: fallbackTo });
       }}
     >
       <Icon className="size-4" />
