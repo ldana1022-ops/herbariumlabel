@@ -14,6 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { BackButton } from "@/components/BackButton";
 
 export const Route = createFileRoute("/_authenticated/admin/activity")({
   head: () => ({
@@ -79,6 +80,7 @@ function ActivityPage() {
 
   return (
     <div className="space-y-4">
+      <BackButton />
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="text-lg font-semibold">{t("activityLog")}</h2>
         <Input

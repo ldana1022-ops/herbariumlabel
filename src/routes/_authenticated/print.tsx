@@ -24,6 +24,7 @@ import { fetchSpecimens, type Specimen } from "@/lib/specimens";
 import { toMm, useLabelSize } from "@/lib/label-size";
 import { useBarcodeSize } from "@/lib/barcode-size";
 import { exportLabelsToWord } from "@/lib/export-word";
+import { BackButton } from "@/components/BackButton";
 
 export const Route = createFileRoute("/_authenticated/print")({
   validateSearch: (search: Record<string, unknown>): { ids?: string } =>
@@ -107,6 +108,9 @@ function PrintPage() {
   return (
     <div dir={dir} className="min-h-screen bg-muted/40">
       <style>{pageCss}</style>
+      <div className="print-hide mx-auto max-w-6xl px-4 pt-3">
+        <BackButton />
+      </div>
       <div className="print-hide border-b border-border bg-card">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-2 px-4 py-3">
           <div>

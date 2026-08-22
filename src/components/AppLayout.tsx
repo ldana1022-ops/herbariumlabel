@@ -18,6 +18,7 @@ import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { NotificationBell } from "@/components/NotificationBell";
+import { BackButton } from "@/components/BackButton";
 
 function NavLink({ to, icon, label }: { to: string; icon: ReactNode; label: string }) {
   return (
@@ -116,7 +117,12 @@ export function AppLayout({ children }: { children: ReactNode }) {
           </div>
         </nav>
       </header>
-      <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6">{children}</main>
+      <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
+        <div className="mb-4 empty:mb-0">
+          <BackButton />
+        </div>
+        {children}
+      </main>
       <footer className="border-t border-border bg-card py-4 text-center text-xs text-muted-foreground">
         {t("org")}
       </footer>

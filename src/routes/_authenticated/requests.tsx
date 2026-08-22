@@ -28,6 +28,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { BackButton } from "@/components/BackButton";
 
 export const Route = createFileRoute("/_authenticated/requests")({
   head: () => ({
@@ -149,6 +150,7 @@ function RequestsPage() {
 
   return (
     <div className="space-y-4">
+      <BackButton />
       <h2 className="text-lg font-semibold">{t("requests")}</h2>
 
       {can("sendRequests") ? (
