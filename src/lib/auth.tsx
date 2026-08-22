@@ -2,6 +2,11 @@ import { createContext, useContext, useEffect, useMemo, useState, type ReactNode
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  clearSessionBookkeeping,
+  dropPersistentToken,
+  mirrorSessionToken,
+} from "@/lib/session-storage";
 
 export type Permission =
   | "view"
@@ -86,10 +91,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data: sub } = supabase.auth.onAuthStateChange((_event, next) => {
       setSession(next ?? null);
       setReady(true);
+      // Keep the per-tab mirror in sync for session-only ("remember me" off) logins.
+      mirrorSessionToken();
     });
+    const onPageHide = () => dropPersistentToken();
+    window.addEventListener("pagehide", onPageHide);
+    window.addEventListener("beforeunload", onPageHide);
     return () => {
       mounted = false;
       sub.subscription.unsubscribe();
+      window.removeEventListener("pagehide", onPageHide);
+      window.removeEventListener("beforeunload", onPageHide);
     };
   }, []);
 
@@ -151,6 +163,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       signOut: async () => {
         await queryClient.cancelQueries();
         queryClient.clear();
+        clearSessionBookkeeping();
         await supabase.auth.signOut();
       },
     };
