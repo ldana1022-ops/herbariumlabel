@@ -264,6 +264,8 @@ export type Database = {
           request_type: string
           specimen_id: string | null
           status: Database["public"]["Enums"]["request_status"]
+          status_changed_at: string | null
+          status_changed_by: string | null
           updated_at: string
         }
         Insert: {
@@ -277,6 +279,8 @@ export type Database = {
           request_type: string
           specimen_id?: string | null
           status?: Database["public"]["Enums"]["request_status"]
+          status_changed_at?: string | null
+          status_changed_by?: string | null
           updated_at?: string
         }
         Update: {
@@ -290,6 +294,8 @@ export type Database = {
           request_type?: string
           specimen_id?: string | null
           status?: Database["public"]["Enums"]["request_status"]
+          status_changed_at?: string | null
+          status_changed_by?: string | null
           updated_at?: string
         }
         Relationships: [
