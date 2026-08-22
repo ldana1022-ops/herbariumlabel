@@ -3,12 +3,23 @@ import { createStart, createCsrfMiddleware, createMiddleware } from "@tanstack/r
 import { attachSupabaseAuth } from "./integrations/supabase/auth-attacher";
 import { renderErrorPage } from "./lib/error-page";
 
-const errorMiddleware = createMiddleware().server(async ({ next }) => {
+const isAbortError = (error: unknown): boolean =>
+  error != null &&
+  typeof error === "object" &&
+  ((error as { name?: string }).name === "AbortError" ||
+    isAbortError((error as { cause?: unknown }).cause));
+
+const errorMiddleware = createMiddleware().server(async ({ next, request }) => {
   try {
     return await next();
   } catch (error) {
     if (error != null && typeof error === "object" && "statusCode" in error) {
       throw error;
+    }
+    // The client closed the connection (navigation, reload, HMR) before the
+    // response finished. Nothing to report and nothing to render.
+    if (isAbortError(error) || request.signal.aborted) {
+      return new Response(null, { status: 499 });
     }
     console.error(error);
     return new Response(renderErrorPage(), {
@@ -17,6 +28,7 @@ const errorMiddleware = createMiddleware().server(async ({ next }) => {
     });
   }
 });
+
 
 // Start installs this automatically when src/start.ts is absent; defining the
 // file opts out, so re-add it explicitly to keep server functions protected
