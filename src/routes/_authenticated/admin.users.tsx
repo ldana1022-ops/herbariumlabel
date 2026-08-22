@@ -36,7 +36,7 @@ import {
   setUserRole,
   updateUser,
 } from "@/lib/admin.functions";
-import { validatePassword } from "@/lib/password";
+import { isStrongPassword, isValidEmail } from "@/lib/password";
 
 export const Route = createFileRoute("/_authenticated/admin/users")({
   head: () => ({
@@ -138,8 +138,8 @@ function UsersPage() {
 
   const createMut = useMutation({
     mutationFn: async () => {
-      const check = validatePassword(form.password);
-      if (!check.valid) throw new Error(t("passwordWeak"));
+      if (!isValidEmail(form.email)) throw new Error(t("invalidEmail"));
+      if (!isStrongPassword(form.password)) throw new Error(t("weakPassword"));
       return create({ data: { email: form.email, fullName: form.fullName, password: form.password } });
     },
     onSuccess: () => {
@@ -182,8 +182,7 @@ function UsersPage() {
     mutationFn: async (row: UserRow) => {
       const pw = window.prompt(t("newPassword") ?? "");
       if (!pw) return null;
-      const check = validatePassword(pw);
-      if (!check.valid) throw new Error(t("passwordWeak"));
+      if (!isStrongPassword(pw)) throw new Error(t("weakPassword"));
       return resetPw({ data: { userId: row.id, password: pw } });
     },
     onSuccess: (res) => {
