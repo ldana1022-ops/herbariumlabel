@@ -87,19 +87,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data: sub } = supabase.auth.onAuthStateChange((_event, next) => {
       setSession(next ?? null);
       setReady(true);
-      // Keep the per-tab mirror in sync for session-only ("remember me" off) logins.
-      mirrorSessionToken();
     });
-    const onPageHide = () => dropPersistentToken();
-    window.addEventListener("pagehide", onPageHide);
-    window.addEventListener("beforeunload", onPageHide);
     return () => {
       mounted = false;
       sub.subscription.unsubscribe();
-      window.removeEventListener("pagehide", onPageHide);
-      window.removeEventListener("beforeunload", onPageHide);
     };
   }, []);
+
 
   const userId = session?.user?.id ?? null;
 
