@@ -329,6 +329,106 @@ function SpecimensPage() {
           ) : null}
         </div>
 
+        {selected.length > 0 && (canEdit || canDelete) ? (
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base">
+                {t("bulkActions")} — {selected.length} {t("selected")}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
+              {canEdit ? (
+                <div className="space-y-1.5">
+                  <Label>{t("bulkChangeStatus")}</Label>
+                  <Select
+                    value=""
+                    onValueChange={(v) =>
+                      bulkStatusMutation.mutate({ ids: selected, status: v as SpecimenStatus })
+                    }
+                    disabled={bulkStatusMutation.isPending}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder={t("bulkChangeStatus")} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {STATUS_ORDER.map((m) => (
+                        <SelectItem key={m.value} value={m.value}>
+                          {lang === "en" ? m.en : m.ar}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              ) : null}
+              {canEdit ? (
+                <>
+                  <div className="space-y-1.5">
+                    <Label>{t("bulkUpdateField")}</Label>
+                    <Select value={bulkField} onValueChange={setBulkField}>
+                      <SelectTrigger>
+                        <SelectValue placeholder={t("bulkChooseField")} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {BULK_EDITABLE_FIELDS.map((field) => (
+                          <SelectItem key={field} value={field}>
+                            {f(field)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="bulk-value">{t("bulkNewValue")}</Label>
+                    <Input
+                      id="bulk-value"
+                      value={bulkValue}
+                      onChange={(e) => setBulkValue(e.target.value)}
+                      dir={bulkField === "determination_date" ? "ltr" : undefined}
+                      type={bulkField === "determination_date" ? "date" : "text"}
+                    />
+                  </div>
+                </>
+              ) : null}
+              <div className="flex flex-wrap items-end gap-2">
+                {canEdit ? (
+                  <Button
+                    size="sm"
+                    disabled={bulkFieldMutation.isPending}
+                    onClick={() => {
+                      if (!bulkField) {
+                        toast.error(t("bulkValueRequired"));
+                        return;
+                      }
+                      bulkFieldMutation.mutate({
+                        ids: selected,
+                        field: bulkField as BulkEditableField,
+                        value: bulkValue,
+                      });
+                    }}
+                  >
+                    {t("bulkApply")}
+                  </Button>
+                ) : null}
+                {canDelete ? (
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    disabled={bulkDeleteMutation.isPending}
+                    onClick={() => setBulkDeleteOpen(true)}
+                  >
+                    <Trash2 className="size-4" />
+                    {t("bulkDelete")}
+                  </Button>
+                ) : null}
+                <Button size="sm" variant="ghost" onClick={() => setSelected([])}>
+                  {t("clearSelection")}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        ) : null}
+
+
         <div className="overflow-x-auto rounded-md border border-border bg-card">
           <table className="w-full min-w-[1400px] border-collapse text-sm">
             <thead className="bg-secondary">
