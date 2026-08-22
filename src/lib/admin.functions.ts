@@ -366,6 +366,14 @@ export const updateUser = createServerFn({ method: "POST" })
       if (error) throw new Error(error.message);
     }
 
+    // Enforce disabling at the authentication layer too, not only in the UI.
+    if (data.isActive !== undefined) {
+      await supabaseAdmin.auth.admin.updateUserById(data.userId, {
+        ban_duration: data.isActive ? "none" : "876000h",
+      });
+    }
+
+
     const { data: profile } = await supabaseAdmin
       .from("profiles")
       .select("full_name, email")
