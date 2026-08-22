@@ -3,6 +3,9 @@ name: Security
 on:
   push:
     branches: ["**"]
+    tags: ["v*"]
+  release:
+    types: [published]
   pull_request:
   schedule:
     # Weekly re-scan so newly published advisories are caught even without commits
