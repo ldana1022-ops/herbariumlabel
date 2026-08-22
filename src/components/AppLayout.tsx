@@ -39,6 +39,7 @@ function NavLink({ to, icon, label }: { to: string; icon: ReactNode; label: stri
 export function AppLayout({ children }: { children: ReactNode }) {
   const { t, lang, setLang, dir } = useI18n();
   const { can, profile, isSuperAdmin, session, signOut } = useAuth();
+  useRealtimeSync(Boolean(session));
 
   return (
     <div dir={dir} className="min-h-screen bg-muted/40 no-print-wrapper">
@@ -86,7 +87,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
           <div className="mx-auto flex max-w-7xl flex-wrap gap-1 px-2 py-1.5 sm:px-4">
             <NavLink to="/" icon={<LayoutDashboard className="size-4" />} label={t("dashboard")} />
             <NavLink to="/specimens" icon={<Database className="size-4" />} label={t("database")} />
-            {can("edit") ? (
+            {can("add") ? (
               <NavLink to="/specimens/new" icon={<Plus className="size-4" />} label={t("newSpecimen")} />
             ) : null}
             {can("import") ? (
@@ -126,7 +127,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
         </div>
         {children}
       </main>
-      {null}
+      
       <footer className="border-t border-border bg-card py-4 text-center text-xs text-muted-foreground">
         {t("org")}
       </footer>
