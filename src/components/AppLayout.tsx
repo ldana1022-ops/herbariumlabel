@@ -126,7 +126,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
         </div>
         {children}
       </main>
-      {session ? <SessionTimeoutDialog /> : null}
+      {null}
       <footer className="border-t border-border bg-card py-4 text-center text-xs text-muted-foreground">
         {t("org")}
       </footer>
