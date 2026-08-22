@@ -89,6 +89,9 @@ function SpecimensPage() {
   const [to, setTo] = useState("");
   const [selected, setSelected] = useState<string[]>([]);
   const [pendingDelete, setPendingDelete] = useState<Specimen | null>(null);
+  const [bulkField, setBulkField] = useState("");
+  const [bulkValue, setBulkValue] = useState("");
+  const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
 
   const unique = (fn: (s: Specimen) => string | null) =>
     [...new Set(data.map(fn).filter((v): v is string => Boolean(v)))].sort();
