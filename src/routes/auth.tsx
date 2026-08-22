@@ -39,7 +39,7 @@ function AuthPage() {
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [busy, setBusy] = useState(false);
-  const [needsVerification, setNeedsVerification] = useState(false);
+
 
   const checks = checkPassword(password);
 
@@ -77,26 +77,18 @@ function AuthPage() {
     return error.message ?? t("invalidCredentials");
   };
 
-  const resendVerification = async () => {
-    if (!isValidEmail(email)) {
-      toast.error(t("invalidEmailFormat"));
+  const finishSignIn = async (fullNameValue?: string) => {
+    const result = await ensureAccount({ data: fullNameValue ? { fullName: fullNameValue } : {} });
+    if (!result.isActive) {
+      await supabase.auth.signOut();
+      toast.error(t("accountDisabled"));
       return;
     }
-    setBusy(true);
-    try {
-      const { error } = await supabase.auth.resend({
-        type: "signup",
-        email: email.trim().toLowerCase(),
-        options: { emailRedirectTo: `${window.location.origin}/auth` },
-      });
-      if (error) throw error;
-      toast.success(t("verificationResent"));
-    } catch (error) {
-      toast.error(describeError(error as Error));
-    } finally {
-      setBusy(false);
-    }
+    await recordLogin({ data: undefined as never });
+    toast.success(t("signedIn"));
+    navigate({ to: "/", replace: true });
   };
+
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -126,56 +118,48 @@ function AuthPage() {
         const { data, error } = await supabase.auth.signUp({
           email: cleanEmail,
           password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/auth`,
-            data: { full_name: fullName.trim() },
-          },
+          options: { data: { full_name: fullName.trim() } },
         });
+        const alreadyExists =
+          (error && ((error as { code?: string }).code === "user_already_exists" ||
+            (error.message ?? "").toLowerCase().includes("already"))) ||
+          (data?.user && (data.user.identities?.length ?? 0) === 0);
+
+        if (alreadyExists) {
+          // Existing account: never create a duplicate; require the password to sign in.
+          const { error: signInError } = await supabase.auth.signInWithPassword({
+            email: cleanEmail,
+            password,
+          });
+          if (signInError) {
+            setMode("signin");
+            toast.error(t("emailAlreadyUsed"));
+            return;
+          }
+          await finishSignIn();
+          return;
+        }
         if (error) throw error;
-        // Supabase returns a user with an empty identities array when the email already exists.
-        if (data.user && (data.user.identities?.length ?? 0) === 0) {
-          toast.error(t("emailAlreadyUsed"));
-          setMode("signin");
-          return;
-        }
+
         if (!data.session) {
-          setNeedsVerification(true);
-          setMode("signin");
-          toast.success(t("accountCreatedVerify"));
-          return;
+          // Auto-confirm is enabled, so signing in immediately succeeds.
+          const { error: signInError } = await supabase.auth.signInWithPassword({
+            email: cleanEmail,
+            password,
+          });
+          if (signInError) throw signInError;
         }
-        await ensureAccount({ data: { fullName: fullName.trim() } });
-        await recordLogin({ data: undefined as never });
-        toast.success(t("signedIn"));
-        navigate({ to: "/", replace: true });
+        await finishSignIn(fullName.trim());
         return;
       }
 
-      const { data: signInData, error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signInWithPassword({
         email: cleanEmail,
         password,
       });
-      if (error) {
-        if ((error as { code?: string }).code === "email_not_confirmed") setNeedsVerification(true);
-        throw error;
-      }
-      // Defence in depth: never let an unverified account through.
-      if (signInData.user && !signInData.user.email_confirmed_at) {
-        await supabase.auth.signOut();
-        setNeedsVerification(true);
-        toast.error(t("emailNotConfirmed"));
-        return;
-      }
-      const result = await ensureAccount({ data: {} });
-      if (!result.isActive) {
-        await supabase.auth.signOut();
-        toast.error(t("accountDisabled"));
-        return;
-      }
-      setNeedsVerification(false);
-      await recordLogin({ data: undefined as never });
-      toast.success(t("signedIn"));
-      navigate({ to: "/", replace: true });
+      if (error) throw error;
+      await finishSignIn();
+
     } catch (error) {
       toast.error(describeError(error as Error));
     } finally {
@@ -308,14 +292,8 @@ function AuthPage() {
               ) : null}
             </div>
 
-            {needsVerification && mode !== "forgot" ? (
-              <div className="mt-4 rounded-md border border-border bg-muted/40 p-3 text-center">
-                <p className="text-xs text-muted-foreground">{t("emailNotConfirmed")}</p>
-                <Button type="button" variant="outline" size="sm" className="mt-2" disabled={busy} onClick={resendVerification}>
-                  {t("resendVerification")}
-                </Button>
-              </div>
-            ) : null}
+
+
 
             <p className="mt-4 text-xs leading-relaxed text-muted-foreground">{t("firstUserAdminHint")}</p>
           </CardContent>
