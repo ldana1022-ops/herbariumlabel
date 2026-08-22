@@ -11,7 +11,8 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "audit": "bun scripts/audit.mjs",
-    "security:secrets": "bun scripts/scan-secrets.mjs"
+    "security:secrets": "bun scripts/scan-secrets.mjs",
+    "security:summary": "bun scripts/security-summary.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
