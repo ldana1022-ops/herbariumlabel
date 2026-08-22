@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/lib/auth";
 import { useI18n } from "@/lib/i18n";
 import { fetchPublicSpecimenBySerial } from "@/lib/specimens";
 
