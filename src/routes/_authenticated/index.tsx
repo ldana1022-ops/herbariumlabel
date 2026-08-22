@@ -119,6 +119,43 @@ function Index() {
           </CardContent>
         </Card>
 
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">{t("printed")}</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {isLoading ? <p className="text-sm text-muted-foreground">{t("loading")}</p> : null}
+            {!isLoading && printedList.length === 0 ? (
+              <p className="text-sm text-muted-foreground">{t("printedNone")}</p>
+            ) : null}
+            {printedList.map((s) => (
+              <div
+                key={s.id}
+                className="flex flex-wrap items-center justify-between gap-2 border-b border-border pb-1.5 text-sm last:border-0"
+              >
+                <Link
+                  to="/specimens/$id"
+                  params={{ id: s.id }}
+                  className="font-medium hover:underline"
+                >
+                  <span dir="ltr" className="font-mono text-xs text-muted-foreground">
+                    {s.serial_number}
+                  </span>{" "}
+                  <span className="italic">{s.scientific_name}</span>
+                </Link>
+                <div className="flex items-center gap-2">
+                  <StatusBadge status={s.status} />
+                  {printedMap.get(s.id) ? (
+                    <span className="text-xs text-muted-foreground" dir="ltr">
+                      {formatDate(printedMap.get(s.id)!.last_printed_at.slice(0, 10))}
+                    </span>
+                  ) : null}
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+
         <div className="grid gap-4 lg:grid-cols-2">
           <Card>
             <CardHeader>
