@@ -333,7 +333,11 @@ function PrintPage() {
                 <div className="print-group" key={`${s.id}-${i}`}>
                   {mode !== "barcodes" ? <HerbariumLabel specimen={s} size={size} /> : null}
                   {mode !== "labels" ? (
-                    <BarcodeSection serial={s.serial_number} size={barcode.size} />
+                    <BarcodeSection
+                      serial={s.serial_number}
+                      size={barcode.size}
+                      text={barcodeText.settings}
+                    />
                   ) : null}
                 </div>
               ))}
