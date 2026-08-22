@@ -296,6 +296,57 @@ export type Database = {
           },
         ]
       }
+      specimen_prints: {
+        Row: {
+          created_at: string
+          first_printed_at: string
+          id: string
+          last_printed_at: string
+          print_count: number
+          printed_by: string | null
+          serial_number: string | null
+          specimen_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          first_printed_at?: string
+          id?: string
+          last_printed_at?: string
+          print_count?: number
+          printed_by?: string | null
+          serial_number?: string | null
+          specimen_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          first_printed_at?: string
+          id?: string
+          last_printed_at?: string
+          print_count?: number
+          printed_by?: string | null
+          serial_number?: string | null
+          specimen_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "specimen_prints_specimen_id_fkey"
+            columns: ["specimen_id"]
+            isOneToOne: true
+            referencedRelation: "herbarium_specimens"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "specimen_prints_specimen_id_fkey"
+            columns: ["specimen_id"]
+            isOneToOne: true
+            referencedRelation: "specimens_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_permissions: {
         Row: {
           can_add: boolean
