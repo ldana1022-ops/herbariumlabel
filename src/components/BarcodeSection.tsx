@@ -1,5 +1,5 @@
 import { Barcode } from "@/components/Barcode";
-import { DEFAULT_BARCODE_SIZE, type BarcodeSize } from "@/lib/barcode-size";
+import { barcodeToMm, DEFAULT_BARCODE_SIZE, type BarcodeSize } from "@/lib/barcode-size";
 
 export const HERBARIUM_NAME = "Herbarium of National Center for Vegetation Cover";
 
@@ -15,10 +15,15 @@ export function BarcodeSection({
   size?: BarcodeSize;
 }) {
   if (!serial) return null;
+  const unit = size.unit ?? "mm";
   return (
     <div className="barcode-section" dir="ltr" lang="en">
       <div className="barcode-section-title">{HERBARIUM_NAME}</div>
-      <Barcode value={serial} widthMm={size.width} heightMm={size.height} />
+      <Barcode
+        value={serial}
+        widthMm={barcodeToMm(size.width, unit)}
+        heightMm={barcodeToMm(size.height, unit)}
+      />
       <div className="barcode-section-serial">{serial}</div>
     </div>
   );
