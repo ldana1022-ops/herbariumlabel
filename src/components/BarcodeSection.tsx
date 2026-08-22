@@ -1,24 +1,45 @@
 import { Barcode } from "@/components/Barcode";
 import { barcodeToMm, DEFAULT_BARCODE_SIZE, type BarcodeSize } from "@/lib/barcode-size";
+import {
+  DEFAULT_BARCODE_TEXT,
+  DEFAULT_BARCODE_TEXT_VALUE,
+  type BarcodeTextSettings,
+} from "@/lib/barcode-text";
 
-export const HERBARIUM_NAME = "Herbarium of National Center for Vegetation Cover";
+export const HERBARIUM_NAME = DEFAULT_BARCODE_TEXT_VALUE;
 
 /**
  * Barcode block — fully independent from the herbarium label.
- * Order: herbarium name, barcode, then serial number below the barcode.
+ * Order: heading text (configurable), barcode, then serial number below it.
  */
 export function BarcodeSection({
   serial,
   size = DEFAULT_BARCODE_SIZE,
+  text = DEFAULT_BARCODE_TEXT,
 }: {
   serial: string;
   size?: BarcodeSize;
+  text?: BarcodeTextSettings;
 }) {
   if (!serial) return null;
   const unit = size.unit ?? "mm";
+  const heading = text.text?.trim();
   return (
     <div className="barcode-section" dir="ltr" lang="en">
-      <div className="barcode-section-title">{HERBARIUM_NAME}</div>
+      {text.show && heading ? (
+        <div
+          className="barcode-section-title"
+          style={{
+            fontSize: `${text.fontSize}pt`,
+            fontWeight: text.bold ? 700 : 400,
+            textTransform: text.uppercase ? "uppercase" : "none",
+            textAlign: text.align === "center" ? "center" : text.align === "start" ? "left" : "right",
+            alignSelf: text.align === "center" ? "center" : text.align === "start" ? "flex-start" : "flex-end",
+          }}
+        >
+          {heading}
+        </div>
+      ) : null}
       <Barcode
         value={serial}
         widthMm={barcodeToMm(size.width, unit)}
