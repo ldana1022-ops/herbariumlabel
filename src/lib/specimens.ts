@@ -166,6 +166,62 @@ export async function deleteSpecimen(id: string): Promise<void> {
   if (error) throw new Error(error.message);
 }
 
+/** Fields that can be updated for many specimens at once. */
+export const BULK_EDITABLE_FIELDS = [
+  "family",
+  "local_name",
+  "local_name_ar",
+  "locality",
+  "region",
+  "collectors",
+  "determination",
+  "determined_by",
+  "determination_date",
+  "notes",
+] as const;
+
+export type BulkEditableField = (typeof BULK_EDITABLE_FIELDS)[number];
+
+/** Deletes only the given ids; RLS decides which rows are actually removed. */
+export async function bulkDeleteSpecimens(ids: string[]): Promise<number> {
+  if (ids.length === 0) throw new Error("NO_SELECTION");
+  const { data, error } = await supabase
+    .from("herbarium_specimens")
+    .delete()
+    .in("id", ids)
+    .select("id");
+  if (error) throw new Error(error.message);
+  return data?.length ?? 0;
+}
+
+export async function bulkUpdateStatus(ids: string[], status: SpecimenStatus): Promise<number> {
+  if (ids.length === 0) throw new Error("NO_SELECTION");
+  const { data, error } = await supabase
+    .from("herbarium_specimens")
+    .update({ status })
+    .in("id", ids)
+    .select("id");
+  if (error) throw new Error(error.message);
+  return data?.length ?? 0;
+}
+
+export async function bulkUpdateField(
+  ids: string[],
+  field: BulkEditableField,
+  value: string,
+): Promise<number> {
+  if (ids.length === 0) throw new Error("NO_SELECTION");
+  const trimmed = value.trim();
+  const { data, error } = await supabase
+    .from("herbarium_specimens")
+    .update({ [field]: trimmed.length > 0 ? trimmed : null })
+    .in("id", ids)
+    .select("id");
+  if (error) throw new Error(humanizeError(error.message));
+  return data?.length ?? 0;
+}
+
+
 export async function bulkInsertSpecimens(payloads: SpecimenPayload[]): Promise<number> {
   if (payloads.length === 0) return 0;
   let inserted = 0;
