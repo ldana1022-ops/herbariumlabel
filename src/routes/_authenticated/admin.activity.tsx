@@ -7,7 +7,6 @@ import { useI18n } from "@/lib/i18n";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import {
-import { BackButton } from "@/components/BackButton";
   Table,
   TableBody,
   TableCell,
@@ -15,6 +14,7 @@ import { BackButton } from "@/components/BackButton";
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { BackButton } from "@/components/BackButton";
 
 export const Route = createFileRoute("/_authenticated/admin/activity")({
   head: () => ({
