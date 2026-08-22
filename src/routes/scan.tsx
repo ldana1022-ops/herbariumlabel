@@ -34,7 +34,8 @@ const NCVCH_RE = /^NCVCH\d{4,8}$/i;
 function ScanPage() {
   const { t, dir } = useI18n();
   const navigate = useNavigate();
-  const scannerRef = useRef<InstanceType<NonNullable<Awaited<ReturnType<typeof import("html5-qrcode")>>["Html5Qrcode"]>> & { stop: () => Promise<void> }>>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const scannerRef = useRef<any>(null);
   const regionId = "barcode-scanner-region";
   const [scanning, setScanning] = useState(false);
   const [error, setError] = useState<string | null>(null);
