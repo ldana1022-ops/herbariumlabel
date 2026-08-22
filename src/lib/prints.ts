@@ -43,7 +43,11 @@ export async function recordPrints(
     }));
 
   if (toInsert.length > 0) {
-    const { error } = await supabase.from("specimen_prints").insert(toInsert);
+    // upsert (ignore duplicates) so two concurrent prints of the same
+    // specimen cannot fail with a unique-violation error
+    const { error } = await supabase
+      .from("specimen_prints")
+      .upsert(toInsert, { onConflict: "specimen_id", ignoreDuplicates: true });
     if (error) throw new Error(error.message);
   }
 
