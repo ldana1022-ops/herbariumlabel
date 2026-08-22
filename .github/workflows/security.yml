@@ -13,6 +13,12 @@ concurrency:
   group: security-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+  pull-requests: write
+  statuses: write
+  security-events: write
+
 jobs:
   audit:
     name: Dependency audit
@@ -27,11 +33,72 @@ jobs:
       - name: Install dependencies (frozen lockfile)
         run: bun install --frozen-lockfile
 
+      # Scans keep running so the PR comment reports every check, not just the first failure.
       - name: Fail on high/critical advisories
+        id: deps
+        continue-on-error: true
         run: bun run audit
 
       - name: Scan source for hardcoded secrets
+        id: secrets
+        continue-on-error: true
         run: bun run security:secrets
+
+      - name: Build summary from scan reports
+        id: summary
+        run: bun run security:summary
+
+      - name: Upload scan reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: security-reports
+          path: security-reports/
+
+      - name: Comment summary on pull request
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const body = fs.readFileSync('security-reports/summary.md', 'utf8');
+            const marker = '<!-- lovable-security-summary -->';
+            const { owner, repo } = context.repo;
+            const issue_number = context.payload.pull_request.number;
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner, repo, issue_number, per_page: 100,
+            });
+            const existing = comments.find(
+              (c) => c.user?.type === 'Bot' && c.body?.includes(marker),
+            );
+            if (existing) {
+              await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });
+            } else {
+              await github.rest.issues.createComment({ owner, repo, issue_number, body });
+            }
+
+      - name: Publish commit status check
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const sha = context.payload.pull_request?.head?.sha ?? context.sha;
+            await github.rest.repos.createCommitStatus({
+              owner,
+              repo,
+              sha,
+              context: 'security/scan-summary',
+              state: '${{ steps.summary.outputs.state }}' || 'failure',
+              description: ('${{ steps.summary.outputs.description }}' || 'Security scan did not complete').slice(0, 140),
+              target_url: `${context.serverUrl}/${owner}/${repo}/actions/runs/${context.runId}`,
+            });
+
+      - name: Fail the job when a security check failed
+        if: steps.summary.outputs.status == 'fail'
+        run: |
+          echo "Security checks failed — see the summary above."
+          exit 1
 
   build:
     name: Build
