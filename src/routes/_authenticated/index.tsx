@@ -60,11 +60,12 @@ function Index() {
     queryFn: fetchPrintRecords,
   });
 
+  const printedMap = new Map(prints.map((p) => [p.specimen_id, p]));
   // Printed specimens: any specimen with a print record or marked as printed.
   const printedList = data
     .filter((s) => printedMap.has(s.id) || normalizeStatus(s.status) === "printed")
-
     .sort((a, b) => a.serial_number.localeCompare(b.serial_number));
+
 
   const statusCounts = STATUS_ORDER.map((m) => ({
     meta: m,
