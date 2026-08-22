@@ -33,10 +33,15 @@ import { exportSpecimensToExcel } from "@/lib/export-excel";
 import { exportLabelsToWord } from "@/lib/export-word";
 import { useLabelSize } from "@/lib/label-size";
 import {
+  BULK_EDITABLE_FIELDS,
+  bulkDeleteSpecimens,
+  bulkUpdateField,
+  bulkUpdateStatus,
   deleteSpecimen,
   fetchSpecimens,
   formatDate,
   updateSpecimenStatus,
+  type BulkEditableField,
   type Specimen,
 } from "@/lib/specimens";
 import { StatusSelect } from "@/components/StatusSelect";
