@@ -10,6 +10,7 @@ import {
   Plus,
   Printer,
   ScanLine,
+  ShieldCheck,
   Upload,
   Users,
 } from "lucide-react";
@@ -19,6 +20,7 @@ import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { NotificationBell } from "@/components/NotificationBell";
 import { BackButton } from "@/components/BackButton";
+import { SessionTimeoutDialog } from "@/components/SessionTimeoutDialog";
 
 function NavLink({ to, icon, label }: { to: string; icon: ReactNode; label: string }) {
   return (
@@ -102,6 +104,11 @@ export function AppLayout({ children }: { children: ReactNode }) {
                   label={t("requests")}
                 />
                 <NavLink to="/notifications" icon={<Bell className="size-4" />} label={t("notifications")} />
+                <NavLink
+                  to="/admin/session"
+                  icon={<ShieldCheck className="size-4" />}
+                  label={t("sessionSettings")}
+                />
               </>
             ) : null}
             {isSuperAdmin ? (
@@ -123,6 +130,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
         </div>
         {children}
       </main>
+      {session ? <SessionTimeoutDialog /> : null}
       <footer className="border-t border-border bg-card py-4 text-center text-xs text-muted-foreground">
         {t("org")}
       </footer>
