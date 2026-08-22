@@ -40,8 +40,7 @@ function AuthPage() {
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [busy, setBusy] = useState(false);
-  const [remember, setRemember] = useState(false);
-  const [allowRemember, setAllowRemember] = useState(true);
+
 
 
   const checks = checkPassword(password);
@@ -81,8 +80,6 @@ function AuthPage() {
   };
 
   const finishSignIn = async (fullNameValue?: string) => {
-    // Apply the storage policy before anything else touches the token.
-    setRememberMe(remember);
     const result = await ensureAccount({ data: fullNameValue ? { fullName: fullNameValue } : {} });
     if (!result.isActive) {
       await supabase.auth.signOut();
@@ -90,19 +87,10 @@ function AuthPage() {
       return;
     }
     await recordLogin({ data: undefined as never });
-    try {
-      const policy = await fetchSessionPolicy();
-      setAllowRemember(policy.allow_remember_me);
-      const effectiveRemember = policy.allow_remember_me ? remember : false;
-      if (effectiveRemember !== remember) setRememberMe(effectiveRemember);
-      const { data: current } = await supabase.auth.getUser();
-      if (current.user) await saveSessionPrefs(current.user.id, { remember_me: effectiveRemember });
-    } catch {
-      /* session preferences are best-effort */
-    }
     toast.success(t("signedIn"));
     navigate({ to: "/", replace: true });
   };
+
 
 
   const submit = async (e: React.FormEvent) => {
@@ -244,19 +232,8 @@ function AuthPage() {
                 </div>
               ) : null}
 
-              {mode !== "forgot" && allowRemember ? (
-                <label className="flex items-start gap-2 text-sm">
-                  <Checkbox
-                    checked={remember}
-                    onCheckedChange={(v) => setRemember(v === true)}
-                    className="mt-0.5"
-                  />
-                  <span>
-                    <span className="font-medium text-foreground">{t("rememberMe")}</span>
-                    <span className="block text-xs text-muted-foreground">{t("rememberMeHint")}</span>
-                  </span>
-                </label>
-              ) : null}
+
+
 
               {mode === "signup" ? (
                 <div className="rounded-md border border-border bg-muted/40 p-3">
