@@ -206,6 +206,52 @@ export type Database = {
         }
         Relationships: []
       }
+      request_samples: {
+        Row: {
+          created_at: string
+          id: string
+          request_id: string
+          specimen_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          request_id: string
+          specimen_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          request_id?: string
+          specimen_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "request_samples_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "request_samples_specimen_id_fkey"
+            columns: ["specimen_id"]
+            isOneToOne: false
+            referencedRelation: "herbarium_specimens"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "request_samples_specimen_id_fkey"
+            columns: ["specimen_id"]
+            isOneToOne: false
+            referencedRelation: "specimens_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       requests: {
         Row: {
           assigned_to: string
@@ -214,6 +260,7 @@ export type Database = {
           due_date: string | null
           id: string
           message: string | null
+          request_number: string
           request_type: string
           specimen_id: string | null
           status: Database["public"]["Enums"]["request_status"]
@@ -226,6 +273,7 @@ export type Database = {
           due_date?: string | null
           id?: string
           message?: string | null
+          request_number?: string
           request_type: string
           specimen_id?: string | null
           status?: Database["public"]["Enums"]["request_status"]
@@ -238,6 +286,7 @@ export type Database = {
           due_date?: string | null
           id?: string
           message?: string | null
+          request_number?: string
           request_type?: string
           specimen_id?: string | null
           status?: Database["public"]["Enums"]["request_status"]
