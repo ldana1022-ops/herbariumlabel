@@ -392,9 +392,14 @@ function UsersPage() {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        <Badge variant={row.is_active ? "outline" : "destructive"}>
-                          {row.is_active ? t("active") : t("disabled")}
-                        </Badge>
+                        <div className="flex flex-wrap gap-1">
+                          <Badge variant={row.is_active && !row.banned ? "outline" : "destructive"}>
+                            {row.is_active && !row.banned ? t("active") : t("disabled")}
+                          </Badge>
+                          <Badge variant={row.email_confirmed ? "secondary" : "outline"}>
+                            {row.email_confirmed ? t("verifiedStatus") : t("unverifiedStatus")}
+                          </Badge>
+                        </div>
                       </TableCell>
                       <TableCell className="text-xs text-muted-foreground">
                         {fmt(row.last_login_at)}
@@ -419,9 +424,20 @@ function UsersPage() {
                           >
                             {row.is_active ? t("disable") : t("enable")}
                           </Button>
+                          {row.email_confirmed ? null : (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              disabled={resendMut.isPending}
+                              onClick={() => resendMut.mutate(row)}
+                            >
+                              {t("resendInvite")}
+                            </Button>
+                          )}
                           <Button size="sm" variant="outline" onClick={() => resetMut.mutate(row)}>
                             {t("resetUserPassword")}
                           </Button>
+
                           <Button
                             size="sm"
                             variant="outline"
