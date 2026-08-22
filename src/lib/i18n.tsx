@@ -262,7 +262,17 @@ const dict = {
   permSendRequests: { ar: "إرسال الطلبات", en: "Send requests" },
   permReceiveRequests: { ar: "استقبال الطلبات", en: "Receive requests" },
   addUser: { ar: "إضافة مستخدم", en: "Add user" },
-  userCreated: { ar: "تم إنشاء المستخدم", en: "User created" },
+  userCreated: { ar: "تم إنشاء المستخدم وإرسال دعوة التفعيل", en: "User created and activation invite sent" },
+  verifiedStatus: { ar: "موثق", en: "Verified" },
+  unverifiedStatus: { ar: "غير موثق", en: "Unverified" },
+  resendInvite: { ar: "إعادة إرسال الدعوة", en: "Resend invite" },
+  inviteSent: { ar: "تم إرسال الدعوة إلى البريد الإلكتروني", en: "Invite sent to the email address" },
+  inviteUserHint: {
+    ar: "يتم إنشاء حساب حقيقي وإرسال رسالة تفعيل إلى البريد، ويحدد المستخدم كلمة المروره بنفسه.",
+    en: "A real account is created and an activation email is sent; the user sets their own password.",
+  },
+  accountState: { ar: "حالة الحساب", en: "Account state" },
+
   userUpdated: { ar: "تم تحديث المستخدم", en: "User updated" },
   userDeleted: { ar: "تم حذف المستخدم", en: "User deleted" },
   enable: { ar: "تفعيل", en: "Enable" },
