@@ -94,6 +94,7 @@ function SpecimensPage() {
   const [bulkField, setBulkField] = useState("");
   const [bulkValue, setBulkValue] = useState("");
   const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
+  const editableSelected = selected.filter((id) => canEditSpecimen(id));
 
   const unique = (fn: (s: Specimen) => string | null) =>
     [...new Set(data.map(fn).filter((v): v is string => Boolean(v)))].sort();
@@ -228,7 +229,7 @@ function SpecimensPage() {
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-xl font-semibold text-foreground">{t("database")}</h2>
           <div className="flex flex-wrap gap-2">
-            {canEdit ? (
+            {can("add") ? (
             <Button asChild size="sm">
               <Link to="/specimens/new">
                 <Plus className="size-4" />
