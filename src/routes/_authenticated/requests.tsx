@@ -443,8 +443,60 @@ function RequestsPage() {
                       </TableCell>
                       <TableCell className="whitespace-nowrap text-sm">{r.due_date ?? "—"}</TableCell>
                       <TableCell>
-                        {editable ? (
-                          <div className="flex flex-col gap-1">
+                        <div className="flex flex-col items-start gap-1.5">
+                          <span
+                            className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_CLASS[r.status]}`}
+                          >
+                            {t(STATUS_KEYS[r.status])}
+                          </span>
+
+                          {r.status_changed_by ? (
+                            <span className="text-[11px] text-muted-foreground">
+                              {t("statusChangedBy")}: {nameOf(r.status_changed_by)}
+                              {r.status_changed_at
+                                ? ` · ${new Date(r.status_changed_at).toLocaleString(locale)}`
+                                : ""}
+                            </span>
+                          ) : null}
+
+                          {isRecipient && r.status === "pending" ? (
+                            <div className="flex gap-1.5">
+                              <Button
+                                size="sm"
+                                className="h-7 text-xs"
+                                disabled={updateStatus.isPending}
+                                onClick={() =>
+                                  updateStatus.mutate({ id: r.id, status: "in_progress" })
+                                }
+                              >
+                                {t("acceptRequest")}
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="destructive"
+                                className="h-7 text-xs"
+                                disabled={updateStatus.isPending}
+                                onClick={() => updateStatus.mutate({ id: r.id, status: "rejected" })}
+                              >
+                                {t("rejectRequest")}
+                              </Button>
+                            </div>
+                          ) : null}
+
+                          {isRecipient && r.status === "in_progress" ? (
+                            <Button
+                              size="sm"
+                              className="h-7 text-xs"
+                              disabled={completeRequest.isPending}
+                              onClick={() =>
+                                completeRequest.mutate({ id: r.id, specimenIds: sampleIds })
+                              }
+                            >
+                              {t("completeRequestSamples")}
+                            </Button>
+                          ) : null}
+
+                          {isSuperAdmin && !isRecipient ? (
                             <Select
                               value={r.status}
                               onValueChange={(v) =>
@@ -462,27 +514,10 @@ function RequestsPage() {
                                 ))}
                               </SelectContent>
                             </Select>
-                            {r.status !== "completed" && r.status !== "rejected" ? (
-                              <Button
-                                size="sm"
-                                className="h-7 text-xs"
-                                disabled={completeRequest.isPending}
-                                onClick={() =>
-                                  completeRequest.mutate({ id: r.id, specimenIds: sampleIds })
-                                }
-                              >
-                                {t("completeRequestSamples")}
-                              </Button>
-                            ) : null}
-                          </div>
-                        ) : (
-                          <span
-                            className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_CLASS[r.status]}`}
-                          >
-                            {t(STATUS_KEYS[r.status])}
-                          </span>
-                        )}
+                          ) : null}
+                        </div>
                       </TableCell>
+
 
                       <TableCell className="whitespace-nowrap text-sm">
                         {new Date(r.created_at).toLocaleDateString(locale)}
