@@ -59,6 +59,8 @@ type RequestRow = {
   message: string | null;
   due_date: string | null;
   status: RequestStatus;
+  status_changed_by: string | null;
+  status_changed_at: string | null;
   created_at: string;
 };
 
@@ -402,7 +404,6 @@ function RequestsPage() {
               ) : (
                 requests.flatMap((r) => {
                   const isRecipient = r.assigned_to === user?.id && can("receiveRequests");
-                  const editable = isSuperAdmin || isRecipient;
                   const sampleIds = samplesByRequest.get(r.id) ?? [];
                   const isOpen = expanded === r.id;
                   const rows = [
