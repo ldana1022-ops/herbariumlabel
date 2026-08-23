@@ -384,6 +384,8 @@ const dict = {
   name: { ar: "الاسم", en: "Name" },
   scanTitle: { ar: "مسح الباركود", en: "Scan Barcode" },
   scanHint: { ar: "وجّه كاميرا الهاتف نحو الباركود لفتح بيانات العينة تلقائيًا.", en: "Point your phone camera at a barcode to open the specimen automatically." },
+  scanAsGuest: { ar: "مسح الباركود كزائر (بدون تسجيل دخول)", en: "Scan barcode as a guest (no sign-in)" },
+  scanGuestNote: { ar: "الزائر يستطيع العرض فقط، دون تعديل أو حذف.", en: "Guests get view-only access — no editing or deleting." },
   scanStart: { ar: "بدء المسح", en: "Start Scanning" },
   scanStop: { ar: "إيقاف", en: "Stop" },
   scanError: { ar: "تعذّر الوصول إلى الكاميرا. تأكد من منح الإذن واستخدام HTTPS.", en: "Could not access the camera. Make sure camera permission is granted and you are using HTTPS." },

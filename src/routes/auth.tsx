@@ -1,7 +1,7 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Check, Loader2, X } from "lucide-react";
+import { Check, Loader2, ScanLine, X } from "lucide-react";
 import { checkPassword, isStrongPassword, isValidEmail } from "@/lib/password";
 import { supabase } from "@/integrations/supabase/client";
 import { useI18n } from "@/lib/i18n";
@@ -300,6 +300,16 @@ function AuthPage() {
 
 
 
+
+            <div className="mt-4 border-t border-border pt-4">
+              <Button asChild variant="outline" className="w-full gap-2">
+                <Link to="/scan">
+                  <ScanLine className="size-4" />
+                  {t("scanAsGuest")}
+                </Link>
+              </Button>
+              <p className="mt-2 text-center text-xs text-muted-foreground">{t("scanGuestNote")}</p>
+            </div>
 
             <p className="mt-4 text-xs leading-relaxed text-muted-foreground">{t("firstUserAdminHint")}</p>
           </CardContent>
