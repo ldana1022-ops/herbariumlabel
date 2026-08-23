@@ -401,8 +401,8 @@ function RequestsPage() {
                 </TableRow>
               ) : (
                 requests.flatMap((r) => {
-                  const editable =
-                    isSuperAdmin || (r.assigned_to === user?.id && can("receiveRequests"));
+                  const isRecipient = r.assigned_to === user?.id && can("receiveRequests");
+                  const editable = isSuperAdmin || isRecipient;
                   const sampleIds = samplesByRequest.get(r.id) ?? [];
                   const isOpen = expanded === r.id;
                   const rows = [
