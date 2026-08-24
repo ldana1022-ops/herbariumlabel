@@ -28,20 +28,21 @@ export const Route = createFileRoute("/scan")({
 /**
  * Accepts what people actually type or scan: full serial, lowercase,
  * spaces/dashes, a bare number, or a scanned URL containing the serial.
- * Returns a canonical NCVCH###### serial, or null when unusable.
+ * Returns a canonical NCVC###### serial, or null when unusable.
  */
 export function normalizeSerial(input: string): string | null {
   let value = (input || "").trim().toUpperCase();
   if (!value) return null;
-  // A scanned URL such as .../p/NCVCH000001
-  const fromUrl = value.match(/NCVCH\s*-?\s*(\d{1,8})/);
-  if (fromUrl?.[1]) value = `NCVCH${fromUrl[1]}`;
+  // A scanned URL such as .../p/NCVC000001 (legacy NCVCH also accepted)
+  const fromUrl = value.match(/NCVCH?\s*-?\s*(\d{1,8})/);
+  if (fromUrl?.[1]) value = `NCVC${fromUrl[1]}`;
   value = value.replace(/[\s\-_.]/g, "");
-  if (/^\d{1,8}$/.test(value)) value = `NCVCH${value}`;
-  const m = value.match(/^NCVCH(\d{1,8})$/);
+  if (/^\d{1,8}$/.test(value)) value = `NCVC${value}`;
+  const m = value.match(/^NCVCH?(\d{1,8})$/);
   if (!m?.[1]) return null;
   const digits = m[1].length < 6 ? m[1].padStart(6, "0") : m[1];
-  return `NCVCH${digits}`;
+  return `NCVC${digits}`;
+
 }
 
 function ScanPage() {
@@ -190,7 +191,7 @@ function ScanPage() {
                   setManual(e.target.value);
                   setManualError(false);
                 }}
-                placeholder="NCVCH000001"
+                placeholder="NCVC000001"
                 className="flex-1 rounded-md border border-border bg-background px-3 py-2 text-sm uppercase placeholder:normal-case placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
               />
               <Button type="submit" size="sm">
