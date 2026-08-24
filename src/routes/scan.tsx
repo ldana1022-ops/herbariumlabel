@@ -191,7 +191,7 @@ function ScanPage() {
                   setManual(e.target.value);
                   setManualError(false);
                 }}
-                placeholder="NCVCH000001"
+                placeholder="NCVC000001"
                 className="flex-1 rounded-md border border-border bg-background px-3 py-2 text-sm uppercase placeholder:normal-case placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
               />
               <Button type="submit" size="sm">
