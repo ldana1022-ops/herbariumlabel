@@ -241,8 +241,19 @@ body {
 
 .label-coords {
   display: flex;
-  gap: 4mm;
+  flex-wrap: wrap;
+  gap: 0.4mm 3mm;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
 }
+
+.label-coords > span {
+  white-space: nowrap;
+  flex: 0 0 auto;
+  font-variant-numeric: tabular-nums;
+}
+
 
 .label-key {
   font-weight: 700;
