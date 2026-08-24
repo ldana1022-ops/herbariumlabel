@@ -3,6 +3,7 @@ import { z } from "zod";
 
 const SERIAL_RE = /^NCVCH?\d{6}$/;
 
+
 /**
  * Records an anonymous visit to the public summary page (/p/:serial).
  * Only the serial number is stored: no IP address, user agent, referrer,
