@@ -24,14 +24,19 @@ export const logPublicSpecimenView = createServerFn({ method: "POST" })
       .eq("serial_number", data.serial)
       .maybeSingle();
 
+    // Unknown serials are not logged: keeps this public endpoint from being
+    // used to write arbitrary rows into the activity log.
+    if (!specimen?.id) return { ok: true };
+
     await supabaseAdmin.from("activity_log").insert({
       actor_id: null,
       actor_name: "زائر عام / Public visitor",
       action: "public_view",
       record_label: data.serial,
-      record_id: specimen?.id ?? null,
+      record_id: specimen.id,
       session_info: "public_page",
     });
 
     return { ok: true };
   });
+
