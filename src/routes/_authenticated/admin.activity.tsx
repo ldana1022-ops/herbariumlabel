@@ -20,7 +20,10 @@ export const Route = createFileRoute("/_authenticated/admin/activity")({
   head: () => ({
     meta: [
       { title: "سجل النشاطات | معشبة NCVC" },
-      { name: "description", content: "سجل نشاطات النظام للقراءة فقط: من قام بالعملية، ماذا تغيّر، ومتى." },
+      {
+        name: "description",
+        content: "سجل نشاطات النظام للقراءة فقط: من قام بالعملية، ماذا تغيّر، ومتى.",
+      },
       { property: "og:title", content: "سجل النشاطات | معشبة NCVC" },
       { property: "og:description", content: "سجل نشاطات نظام إدارة عينات المعشبة النباتية." },
       { property: "og:type", content: "website" },
@@ -69,7 +72,9 @@ function ActivityPage() {
     const needle = q.trim().toLowerCase();
     if (!needle) return rows;
     return rows.filter((r) =>
-      [r.actor_name, r.action, r.record_label].some((v) => (v ?? "").toLowerCase().includes(needle)),
+      [r.actor_name, r.action, r.record_label].some((v) =>
+        (v ?? "").toLowerCase().includes(needle),
+      ),
     );
   }, [q, rows]);
 
@@ -123,7 +128,9 @@ function ActivityPage() {
                   const d = new Date(r.created_at);
                   return (
                     <TableRow key={r.id}>
-                      <TableCell className="whitespace-nowrap text-sm">{r.actor_name ?? "—"}</TableCell>
+                      <TableCell className="whitespace-nowrap text-sm">
+                        {r.actor_name ?? "—"}
+                      </TableCell>
                       <TableCell className="whitespace-nowrap text-sm">{r.action}</TableCell>
                       <TableCell className="text-sm">{r.record_label ?? "—"}</TableCell>
                       <TableCell className="max-w-[16rem] text-xs text-muted-foreground">

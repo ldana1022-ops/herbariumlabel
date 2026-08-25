@@ -31,7 +31,10 @@ export const clampBarcodeSize = (s: BarcodeSize): BarcodeSize => {
   const unit: BarcodeUnit = s.unit === "cm" ? "cm" : "mm";
   const factor = unit === "cm" ? 10 : 1;
   const wMm = Math.min(BARCODE_LIMITS.maxW, Math.max(BARCODE_LIMITS.minW, (s.width || 1) * factor));
-  const hMm = Math.min(BARCODE_LIMITS.maxH, Math.max(BARCODE_LIMITS.minH, (s.height || 1) * factor));
+  const hMm = Math.min(
+    BARCODE_LIMITS.maxH,
+    Math.max(BARCODE_LIMITS.minH, (s.height || 1) * factor),
+  );
   return {
     unit,
     width: Number((wMm / factor).toFixed(2)),

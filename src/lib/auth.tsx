@@ -3,7 +3,6 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
-
 export type Permission =
   | "view"
   | "add"
@@ -94,7 +93,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-
   const userId = session?.user?.id ?? null;
 
   const { data: account, isLoading } = useQuery({
@@ -153,7 +151,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       signOut: async () => {
         await queryClient.cancelQueries();
         queryClient.clear();
-        
+
         await supabase.auth.signOut();
       },
     };

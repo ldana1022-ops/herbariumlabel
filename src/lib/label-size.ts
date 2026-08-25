@@ -16,7 +16,13 @@ export const DEFAULT_LABEL_SIZE: LabelSize = {
   fontScale: 1,
 };
 
-export const LABEL_PRESETS: { id: string; label: string; width: number; height: number; unit: LabelUnit }[] = [
+export const LABEL_PRESETS: {
+  id: string;
+  label: string;
+  width: number;
+  height: number;
+  unit: LabelUnit;
+}[] = [
   { id: "a6", label: "A6 — 105 × 74 mm", width: 105, height: 74, unit: "mm" },
   { id: "a5", label: "A5 — 148 × 105 mm", width: 148, height: 105, unit: "mm" },
   { id: "small", label: "Small — 90 × 62 mm", width: 90, height: 62, unit: "mm" },

@@ -176,11 +176,15 @@ function ImportPage() {
                         setMapping((prev) => ({ ...prev, [field]: v === IGNORE ? "" : v }))
                       }
                     >
-                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
                       <SelectContent>
                         <SelectItem value={IGNORE}>{t("ignoreColumn")}</SelectItem>
                         {columns.map((c) => (
-                          <SelectItem key={c} value={c}>{c}</SelectItem>
+                          <SelectItem key={c} value={c}>
+                            {c}
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -190,10 +194,18 @@ function ImportPage() {
             </Card>
 
             <div className="flex flex-wrap items-center gap-2 text-sm">
-              <Badge variant="default">{t("validRows")}: {valid.length}</Badge>
-              <Badge variant="secondary">{t("newRows")}: {fresh.length}</Badge>
-              <Badge variant="secondary">{t("duplicateRows")}: {duplicates.length}</Badge>
-              <Badge variant="destructive">{t("invalidRows")}: {invalid.length}</Badge>
+              <Badge variant="default">
+                {t("validRows")}: {valid.length}
+              </Badge>
+              <Badge variant="secondary">
+                {t("newRows")}: {fresh.length}
+              </Badge>
+              <Badge variant="secondary">
+                {t("duplicateRows")}: {duplicates.length}
+              </Badge>
+              <Badge variant="destructive">
+                {t("invalidRows")}: {invalid.length}
+              </Badge>
             </div>
 
             <Card>
@@ -202,7 +214,9 @@ function ImportPage() {
               </CardHeader>
               <CardContent className="max-w-sm">
                 <Select value={dupMode} onValueChange={(v) => setDupMode(v as "skip" | "update")}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="skip">{t("skipDuplicates")}</SelectItem>
                     <SelectItem value="update">{t("updateDuplicates")}</SelectItem>
@@ -265,7 +279,9 @@ function ImportPage() {
 
             <Button
               onClick={runImport}
-              disabled={busy || (fresh.length === 0 && !(dupMode === "update" && duplicates.length > 0))}
+              disabled={
+                busy || (fresh.length === 0 && !(dupMode === "update" && duplicates.length > 0))
+              }
             >
               <Upload className="size-4" />
               {busy ? t("importing") : t("startImport")}

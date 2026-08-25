@@ -11,7 +11,11 @@ export const Route = createFileRoute("/_authenticated/notifications")({
   head: () => ({
     meta: [
       { title: "الإشعارات | معشبة NCVC" },
-      { name: "description", content: "مركز إشعارات نظام إدارة عينات المعشبة: تسجيل الدخول، تعديل البيانات، الطلبات والصلاحيات." },
+      {
+        name: "description",
+        content:
+          "مركز إشعارات نظام إدارة عينات المعشبة: تسجيل الدخول، تعديل البيانات، الطلبات والصلاحيات.",
+      },
       { property: "og:title", content: "الإشعارات | معشبة NCVC" },
       { property: "og:description", content: "مركز إشعارات نظام إدارة عينات المعشبة النباتية." },
       { property: "og:type", content: "website" },
@@ -64,7 +68,9 @@ function NotificationsPage() {
           {isLoading ? (
             <p className="px-4 py-8 text-center text-sm text-muted-foreground">…</p>
           ) : items.length === 0 ? (
-            <p className="px-4 py-8 text-center text-sm text-muted-foreground">{t("noNotifications")}</p>
+            <p className="px-4 py-8 text-center text-sm text-muted-foreground">
+              {t("noNotifications")}
+            </p>
           ) : (
             <ul>
               {items.map((n) => (
@@ -77,10 +83,17 @@ function NotificationsPage() {
                   <div className="min-w-0">
                     <p className="text-sm font-medium">{n.title}</p>
                     <p className="text-xs text-muted-foreground">{n.body}</p>
-                    <p className="mt-1 text-[11px] text-muted-foreground">{formatWhen(n.created_at, lang)}</p>
+                    <p className="mt-1 text-[11px] text-muted-foreground">
+                      {formatWhen(n.created_at, lang)}
+                    </p>
                   </div>
                   {n.read_at ? null : (
-                    <Button variant="ghost" size="sm" className="text-xs" onClick={() => mark.mutate([n.id])}>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-xs"
+                      onClick={() => mark.mutate([n.id])}
+                    >
                       {t("markAsRead")}
                     </Button>
                   )}

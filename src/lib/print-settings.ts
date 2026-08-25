@@ -47,7 +47,7 @@ export function resolvePaperMm(settings: PrintSettings): { w: number; h: number 
       h: Math.max(20, paperToMm(height || 0, unit)),
     };
   }
-  return PAPERS[settings.paper] ?? PAPERS['A4']!;
+  return PAPERS[settings.paper] ?? PAPERS["A4"]!;
 }
 
 const STORAGE_KEY = "ncvc-print-settings";

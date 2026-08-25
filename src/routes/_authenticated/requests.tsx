@@ -37,9 +37,15 @@ export const Route = createFileRoute("/_authenticated/requests")({
   head: () => ({
     meta: [
       { title: "الطلبات | معشبة NCVC" },
-      { name: "description", content: "إنشاء ومتابعة طلبات العمل على عينات المعشبة بين مستخدمي النظام." },
+      {
+        name: "description",
+        content: "إنشاء ومتابعة طلبات العمل على عينات المعشبة بين مستخدمي النظام.",
+      },
       { property: "og:title", content: "الطلبات | معشبة NCVC" },
-      { property: "og:description", content: "إنشاء ومتابعة طلبات العمل على عينات المعشبة النباتية." },
+      {
+        property: "og:description",
+        content: "إنشاء ومتابعة طلبات العمل على عينات المعشبة النباتية.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -131,10 +137,7 @@ function RequestsPage() {
     queryFn: fetchSpecimens,
   });
 
-  const specimenById = useMemo(
-    () => new Map(specimens.map((s) => [s.id, s])),
-    [specimens],
-  );
+  const specimenById = useMemo(() => new Map(specimens.map((s) => [s.id, s])), [specimens]);
 
   const samplesByRequest = useMemo(() => {
     const map = new Map<string, string[]>();
@@ -230,7 +233,10 @@ function RequestsPage() {
     mutationFn: async ({ id, specimenIds }: { id: string; specimenIds: string[] }) => {
       // Mark the samples first: edit rights end as soon as the request closes.
       if (specimenIds.length > 0) await bulkUpdateStatus(specimenIds, "completed");
-      const { error } = await supabase.from("requests").update({ status: "completed" }).eq("id", id);
+      const { error } = await supabase
+        .from("requests")
+        .update({ status: "completed" })
+        .eq("id", id);
       if (error) throw new Error(error.message);
     },
     onSuccess: () => {
@@ -442,7 +448,9 @@ function RequestsPage() {
                           </Button>
                         )}
                       </TableCell>
-                      <TableCell className="whitespace-nowrap text-sm">{r.due_date ?? "—"}</TableCell>
+                      <TableCell className="whitespace-nowrap text-sm">
+                        {r.due_date ?? "—"}
+                      </TableCell>
                       <TableCell>
                         <div className="flex flex-col items-start gap-1.5">
                           <span
@@ -477,7 +485,9 @@ function RequestsPage() {
                                 variant="destructive"
                                 className="h-7 text-xs"
                                 disabled={updateStatus.isPending}
-                                onClick={() => updateStatus.mutate({ id: r.id, status: "rejected" })}
+                                onClick={() =>
+                                  updateStatus.mutate({ id: r.id, status: "rejected" })
+                                }
                               >
                                 {t("rejectRequest")}
                               </Button>
@@ -519,7 +529,6 @@ function RequestsPage() {
                         </div>
                       </TableCell>
 
-
                       <TableCell className="whitespace-nowrap text-sm">
                         {new Date(r.created_at).toLocaleDateString(locale)}
                       </TableCell>
@@ -538,9 +547,7 @@ function RequestsPage() {
                                   key={id}
                                   className="rounded-md border border-border bg-card p-2 text-sm"
                                 >
-                                  <p className="font-mono text-xs">
-                                    {s?.serial_number ?? "—"}
-                                  </p>
+                                  <p className="font-mono text-xs">{s?.serial_number ?? "—"}</p>
                                   <p className="italic">{s?.scientific_name ?? "—"}</p>
                                   {s?.serial_number ? (
                                     <Barcode

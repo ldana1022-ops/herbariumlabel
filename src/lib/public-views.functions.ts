@@ -3,7 +3,6 @@ import { z } from "zod";
 
 const SERIAL_RE = /^NCVCH?\d{6}$/;
 
-
 /**
  * Records an anonymous visit to the public summary page (/p/:serial).
  * Only the serial number is stored: no IP address, user agent, referrer,
@@ -11,9 +10,7 @@ const SERIAL_RE = /^NCVCH?\d{6}$/;
  */
 export const logPublicSpecimenView = createServerFn({ method: "POST" })
   .inputValidator((input: { serial: string }) =>
-    z
-      .object({ serial: z.string().trim().toUpperCase().regex(SERIAL_RE) })
-      .parse(input),
+    z.object({ serial: z.string().trim().toUpperCase().regex(SERIAL_RE) }).parse(input),
   )
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -39,4 +36,3 @@ export const logPublicSpecimenView = createServerFn({ method: "POST" })
 
     return { ok: true };
   });
-

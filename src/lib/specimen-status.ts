@@ -1,9 +1,4 @@
-export const SPECIMEN_STATUSES = [
-  "incomplete",
-  "in_progress",
-  "completed",
-  "printed",
-] as const;
+export const SPECIMEN_STATUSES = ["incomplete", "in_progress", "completed", "printed"] as const;
 
 export type SpecimenStatus = (typeof SPECIMEN_STATUSES)[number];
 

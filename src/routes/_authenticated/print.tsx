@@ -39,7 +39,7 @@ import { BackButton } from "@/components/BackButton";
 
 export const Route = createFileRoute("/_authenticated/print")({
   validateSearch: (search: Record<string, unknown>): { ids?: string } =>
-    typeof search['ids'] === "string" ? { ids: search['ids'] as string } : {},
+    typeof search["ids"] === "string" ? { ids: search["ids"] as string } : {},
   head: () => ({
     meta: [
       { title: "طباعة ملصقات المعشبة | NCVC" },
@@ -66,7 +66,6 @@ function PrintPage() {
   const queryClient = useQueryClient();
   const { data = [], isLoading } = useQuery({ queryKey: ["specimens"], queryFn: fetchSpecimens });
 
-
   const idList = ids
     .split(",")
     .map((v: string) => v.trim())
@@ -81,9 +80,7 @@ function PrintPage() {
   const handlePrint = async () => {
     window.print();
     try {
-      await recordPrints(
-        selectedLabels.map((s) => ({ id: s.id, serial_number: s.serial_number })),
-      );
+      await recordPrints(selectedLabels.map((s) => ({ id: s.id, serial_number: s.serial_number })));
       // Best-effort status sync: only allowed for specimens the user may update.
       try {
         await bulkUpdateStatus(
@@ -101,7 +98,6 @@ function PrintPage() {
     }
   };
 
-
   const paperSize = resolvePaperMm(settings);
   const pageCss = `@page { size: ${paperSize.w}mm ${paperSize.h}mm ${orientation}; margin: ${margin}mm; }`;
   const sheetVars = {
@@ -111,8 +107,7 @@ function PrintPage() {
     ["--label-h" as string]: `${toMm(size.height, size.unit)}mm`,
   } as React.CSSProperties;
 
-  const previewWidth =
-    orientation === "portrait" ? paperSize.w : paperSize.h;
+  const previewWidth = orientation === "portrait" ? paperSize.w : paperSize.h;
   const previewHeight = orientation === "portrait" ? paperSize.h : paperSize.w;
 
   return (
@@ -177,7 +172,9 @@ function PrintPage() {
               <div className="space-y-1.5 sm:col-span-2">
                 <Label>{t("printMode")}</Label>
                 <Select value={mode} onValueChange={(v) => update({ mode: v as PrintMode })}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="labels">{t("labelsOnly")}</SelectItem>
                     <SelectItem value="barcodes">{t("barcodesOnly")}</SelectItem>
@@ -188,10 +185,14 @@ function PrintPage() {
               <div className="space-y-1.5">
                 <Label>{t("paperSize")}</Label>
                 <Select value={paper} onValueChange={(v) => update({ paper: v })}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
                   <SelectContent>
                     {Object.keys(PAPERS).map((p) => (
-                      <SelectItem key={p} value={p}>{p}</SelectItem>
+                      <SelectItem key={p} value={p}>
+                        {p}
+                      </SelectItem>
                     ))}
                     <SelectItem value={CUSTOM_PAPER}>{t("customSize")}</SelectItem>
                   </SelectContent>
@@ -252,7 +253,9 @@ function PrintPage() {
                         });
                       }}
                     >
-                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="mm">mm</SelectItem>
                         <SelectItem value="cm">cm</SelectItem>
@@ -265,11 +268,11 @@ function PrintPage() {
                 <Label>{t("orientation")}</Label>
                 <Select
                   value={orientation}
-                  onValueChange={(v) =>
-                    update({ orientation: v as "portrait" | "landscape" })
-                  }
+                  onValueChange={(v) => update({ orientation: v as "portrait" | "landscape" })}
                 >
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="portrait">{t("portrait")}</SelectItem>
                     <SelectItem value="landscape">{t("landscape")}</SelectItem>

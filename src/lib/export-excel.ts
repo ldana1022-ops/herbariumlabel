@@ -2,7 +2,10 @@ import * as XLSX from "xlsx";
 import { type Specimen } from "./specimens";
 import { statusLabel } from "./specimen-status";
 
-export function exportSpecimensToExcel(specimens: Specimen[], filename = "herbarium_specimens.xlsx") {
+export function exportSpecimensToExcel(
+  specimens: Specimen[],
+  filename = "herbarium_specimens.xlsx",
+) {
   const rows = specimens.map((s) => ({
     "Accession Number": s.accession_number,
     "Scientific Name": s.scientific_name,
@@ -24,9 +27,9 @@ export function exportSpecimensToExcel(specimens: Specimen[], filename = "herbar
   }));
 
   const sheet = XLSX.utils.json_to_sheet(rows);
-  sheet["!cols"] = [
-    18, 30, 18, 20, 32, 16, 14, 14, 10, 16, 24, 30, 20, 18, 36, 14,
-  ].map((w) => ({ wch: w }));
+  sheet["!cols"] = [18, 30, 18, 20, 32, 16, 14, 14, 10, 16, 24, 30, 20, 18, 36, 14].map((w) => ({
+    wch: w,
+  }));
   const book = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(book, sheet, "Specimens");
   XLSX.writeFile(book, filename);

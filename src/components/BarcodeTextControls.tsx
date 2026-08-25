@@ -11,10 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useI18n } from "@/lib/i18n";
-import {
-  BARCODE_TEXT_LIMITS,
-  type BarcodeTextSettings,
-} from "@/lib/barcode-text";
+import { BARCODE_TEXT_LIMITS, type BarcodeTextSettings } from "@/lib/barcode-text";
 
 type Props = {
   settings: BarcodeTextSettings;

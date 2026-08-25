@@ -9,7 +9,12 @@ import { HerbariumLabel } from "@/components/HerbariumLabel";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useI18n } from "@/lib/i18n";
-import { createSpecimen, emptySpecimen, type Specimen, type SpecimenPayload } from "@/lib/specimens";
+import {
+  createSpecimen,
+  emptySpecimen,
+  type Specimen,
+  type SpecimenPayload,
+} from "@/lib/specimens";
 
 export const Route = createFileRoute("/_authenticated/specimens/new")({
   head: () => ({
@@ -20,7 +25,10 @@ export const Route = createFileRoute("/_authenticated/specimens/new")({
         content: "نموذج رسمي لإدخال بيانات عينة نباتية جديدة وإنشاء ملصق المعشبة تلقائيًا.",
       },
       { property: "og:title", content: "إضافة عينة جديدة | نظام إدارة ملصقات المعشبة" },
-      { property: "og:description", content: "إدخال بيانات عينة نباتية جديدة وإنشاء الملصق العلمي." },
+      {
+        property: "og:description",
+        content: "إدخال بيانات عينة نباتية جديدة وإنشاء الملصق العلمي.",
+      },
     ],
   }),
   component: NewSpecimenPage,
