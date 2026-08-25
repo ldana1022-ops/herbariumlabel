@@ -34,13 +34,11 @@ const optionalText = z
   .optional()
   .transform((v) => (v && v.length > 0 ? v : null));
 
-const optionalNumber = z
-  .union([z.string(), z.number(), z.null(), z.undefined()])
-  .transform((v) => {
-    if (v === null || v === undefined || v === "") return null;
-    const n = typeof v === "number" ? v : Number(v);
-    return Number.isFinite(n) ? n : NaN;
-  });
+const optionalNumber = z.union([z.string(), z.number(), z.null(), z.undefined()]).transform((v) => {
+  if (v === null || v === undefined || v === "") return null;
+  const n = typeof v === "number" ? v : Number(v);
+  return Number.isFinite(n) ? n : NaN;
+});
 
 const optionalDate = z
   .string()
@@ -50,12 +48,22 @@ const optionalDate = z
 
 export const specimenSchema = z.object({
   // Auto-generated from the serial number by the database; kept optional for imports.
-  accession_number: z.string().trim().max(60).optional().transform((v) => v ?? ""),
+  accession_number: z
+    .string()
+    .trim()
+    .max(60)
+    .optional()
+    .transform((v) => v ?? ""),
   scientific_name: z.string().trim().min(1, "required").max(200),
   family: optionalText,
   local_name: optionalText,
   local_name_ar: optionalText,
-  locality: z.string().trim().max(300).optional().transform((v) => (v && v.length > 0 ? v : null)),
+  locality: z
+    .string()
+    .trim()
+    .max(300)
+    .optional()
+    .transform((v) => (v && v.length > 0 ? v : null)),
   region: optionalText,
   latitude: optionalNumber.refine(
     (v) => v === null || (!Number.isNaN(v) && v >= -90 && v <= 90),
@@ -65,16 +73,23 @@ export const specimenSchema = z.object({
     (v) => v === null || (!Number.isNaN(v) && v >= -180 && v <= 180),
     "invalidLong",
   ),
-  altitude_m: optionalNumber.refine(
-    (v) => v === null || !Number.isNaN(v),
-    "invalidNumber",
-  ),
+  altitude_m: optionalNumber.refine((v) => v === null || !Number.isNaN(v), "invalidNumber"),
   collection_date: optionalDate,
-  collectors: z.string().trim().max(300).optional().transform((v) => (v && v.length > 0 ? v : null)),
+  collectors: z
+    .string()
+    .trim()
+    .max(300)
+    .optional()
+    .transform((v) => (v && v.length > 0 ? v : null)),
   determination: optionalText,
   determined_by: optionalText,
   determination_date: optionalDate,
-  notes: z.string().trim().max(2000).optional().transform((v) => (v && v.length > 0 ? v : null)),
+  notes: z
+    .string()
+    .trim()
+    .max(2000)
+    .optional()
+    .transform((v) => (v && v.length > 0 ? v : null)),
 });
 
 export type SpecimenInput = z.input<typeof specimenSchema>;
@@ -150,7 +165,10 @@ export async function createSpecimen(payload: SpecimenPayload): Promise<Specimen
   return data as Specimen;
 }
 
-export async function updateSpecimen(id: string, payload: Partial<SpecimenPayload>): Promise<Specimen> {
+export async function updateSpecimen(
+  id: string,
+  payload: Partial<SpecimenPayload>,
+): Promise<Specimen> {
   const { data, error } = await supabase
     .from("herbarium_specimens")
     .update(payload)
@@ -223,7 +241,6 @@ export async function bulkUpdateField(
   if (error) throw new Error(humanizeError(error.message));
   return data?.length ?? 0;
 }
-
 
 export async function bulkInsertSpecimens(payloads: SpecimenPayload[]): Promise<number> {
   if (payloads.length === 0) return 0;

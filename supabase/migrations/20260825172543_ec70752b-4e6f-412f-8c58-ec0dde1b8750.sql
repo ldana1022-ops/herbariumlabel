@@ -1,0 +1,1 @@
+GRANT SELECT (visibility) ON public.herbarium_specimens TO anon;

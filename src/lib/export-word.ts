@@ -15,7 +15,12 @@ function scientificName(name: string) {
 }
 
 function row(key: string, value: string, dots = false) {
-  const shown = value && value.trim() ? esc(value) : dots ? "................................................" : "";
+  const shown =
+    value && value.trim()
+      ? esc(value)
+      : dots
+        ? "................................................"
+        : "";
   return `<p style="margin:0 0 2pt 0;"><b>${esc(key)}</b> ${shown}</p>`;
 }
 
@@ -25,7 +30,8 @@ function labelHtml(s: Specimen, size: LabelSize) {
   const base = 7.8 * size.fontScale;
   const lat = s.latitude ?? ".........";
   const lon = s.longitude ?? ".........";
-  const alt = s.altitude_m !== null && s.altitude_m !== undefined ? `${s.altitude_m} m` : "..........m";
+  const alt =
+    s.altitude_m !== null && s.altitude_m !== undefined ? `${s.altitude_m} m` : "..........m";
 
   return `
   <table cellspacing="0" cellpadding="0" style="width:${w}mm;border-collapse:collapse;border:2pt solid #000000;font-family:'Times New Roman',serif;font-size:${base}pt;color:#000000;">

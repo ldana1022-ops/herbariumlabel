@@ -3,7 +3,6 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { assertSuperAdmin, actorLabel } from "@/lib/admin.server";
 
-
 /** Creates the profile row on first sign-in and bootstraps the first Super Admin. */
 export const ensureAccount = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -63,7 +62,10 @@ export const recordLogin = createServerFn({ method: "POST" })
     if (profile?.is_active === false) return { active: false };
 
     const name = profile?.full_name || profile?.email || "A user";
-    await supabaseAdmin.from("profiles").update({ last_login_at: new Date().toISOString() }).eq("id", userId);
+    await supabaseAdmin
+      .from("profiles")
+      .update({ last_login_at: new Date().toISOString() })
+      .eq("id", userId);
     await supabaseAdmin.from("activity_log").insert({
       actor_id: userId,
       actor_name: name,
@@ -72,7 +74,10 @@ export const recordLogin = createServerFn({ method: "POST" })
       record_id: userId,
     });
 
-    const { data: admins } = await supabaseAdmin.from("user_roles").select("user_id").eq("role", "admin");
+    const { data: admins } = await supabaseAdmin
+      .from("user_roles")
+      .select("user_id")
+      .eq("role", "admin");
     const rows = (admins ?? []).map((a: { user_id: string }) => ({
       user_id: a.user_id,
       actor_id: userId,
@@ -124,7 +129,10 @@ export const logEvent = createServerFn({ method: "POST" })
       record_label: data.label ?? null,
     });
 
-    const { data: admins } = await supabaseAdmin.from("user_roles").select("user_id").eq("role", "admin");
+    const { data: admins } = await supabaseAdmin
+      .from("user_roles")
+      .select("user_id")
+      .eq("role", "admin");
     const rows = (admins ?? []).map((a: { user_id: string }) => ({
       user_id: a.user_id,
       actor_id: context.userId,
@@ -173,7 +181,10 @@ function permsRow(userId: string, p: PermsInput) {
 
 /** Reads verification/ban state straight from the real auth accounts. */
 async function authIndex(admin: any) {
-  const map = new Map<string, { emailConfirmed: boolean; banned: boolean; invitedAt: string | null }>();
+  const map = new Map<
+    string,
+    { emailConfirmed: boolean; banned: boolean; invitedAt: string | null }
+  >();
   for (let page = 1; page <= 10; page += 1) {
     const { data, error } = await admin.auth.admin.listUsers({ page, perPage: 200 });
     if (error) break;
@@ -283,7 +294,10 @@ export const createUser = createServerFn({ method: "POST" })
       action: "create_user",
       record_label: data.email,
       record_id: userId,
-      new_value: { role: data.superAdmin ? "super_admin" : "user", ...permsRow(userId, data.permissions) },
+      new_value: {
+        role: data.superAdmin ? "super_admin" : "user",
+        ...permsRow(userId, data.permissions),
+      },
     });
 
     const { data: profile } = await supabaseAdmin
@@ -299,7 +313,12 @@ export const createUser = createServerFn({ method: "POST" })
 
     return {
       user: {
-        ...(profile ?? { id: userId, email: data.email, full_name: data.fullName, is_active: true }),
+        ...(profile ?? {
+          id: userId,
+          email: data.email,
+          full_name: data.fullName,
+          is_active: true,
+        }),
         role: data.superAdmin ? "super_admin" : "user",
         permissions: savedPerms ?? null,
         email_confirmed: false,
@@ -311,7 +330,9 @@ export const createUser = createServerFn({ method: "POST" })
 /** Re-sends the invite / verification email to a user who has not activated yet. */
 export const resendInvite = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { userId: string }) => z.object({ userId: z.string().uuid() }).parse(input))
+  .inputValidator((input: { userId: string }) =>
+    z.object({ userId: z.string().uuid() }).parse(input),
+  )
   .handler(async ({ data, context }) => {
     await assertSuperAdmin(context.supabase, context.userId);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -335,7 +356,6 @@ export const resendInvite = createServerFn({ method: "POST" })
     });
     return { ok: true };
   });
-
 
 export const updateUser = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -375,7 +395,6 @@ export const updateUser = createServerFn({ method: "POST" })
       });
     }
 
-
     const { data: profile } = await supabaseAdmin
       .from("profiles")
       .select("full_name, email")
@@ -385,7 +404,8 @@ export const updateUser = createServerFn({ method: "POST" })
     await supabaseAdmin.from("activity_log").insert({
       actor_id: context.userId,
       actor_name: actorName,
-      action: data.isActive === undefined ? "edit_user" : data.isActive ? "enable_user" : "disable_user",
+      action:
+        data.isActive === undefined ? "edit_user" : data.isActive ? "enable_user" : "disable_user",
       record_label: profile?.email ?? data.userId,
       record_id: data.userId,
       new_value: patch as Record<string, string | boolean>,
@@ -395,7 +415,9 @@ export const updateUser = createServerFn({ method: "POST" })
 
 export const deleteUser = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { userId: string }) => z.object({ userId: z.string().uuid() }).parse(input))
+  .inputValidator((input: { userId: string }) =>
+    z.object({ userId: z.string().uuid() }).parse(input),
+  )
   .handler(async ({ data, context }) => {
     await assertSuperAdmin(context.supabase, context.userId);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -469,12 +491,15 @@ export const setUserRole = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     if (data.superAdmin) {
-      await supabaseAdmin.from("user_roles").upsert(
-        { user_id: data.userId, role: "admin" },
-        { onConflict: "user_id,role" },
-      );
+      await supabaseAdmin
+        .from("user_roles")
+        .upsert({ user_id: data.userId, role: "admin" }, { onConflict: "user_id,role" });
     } else {
-      await supabaseAdmin.from("user_roles").delete().eq("user_id", data.userId).eq("role", "admin");
+      await supabaseAdmin
+        .from("user_roles")
+        .delete()
+        .eq("user_id", data.userId)
+        .eq("role", "admin");
     }
 
     await supabaseAdmin.from("activity_log").insert({
@@ -486,7 +511,6 @@ export const setUserRole = createServerFn({ method: "POST" })
     });
     return { ok: true };
   });
-
 
 /**
  * Active users permitted to receive requests (id + display name), for request

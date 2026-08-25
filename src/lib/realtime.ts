@@ -18,10 +18,8 @@ export function useRealtimeSync(enabled: boolean) {
 
     const channel = supabase
       .channel(`herbarium-sync-${Math.random().toString(36).slice(2)}`)
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "herbarium_specimens" },
-        () => invalidate(["specimens", "specimen"]),
+      .on("postgres_changes", { event: "*", schema: "public", table: "herbarium_specimens" }, () =>
+        invalidate(["specimens", "specimen"]),
       )
       .on("postgres_changes", { event: "*", schema: "public", table: "requests" }, () =>
         invalidate(["requests", "editable-specimens", "notifications"]),

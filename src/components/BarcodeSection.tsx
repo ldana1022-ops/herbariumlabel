@@ -33,8 +33,14 @@ export function BarcodeSection({
             fontSize: `${text.fontSize}pt`,
             fontWeight: text.bold ? 700 : 400,
             textTransform: text.uppercase ? "uppercase" : "none",
-            textAlign: text.align === "center" ? "center" : text.align === "start" ? "left" : "right",
-            alignSelf: text.align === "center" ? "center" : text.align === "start" ? "flex-start" : "flex-end",
+            textAlign:
+              text.align === "center" ? "center" : text.align === "start" ? "left" : "right",
+            alignSelf:
+              text.align === "center"
+                ? "center"
+                : text.align === "start"
+                  ? "flex-start"
+                  : "flex-end",
           }}
         >
           {heading}

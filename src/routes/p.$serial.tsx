@@ -65,7 +65,9 @@ function PublicSpecimenPage() {
             <span className="text-xs font-bold tracking-tight">NCVC</span>
           </div>
           <div>
-            <h1 className="text-base font-semibold leading-tight text-foreground">{t("appName")}</h1>
+            <h1 className="text-base font-semibold leading-tight text-foreground">
+              {t("appName")}
+            </h1>
             <p className="text-xs leading-tight text-muted-foreground">{t("org")}</p>
           </div>
         </div>

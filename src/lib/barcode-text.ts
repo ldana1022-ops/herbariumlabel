@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 
-export const DEFAULT_BARCODE_TEXT_VALUE =
-  "Herbarium of National Center for Vegetation Cover";
+export const DEFAULT_BARCODE_TEXT_VALUE = "Herbarium of National Center for Vegetation Cover";
 
 export type BarcodeTextSettings = {
   /** text rendered above the barcode */

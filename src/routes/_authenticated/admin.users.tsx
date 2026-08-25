@@ -39,7 +39,6 @@ import {
 } from "@/lib/admin.functions";
 import { isStrongPassword, isValidEmail } from "@/lib/password";
 
-
 export const Route = createFileRoute("/_authenticated/admin/users")({
   head: () => ({
     meta: [
@@ -83,7 +82,6 @@ type UserRow = {
   email_confirmed: boolean;
   banned: boolean;
 };
-
 
 type Draft = {
   dataScope: DataScope;
@@ -176,7 +174,6 @@ function UsersPage() {
     },
     onError: fail,
   });
-
 
   const resendMut = useMutation({
     mutationFn: (row: UserRow) => resend({ data: { userId: row.id } }),
@@ -348,7 +345,9 @@ function UsersPage() {
                     <label key={`new-${field.key}`} className="flex items-center gap-2 text-sm">
                       <Checkbox
                         checked={Boolean(newPerms[field.key])}
-                        onCheckedChange={(v) => setNewPerms({ ...newPerms, [field.key]: Boolean(v) })}
+                        onCheckedChange={(v) =>
+                          setNewPerms({ ...newPerms, [field.key]: Boolean(v) })
+                        }
                       />
                       <span>{field.label}</span>
                     </label>
@@ -363,7 +362,6 @@ function UsersPage() {
                 <p className="text-xs text-muted-foreground">{t("inviteUserHint")}</p>
               </div>
             </form>
-
           </CardContent>
         </Card>
 
@@ -450,7 +448,9 @@ function UsersPage() {
                             disabled={row.id === user?.id}
                             onClick={() => roleMut.mutate(row)}
                           >
-                            {row.role === "super_admin" ? t("revokeSuperAdmin") : t("makeSuperAdmin")}
+                            {row.role === "super_admin"
+                              ? t("revokeSuperAdmin")
+                              : t("makeSuperAdmin")}
                           </Button>
                           <Button
                             size="sm"

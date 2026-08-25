@@ -44,7 +44,9 @@ function DetailRow({ label, value }: { label: string; value?: string | number | 
   return (
     <div className="flex gap-2 border-b border-border py-1.5 text-sm last:border-0">
       <span className="w-40 shrink-0 font-medium text-muted-foreground">{label}</span>
-      <span className="text-foreground">{value === null || value === undefined || value === "" ? "—" : value}</span>
+      <span className="text-foreground">
+        {value === null || value === undefined || value === "" ? "—" : value}
+      </span>
     </div>
   );
 }
@@ -226,12 +228,14 @@ function SpecimenDetailPage() {
                     onChange={(e) => setDet({ ...det, determination_date: e.target.value })}
                   />
                 </div>
-                <Button onClick={() => mutation.mutate()} disabled={!editable || mutation.isPending}>
+                <Button
+                  onClick={() => mutation.mutate()}
+                  disabled={!editable || mutation.isPending}
+                >
                   {t("updateDetermination")}
                 </Button>
               </CardContent>
             </Card>
-
 
             <Card>
               <CardHeader>
@@ -243,7 +247,6 @@ function SpecimenDetailPage() {
                   <BarcodeSection serial={s.serial_number} text={barcodeText.settings} />
                 </div>
               </CardContent>
-
             </Card>
 
             <Card>

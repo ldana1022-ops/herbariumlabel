@@ -47,19 +47,27 @@ export function LabelSizeControls({
               if (v === CUSTOM) return;
               const preset = LABEL_PRESETS.find((p) => p.id === v);
               if (preset) {
-                onChange({ ...size, width: preset.width, height: preset.height, unit: preset.unit });
+                onChange({
+                  ...size,
+                  width: preset.width,
+                  height: preset.height,
+                  unit: preset.unit,
+                });
               }
             }}
           >
-            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
             <SelectContent>
               {LABEL_PRESETS.map((p) => (
-                <SelectItem key={p.id} value={p.id}>{p.label}</SelectItem>
+                <SelectItem key={p.id} value={p.id}>
+                  {p.label}
+                </SelectItem>
               ))}
               <SelectItem value={CUSTOM}>{t("customSize")}</SelectItem>
             </SelectContent>
           </Select>
-
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="label-w">{t("width")}</Label>
@@ -101,7 +109,9 @@ export function LabelSizeControls({
               });
             }}
           >
-            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
             <SelectContent>
               <SelectItem value="mm">mm</SelectItem>
               <SelectItem value="cm">cm</SelectItem>
@@ -118,9 +128,7 @@ export function LabelSizeControls({
             step="0.05"
             dir="ltr"
             value={size.fontScale}
-            onChange={(e) =>
-              onChange({ ...size, fontScale: Number(e.target.value) || 1 })
-            }
+            onChange={(e) => onChange({ ...size, fontScale: Number(e.target.value) || 1 })}
           />
         </div>
         <div className="sm:col-span-2">

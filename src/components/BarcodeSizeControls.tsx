@@ -152,7 +152,8 @@ export function BarcodeSizeControls({
             <Minus className="size-4" />
           </Button>
           <span className="text-sm text-muted-foreground" dir="ltr">
-            {Math.round(barcodeToMm(size.width, unit))} × {Math.round(barcodeToMm(size.height, unit))} mm
+            {Math.round(barcodeToMm(size.width, unit))} ×{" "}
+            {Math.round(barcodeToMm(size.height, unit))} mm
           </span>
           <Button type="button" variant="outline" size="icon" onClick={() => scale(1.1)}>
             <Plus className="size-4" />

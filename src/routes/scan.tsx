@@ -24,7 +24,6 @@ export const Route = createFileRoute("/scan")({
   component: ScanPage,
 });
 
-
 /**
  * Accepts what people actually type or scan: full serial, lowercase,
  * spaces/dashes, a bare number, or a scanned URL containing the serial.
@@ -42,7 +41,6 @@ export function normalizeSerial(input: string): string | null {
   if (!m?.[1]) return null;
   const digits = m[1].length < 6 ? m[1].padStart(6, "0") : m[1];
   return `NCVCH${digits}`;
-
 }
 
 function ScanPage() {
@@ -198,9 +196,7 @@ function ScanPage() {
                 {t("view")}
               </Button>
             </form>
-            {manualError && (
-              <p className="mt-1 text-xs text-destructive">{t("serialNotFound")}</p>
-            )}
+            {manualError && <p className="mt-1 text-xs text-destructive">{t("serialNotFound")}</p>}
           </div>
         </CardContent>
       </Card>

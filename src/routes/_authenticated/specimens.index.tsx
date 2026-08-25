@@ -2,7 +2,16 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { Eye, FileSpreadsheet, FileText, Pencil, Plus, Printer, Trash2, Upload } from "lucide-react";
+import {
+  Eye,
+  FileSpreadsheet,
+  FileText,
+  Pencil,
+  Plus,
+  Printer,
+  Trash2,
+  Upload,
+} from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -50,7 +59,7 @@ import { normalizeStatus, STATUS_ORDER, type SpecimenStatus } from "@/lib/specim
 
 export const Route = createFileRoute("/_authenticated/specimens/")({
   validateSearch: (search: Record<string, unknown>): { focus?: string } =>
-    typeof search['focus'] === "string" ? { focus: search['focus'] as string } : {},
+    typeof search["focus"] === "string" ? { focus: search["focus"] as string } : {},
   head: () => ({
     meta: [
       { title: "قاعدة بيانات عينات المعشبة | NCVC" },
@@ -80,7 +89,6 @@ function SpecimensPage() {
   const canImport = can("import");
   const canDelete = isSuperAdmin;
   const { data = [], isLoading } = useQuery({ queryKey: ["specimens"], queryFn: fetchSpecimens });
-
 
   const [q, setQ] = useState("");
   const [family, setFamily] = useState(ALL);
@@ -160,7 +168,11 @@ function SpecimensPage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
-  const notifyBulk = (key: "bulkDeleted" | "bulkStatusUpdated" | "bulkFieldUpdated", affected: number, total: number) => {
+  const notifyBulk = (
+    key: "bulkDeleted" | "bulkStatusUpdated" | "bulkFieldUpdated",
+    affected: number,
+    total: number,
+  ) => {
     queryClient.invalidateQueries({ queryKey: ["specimens"] });
     toast.success(t(key).replace("{n}", String(affected)));
     if (affected < total) {
@@ -178,8 +190,15 @@ function SpecimensPage() {
   });
 
   const bulkFieldMutation = useMutation({
-    mutationFn: ({ ids, field, value }: { ids: string[]; field: BulkEditableField; value: string }) =>
-      bulkUpdateField(ids, field, value).then((n) => ({ n, total: ids.length })),
+    mutationFn: ({
+      ids,
+      field,
+      value,
+    }: {
+      ids: string[];
+      field: BulkEditableField;
+      value: string;
+    }) => bulkUpdateField(ids, field, value).then((n) => ({ n, total: ids.length })),
     onSuccess: ({ n, total }) => notifyBulk("bulkFieldUpdated", n, total),
     onError: (e: Error) => toast.error(e.message === "NO_SELECTION" ? t("noSelection") : e.message),
   });
@@ -230,24 +249,20 @@ function SpecimensPage() {
           <h2 className="text-xl font-semibold text-foreground">{t("database")}</h2>
           <div className="flex flex-wrap gap-2">
             {can("add") ? (
-            <Button asChild size="sm">
-              <Link to="/specimens/new">
-                <Plus className="size-4" />
-                {t("newSpecimen")}
-              </Link>
-            </Button>
+              <Button asChild size="sm">
+                <Link to="/specimens/new">
+                  <Plus className="size-4" />
+                  {t("newSpecimen")}
+                </Link>
+              </Button>
             ) : null}
             {canImport ? (
-            <Button
-              size="sm"
-              variant="outline"
-              asChild
-            >
-              <Link to="/specimens/import">
-                <Upload className="size-4" />
-                {t("importExcel")}
-              </Link>
-            </Button>
+              <Button size="sm" variant="outline" asChild>
+                <Link to="/specimens/import">
+                  <Upload className="size-4" />
+                  {t("importExcel")}
+                </Link>
+              </Button>
             ) : null}
             <Button
               size="sm"
@@ -290,8 +305,6 @@ function SpecimensPage() {
           </p>
         ) : null}
 
-
-
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-base">{t("filters")}</CardTitle>
@@ -310,11 +323,15 @@ function SpecimensPage() {
             <div className="space-y-1.5">
               <Label>{t("family")}</Label>
               <Select value={family} onValueChange={setFamily}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value={ALL}>{t("all")}</SelectItem>
                   {unique((s) => s.family).map((v) => (
-                    <SelectItem key={v} value={v}>{v}</SelectItem>
+                    <SelectItem key={v} value={v}>
+                      {v}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -322,11 +339,15 @@ function SpecimensPage() {
             <div className="space-y-1.5">
               <Label>{t("region")}</Label>
               <Select value={region} onValueChange={setRegion}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value={ALL}>{t("all")}</SelectItem>
                   {unique((s) => s.region).map((v) => (
-                    <SelectItem key={v} value={v}>{v}</SelectItem>
+                    <SelectItem key={v} value={v}>
+                      {v}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -334,11 +355,15 @@ function SpecimensPage() {
             <div className="space-y-1.5">
               <Label>{t("collector")}</Label>
               <Select value={collector} onValueChange={setCollector}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value={ALL}>{t("all")}</SelectItem>
                   {collectorOptions.map((v) => (
-                    <SelectItem key={v} value={v}>{v}</SelectItem>
+                    <SelectItem key={v} value={v}>
+                      {v}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -346,7 +371,9 @@ function SpecimensPage() {
             <div className="space-y-1.5">
               <Label>{t("status")}</Label>
               <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value={ALL}>{t("all")}</SelectItem>
                   {STATUS_ORDER.map((m) => (
@@ -359,14 +386,28 @@ function SpecimensPage() {
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="from">{t("dateFrom")}</Label>
-              <Input id="from" type="date" dir="ltr" value={from} onChange={(e) => setFrom(e.target.value)} />
+              <Input
+                id="from"
+                type="date"
+                dir="ltr"
+                value={from}
+                onChange={(e) => setFrom(e.target.value)}
+              />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="to">{t("dateTo")}</Label>
-              <Input id="to" type="date" dir="ltr" value={to} onChange={(e) => setTo(e.target.value)} />
+              <Input
+                id="to"
+                type="date"
+                dir="ltr"
+                value={to}
+                onChange={(e) => setTo(e.target.value)}
+              />
             </div>
             <div className="flex items-end">
-              <Button variant="ghost" onClick={clearFilters}>{t("clearFilters")}</Button>
+              <Button variant="ghost" onClick={clearFilters}>
+                {t("clearFilters")}
+              </Button>
             </div>
           </CardContent>
         </Card>
@@ -424,7 +465,6 @@ function SpecimensPage() {
                 </div>
               ) : null}
               {hasAnyEditable ? (
-
                 <>
                   <div className="space-y-1.5">
                     <Label>{t("bulkUpdateField")}</Label>
@@ -497,7 +537,6 @@ function SpecimensPage() {
           </Card>
         ) : null}
 
-
         <div className="overflow-x-auto rounded-md border border-border bg-card">
           <table className="w-full min-w-[1400px] border-collapse text-sm">
             <thead className="bg-secondary">
@@ -512,24 +551,37 @@ function SpecimensPage() {
                   />
                 </th>
                 {headers.map((h) => (
-                  <th key={h} className="whitespace-nowrap border-b border-border p-2 text-start font-semibold">
+                  <th
+                    key={h}
+                    className="whitespace-nowrap border-b border-border p-2 text-start font-semibold"
+                  >
                     {f(h)}
                   </th>
                 ))}
-                <th className="border-b border-border p-2 text-start font-semibold">{t("status")}</th>
-                <th className="border-b border-border p-2 text-start font-semibold">{t("actions")}</th>
+                <th className="border-b border-border p-2 text-start font-semibold">
+                  {t("status")}
+                </th>
+                <th className="border-b border-border p-2 text-start font-semibold">
+                  {t("actions")}
+                </th>
               </tr>
             </thead>
             <tbody>
               {isLoading ? (
                 <tr>
-                  <td colSpan={headers.length + 3} className="p-6 text-center text-muted-foreground">
+                  <td
+                    colSpan={headers.length + 3}
+                    className="p-6 text-center text-muted-foreground"
+                  >
                     {t("loading")}
                   </td>
                 </tr>
               ) : filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={headers.length + 3} className="p-6 text-center text-muted-foreground">
+                  <td
+                    colSpan={headers.length + 3}
+                    className="p-6 text-center text-muted-foreground"
+                  >
                     {t("noResults")}
                   </td>
                 </tr>
@@ -558,7 +610,9 @@ function SpecimensPage() {
                     <td className="whitespace-nowrap p-2 tabular-nums">{s.latitude ?? "—"}</td>
                     <td className="whitespace-nowrap p-2 tabular-nums">{s.longitude ?? "—"}</td>
                     <td className="whitespace-nowrap p-2 tabular-nums">{s.altitude_m ?? "—"}</td>
-                    <td className="whitespace-nowrap p-2 tabular-nums">{formatDate(s.collection_date)}</td>
+                    <td className="whitespace-nowrap p-2 tabular-nums">
+                      {formatDate(s.collection_date)}
+                    </td>
                     <td className="whitespace-nowrap p-2">{s.collectors ?? "—"}</td>
                     <td className="whitespace-nowrap p-2">{s.determination ?? "—"}</td>
                     <td className="whitespace-nowrap p-2">{s.determined_by ?? "—"}</td>
@@ -580,11 +634,11 @@ function SpecimensPage() {
                           </Link>
                         </Button>
                         {canEditSpecimen(s.id) ? (
-                        <Button asChild size="icon" variant="ghost" title={t("edit")}>
-                          <Link to="/specimens/$id/edit" params={{ id: s.id }}>
-                            <Pencil className="size-4" />
-                          </Link>
-                        </Button>
+                          <Button asChild size="icon" variant="ghost" title={t("edit")}>
+                            <Link to="/specimens/$id/edit" params={{ id: s.id }}>
+                              <Pencil className="size-4" />
+                            </Link>
+                          </Button>
                         ) : null}
 
                         <Button asChild size="icon" variant="ghost" title={t("printLabel")}>
@@ -593,14 +647,14 @@ function SpecimensPage() {
                           </Link>
                         </Button>
                         {canDelete ? (
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          title={t("delete")}
-                          onClick={() => setPendingDelete(s)}
-                        >
-                          <Trash2 className="size-4 text-destructive" />
-                        </Button>
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            title={t("delete")}
+                            onClick={() => setPendingDelete(s)}
+                          >
+                            <Trash2 className="size-4 text-destructive" />
+                          </Button>
                         ) : null}
                       </div>
                     </td>

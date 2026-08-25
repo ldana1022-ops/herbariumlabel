@@ -2,7 +2,6 @@ import { formatDate, type Specimen } from "@/lib/specimens";
 
 import { DEFAULT_LABEL_SIZE, labelStyle, type LabelSize } from "@/lib/label-size";
 
-
 const DOTS = "....................................................................";
 
 function Row({ label, value, fill }: { label: string; value?: string | null; fill?: boolean }) {
@@ -85,7 +84,6 @@ export function HerbariumLabel({
           <Row label="Det.:" value={specimen.determination} fill />
           <Row label="Notes:" value={specimen.notes} fill />
         </div>
-
       </div>
     </div>
   );

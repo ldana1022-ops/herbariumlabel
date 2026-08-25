@@ -87,7 +87,12 @@ export function NotificationBell() {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline" size="sm" className="relative gap-2" aria-label={t("notifications")}>
+        <Button
+          variant="outline"
+          size="sm"
+          className="relative gap-2"
+          aria-label={t("notifications")}
+        >
           <Bell className="size-4" />
           {unread > 0 ? (
             <span className="absolute -end-1.5 -top-1.5 flex min-w-5 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-bold text-destructive-foreground">
@@ -111,7 +116,9 @@ export function NotificationBell() {
         </div>
         <div className="max-h-80 overflow-y-auto">
           {items.length === 0 ? (
-            <p className="px-3 py-6 text-center text-sm text-muted-foreground">{t("noNotifications")}</p>
+            <p className="px-3 py-6 text-center text-sm text-muted-foreground">
+              {t("noNotifications")}
+            </p>
           ) : (
             items.map((n) => (
               <div
@@ -120,7 +127,9 @@ export function NotificationBell() {
               >
                 <p className="text-sm font-medium leading-tight">{n.title}</p>
                 <p className="text-xs leading-snug text-muted-foreground">{n.body}</p>
-                <p className="mt-1 text-[11px] text-muted-foreground">{formatWhen(n.created_at, lang)}</p>
+                <p className="mt-1 text-[11px] text-muted-foreground">
+                  {formatWhen(n.created_at, lang)}
+                </p>
               </div>
             ))
           )}

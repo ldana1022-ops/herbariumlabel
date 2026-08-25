@@ -66,7 +66,6 @@ function Index() {
     .filter((s) => printedMap.has(s.id) || normalizeStatus(s.status) === "printed")
     .sort((a, b) => a.serial_number.localeCompare(b.serial_number));
 
-
   const statusCounts = STATUS_ORDER.map((m) => ({
     meta: m,
     count: data.filter((s) => normalizeStatus(s.status) === m.value).length,
@@ -180,7 +179,10 @@ function Index() {
                 <p className="text-sm text-muted-foreground">{t("noResults")}</p>
               ) : null}
               {countByRegion(data).map(({ region, count }) => (
-                <div key={region.key} className="flex items-center justify-between border-b border-border pb-1.5 text-sm last:border-0">
+                <div
+                  key={region.key}
+                  className="flex items-center justify-between border-b border-border pb-1.5 text-sm last:border-0"
+                >
                   <span>{lang === "en" ? region.en : region.ar}</span>
                   <span className="font-semibold tabular-nums">{count}</span>
                 </div>
@@ -193,7 +195,10 @@ function Index() {
             </CardHeader>
             <CardContent className="space-y-2">
               {countBy(data, (s) => s.family).map(([name, count]) => (
-                <div key={name} className="flex items-center justify-between border-b border-border pb-1.5 text-sm last:border-0">
+                <div
+                  key={name}
+                  className="flex items-center justify-between border-b border-border pb-1.5 text-sm last:border-0"
+                >
                   <span className="font-medium">{name}</span>
                   <span className="font-semibold tabular-nums">{count}</span>
                 </div>

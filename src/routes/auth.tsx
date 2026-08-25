@@ -12,7 +12,6 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ensureAccount, recordLogin } from "@/lib/admin.functions";
 
-
 export const Route = createFileRoute("/auth")({
   ssr: false,
   head: () => ({
@@ -20,7 +19,8 @@ export const Route = createFileRoute("/auth")({
       { title: "تسجيل الدخول | نظام إدارة ملصقات المعشبة النباتية" },
       {
         name: "description",
-        content: "تسجيل الدخول إلى نظام إدارة بيانات عينات المعشبة النباتية وطباعة الملصقات العلمية.",
+        content:
+          "تسجيل الدخول إلى نظام إدارة بيانات عينات المعشبة النباتية وطباعة الملصقات العلمية.",
       },
       { property: "og:title", content: "تسجيل الدخول | نظام إدارة ملصقات المعشبة النباتية" },
       { property: "og:description", content: "دخول آمن لمستخدمي نظام المعشبة النباتية." },
@@ -41,8 +41,6 @@ function AuthPage() {
   const [fullName, setFullName] = useState("");
   const [busy, setBusy] = useState(false);
 
-
-
   const checks = checkPassword(password);
 
   useEffect(() => {
@@ -57,7 +55,10 @@ function AuthPage() {
       window.history.replaceState(null, "", window.location.pathname);
     }
     if (hash.includes("error_description")) {
-      const description = decodeURIComponent(hash.split("error_description=")[1] ?? "").replace(/\+/g, " ");
+      const description = decodeURIComponent(hash.split("error_description=")[1] ?? "").replace(
+        /\+/g,
+        " ",
+      );
       if (description) toast.error(description);
       window.history.replaceState(null, "", window.location.pathname);
     }
@@ -67,15 +68,31 @@ function AuthPage() {
   const describeError = (error: { message?: string; code?: string; status?: number }) => {
     const message = (error.message ?? "").toLowerCase();
     const code = error.code ?? "";
-    if (code === "email_not_confirmed" || message.includes("not confirmed")) return t("emailNotConfirmed");
-    if (code === "invalid_credentials" || message.includes("invalid login credentials")) return t("invalidCredentials");
-    if (code === "weak_password" || message.includes("weak") || message.includes("pwned") || message.includes("easy to guess"))
+    if (code === "email_not_confirmed" || message.includes("not confirmed"))
+      return t("emailNotConfirmed");
+    if (code === "invalid_credentials" || message.includes("invalid login credentials"))
+      return t("invalidCredentials");
+    if (
+      code === "weak_password" ||
+      message.includes("weak") ||
+      message.includes("pwned") ||
+      message.includes("easy to guess")
+    )
       return t("weakPassword");
-    if (code === "user_already_exists" || message.includes("already registered") || message.includes("already been registered"))
+    if (
+      code === "user_already_exists" ||
+      message.includes("already registered") ||
+      message.includes("already been registered")
+    )
       return t("emailAlreadyUsed");
-    if (code === "over_email_send_rate_limit" || code === "over_request_rate_limit" || error.status === 429)
+    if (
+      code === "over_email_send_rate_limit" ||
+      code === "over_request_rate_limit" ||
+      error.status === 429
+    )
       return t("tooManyRequests");
-    if (message.includes("invalid email") || message.includes("email address")) return t("invalidEmailFormat");
+    if (message.includes("invalid email") || message.includes("email address"))
+      return t("invalidEmailFormat");
     return error.message ?? t("invalidCredentials");
   };
 
@@ -90,8 +107,6 @@ function AuthPage() {
     toast.success(t("signedIn"));
     navigate({ to: "/", replace: true });
   };
-
-
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -124,8 +139,9 @@ function AuthPage() {
           options: { data: { full_name: fullName.trim() } },
         });
         const alreadyExists =
-          (error && ((error as { code?: string }).code === "user_already_exists" ||
-            (error.message ?? "").toLowerCase().includes("already"))) ||
+          (error &&
+            ((error as { code?: string }).code === "user_already_exists" ||
+              (error.message ?? "").toLowerCase().includes("already"))) ||
           (data?.user && (data.user.identities?.length ?? 0) === 0);
 
         if (alreadyExists) {
@@ -162,7 +178,6 @@ function AuthPage() {
       });
       if (error) throw error;
       await finishSignIn();
-
     } catch (error) {
       toast.error(describeError(error as Error));
     } finally {
@@ -184,7 +199,11 @@ function AuthPage() {
         <Card>
           <CardHeader>
             <CardTitle className="text-base">
-              {mode === "signin" ? t("signIn") : mode === "signup" ? t("signUp") : t("forgotPassword")}
+              {mode === "signin"
+                ? t("signIn")
+                : mode === "signup"
+                  ? t("signUp")
+                  : t("forgotPassword")}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -232,12 +251,11 @@ function AuthPage() {
                 </div>
               ) : null}
 
-
-
-
               {mode === "signup" ? (
                 <div className="rounded-md border border-border bg-muted/40 p-3">
-                  <p className="mb-2 text-xs font-medium text-foreground">{t("passwordRequirements")}</p>
+                  <p className="mb-2 text-xs font-medium text-foreground">
+                    {t("passwordRequirements")}
+                  </p>
                   <ul className="space-y-1 text-xs">
                     {(
                       [
@@ -251,7 +269,11 @@ function AuthPage() {
                     ).map(([key, ok]) => (
                       <li
                         key={key}
-                        className={ok ? "flex items-center gap-1.5 text-primary" : "flex items-center gap-1.5 text-muted-foreground"}
+                        className={
+                          ok
+                            ? "flex items-center gap-1.5 text-primary"
+                            : "flex items-center gap-1.5 text-muted-foreground"
+                        }
                       >
                         {ok ? <Check className="size-3.5" /> : <X className="size-3.5" />}
                         <span>{t(key)}</span>
@@ -263,7 +285,11 @@ function AuthPage() {
 
               <Button type="submit" className="w-full" disabled={busy}>
                 {busy ? <Loader2 className="size-4 animate-spin" /> : null}
-                {mode === "signin" ? t("signIn") : mode === "signup" ? t("signUp") : t("sendResetLink")}
+                {mode === "signin"
+                  ? t("signIn")
+                  : mode === "signup"
+                    ? t("signUp")
+                    : t("sendResetLink")}
               </Button>
             </form>
 
@@ -298,9 +324,6 @@ function AuthPage() {
               ) : null}
             </div>
 
-
-
-
             <div className="mt-4 border-t border-border pt-4">
               <Button asChild variant="outline" className="w-full gap-2">
                 <Link to="/scan">
@@ -311,7 +334,9 @@ function AuthPage() {
               <p className="mt-2 text-center text-xs text-muted-foreground">{t("scanGuestNote")}</p>
             </div>
 
-            <p className="mt-4 text-xs leading-relaxed text-muted-foreground">{t("firstUserAdminHint")}</p>
+            <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
+              {t("firstUserAdminHint")}
+            </p>
           </CardContent>
         </Card>
       </div>

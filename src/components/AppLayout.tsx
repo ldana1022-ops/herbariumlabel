@@ -21,7 +21,6 @@ import { Button } from "@/components/ui/button";
 import { NotificationBell } from "@/components/NotificationBell";
 import { BackButton } from "@/components/BackButton";
 
-
 function NavLink({ to, icon, label }: { to: string; icon: ReactNode; label: string }) {
   return (
     <Link
@@ -50,7 +49,9 @@ export function AppLayout({ children }: { children: ReactNode }) {
               <span className="text-xs font-bold tracking-tight">NCVC</span>
             </div>
             <div>
-              <h1 className="text-base font-semibold leading-tight text-foreground">{t("appName")}</h1>
+              <h1 className="text-base font-semibold leading-tight text-foreground">
+                {t("appName")}
+              </h1>
               <p className="max-w-2xl text-xs leading-tight text-muted-foreground">{t("org")}</p>
             </div>
           </div>
@@ -75,7 +76,12 @@ export function AppLayout({ children }: { children: ReactNode }) {
                     {isSuperAdmin ? t("superAdmin") : t("user")}
                   </p>
                 </div>
-                <Button variant="outline" size="sm" className="gap-2" onClick={() => void signOut()}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-2"
+                  onClick={() => void signOut()}
+                >
                   <LogOut className="size-4" />
                   {t("signOut")}
                 </Button>
@@ -88,10 +94,18 @@ export function AppLayout({ children }: { children: ReactNode }) {
             <NavLink to="/" icon={<LayoutDashboard className="size-4" />} label={t("dashboard")} />
             <NavLink to="/specimens" icon={<Database className="size-4" />} label={t("database")} />
             {can("add") ? (
-              <NavLink to="/specimens/new" icon={<Plus className="size-4" />} label={t("newSpecimen")} />
+              <NavLink
+                to="/specimens/new"
+                icon={<Plus className="size-4" />}
+                label={t("newSpecimen")}
+              />
             ) : null}
             {can("import") ? (
-              <NavLink to="/specimens/import" icon={<Upload className="size-4" />} label={t("importExcel")} />
+              <NavLink
+                to="/specimens/import"
+                icon={<Upload className="size-4" />}
+                label={t("importExcel")}
+              />
             ) : null}
             {can("print") ? (
               <NavLink to="/print" icon={<Printer className="size-4" />} label={t("printLabels")} />
@@ -104,7 +118,11 @@ export function AppLayout({ children }: { children: ReactNode }) {
                   icon={<ClipboardList className="size-4" />}
                   label={t("requests")}
                 />
-                <NavLink to="/notifications" icon={<Bell className="size-4" />} label={t("notifications")} />
+                <NavLink
+                  to="/notifications"
+                  icon={<Bell className="size-4" />}
+                  label={t("notifications")}
+                />
               </>
             ) : null}
 
@@ -127,7 +145,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
         </div>
         {children}
       </main>
-      
+
       <footer className="border-t border-border bg-card py-4 text-center text-xs text-muted-foreground">
         {t("org")}
       </footer>
