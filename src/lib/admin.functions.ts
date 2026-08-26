@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { assertSuperAdmin, actorLabel } from "@/lib/admin.server";
+import { assertSuperAdmin, actorLabel, type Db } from "@/lib/admin.server";
 
 /** Creates the profile row on first sign-in and bootstraps the first Super Admin. */
 export const ensureAccount = createServerFn({ method: "POST" })
@@ -180,7 +180,7 @@ function permsRow(userId: string, p: PermsInput) {
 }
 
 /** Reads verification/ban state straight from the real auth accounts. */
-async function authIndex(admin: any) {
+async function authIndex(admin: Db) {
   const map = new Map<
     string,
     { emailConfirmed: boolean; banned: boolean; invitedAt: string | null }
@@ -214,12 +214,12 @@ export const listUsers = createServerFn({ method: "POST" })
       authIndex(supabaseAdmin),
     ]);
 
-    return (profiles ?? []).map((p: any) => ({
+    return (profiles ?? []).map((p) => ({
       ...p,
-      role: (roles ?? []).some((r: any) => r.user_id === p.id && r.role === "admin")
+      role: (roles ?? []).some((r) => r.user_id === p.id && r.role === "admin")
         ? "super_admin"
         : "user",
-      permissions: (perms ?? []).find((x: any) => x.user_id === p.id) ?? null,
+      permissions: (perms ?? []).find((x) => x.user_id === p.id) ?? null,
       email_confirmed: auth.get(p.id)?.emailConfirmed ?? false,
       banned: auth.get(p.id)?.banned ?? false,
     }));

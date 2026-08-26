@@ -66,11 +66,18 @@ function PrintPage() {
   const queryClient = useQueryClient();
   const { data = [], isLoading } = useQuery({ queryKey: ["specimens"], queryFn: fetchSpecimens });
 
-  const idList = ids
-    .split(",")
-    .map((v: string) => v.trim())
-    .filter(Boolean);
-  const selectedLabels = idList.length > 0 ? data.filter((s) => idList.includes(s.id)) : [];
+  const idList = useMemo(
+    () =>
+      ids
+        .split(",")
+        .map((v: string) => v.trim())
+        .filter(Boolean),
+    [ids],
+  );
+  const selectedLabels = useMemo(
+    () => (idList.length > 0 ? data.filter((s) => idList.includes(s.id)) : []),
+    [idList, data],
+  );
 
   const labels: Specimen[] = useMemo(
     () => Array.from({ length: Math.max(1, copies) }).flatMap(() => selectedLabels),
