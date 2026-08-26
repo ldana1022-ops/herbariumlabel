@@ -1,0 +1,4 @@
+CREATE POLICY "Read specimen images" ON storage.objects FOR SELECT TO authenticated USING (bucket_id = 'specimen-images' AND private.is_active_user(auth.uid()));
+CREATE POLICY "Upload specimen images" ON storage.objects FOR INSERT TO authenticated WITH CHECK (bucket_id = 'specimen-images' AND private.is_active_user(auth.uid()));
+CREATE POLICY "Update specimen images" ON storage.objects FOR UPDATE TO authenticated USING (bucket_id = 'specimen-images' AND private.is_active_user(auth.uid())) WITH CHECK (bucket_id = 'specimen-images' AND private.is_active_user(auth.uid()));
+CREATE POLICY "Delete specimen images" ON storage.objects FOR DELETE TO authenticated USING (bucket_id = 'specimen-images' AND private.is_active_user(auth.uid()));
