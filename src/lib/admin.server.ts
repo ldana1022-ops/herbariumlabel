@@ -1,7 +1,11 @@
 /* Server-only helpers for admin server functions. */
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "@/integrations/supabase/types";
+
+export type Db = SupabaseClient<Database>;
 
 /** Throws unless the user holds the Super Admin role. */
-export async function assertSuperAdmin(supabase: any, userId: string) {
+export async function assertSuperAdmin(supabase: Db, userId: string) {
   const { data, error } = await supabase
     .from("user_roles")
     .select("role")
@@ -14,7 +18,7 @@ export async function assertSuperAdmin(supabase: any, userId: string) {
 }
 
 /** Human-readable label for an actor id. */
-export async function actorLabel(admin: any, userId: string): Promise<string> {
+export async function actorLabel(admin: Db, userId: string): Promise<string> {
   const { data } = await admin
     .from("profiles")
     .select("full_name, email")
