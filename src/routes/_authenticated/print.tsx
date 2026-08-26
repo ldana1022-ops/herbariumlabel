@@ -79,7 +79,6 @@ function PrintPage() {
     [idList, data],
   );
 
-
   const labels: Specimen[] = useMemo(
     () => Array.from({ length: Math.max(1, copies) }).flatMap(() => selectedLabels),
     [selectedLabels, copies],
