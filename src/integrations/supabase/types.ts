@@ -66,6 +66,7 @@ export type Database = {
           determined_by: string | null
           family: string | null
           id: string
+          image_url: string | null
           latitude: number | null
           local_name: string | null
           local_name_ar: string | null
@@ -91,6 +92,7 @@ export type Database = {
           determined_by?: string | null
           family?: string | null
           id?: string
+          image_url?: string | null
           latitude?: number | null
           local_name?: string | null
           local_name_ar?: string | null
@@ -116,6 +118,7 @@ export type Database = {
           determined_by?: string | null
           family?: string | null
           id?: string
+          image_url?: string | null
           latitude?: number | null
           local_name?: string | null
           local_name_ar?: string | null
