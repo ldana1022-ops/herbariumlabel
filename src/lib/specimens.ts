@@ -22,6 +22,7 @@ export type Specimen = {
   determined_by: string | null;
   determination_date: string | null;
   notes: string | null;
+  image_url: string | null;
   status: SpecimenStatus;
   created_at: string;
   updated_at: string;
