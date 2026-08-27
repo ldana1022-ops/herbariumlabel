@@ -57,6 +57,101 @@ function DetailRow({ label, value }: { label: string; value?: string | number | 
   );
 }
 
+function SpecimenImageCard({ specimen, editable }: { specimen: Specimen; editable: boolean }) {
+  const { t } = useI18n();
+  const queryClient = useQueryClient();
+  const fileInput = useRef<HTMLInputElement>(null);
+  const [busy, setBusy] = useState(false);
+  const { data: imageUrl } = useSpecimenImageUrl(specimen.image_url);
+
+  const invalidate = () => {
+    queryClient.invalidateQueries({ queryKey: ["specimen", specimen.id] });
+    queryClient.invalidateQueries({ queryKey: ["specimens"] });
+    queryClient.invalidateQueries({ queryKey: ["specimen-image"] });
+  };
+
+  const onFile = async (file: File | undefined) => {
+    if (!file) return;
+    if (!isAllowedImage(file)) {
+      toast.error(t("imageInvalid"));
+      return;
+    }
+    setBusy(true);
+    try {
+      await uploadSpecimenImage(specimen.id, file);
+      invalidate();
+      toast.success(t("imageUploaded"));
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : t("imageInvalid"));
+    } finally {
+      setBusy(false);
+      if (fileInput.current) fileInput.current.value = "";
+    }
+  };
+
+  const onDelete = async () => {
+    setBusy(true);
+    try {
+      await deleteSpecimenImage(specimen.id, specimen.image_url);
+      invalidate();
+      toast.success(t("imageDeleted"));
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : t("imageInvalid"));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-base">{t("specimenImage")}</CardTitle>
+        <p className="text-xs text-muted-foreground">{t("specimenImageHint")}</p>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        {imageUrl ? (
+          <img
+            src={imageUrl}
+            alt={specimen.scientific_name}
+            className="max-h-64 w-auto rounded-md border border-border object-contain"
+          />
+        ) : (
+          <div className="flex items-center gap-2 rounded-md border border-dashed border-border p-6 text-sm text-muted-foreground">
+            <ImageIcon className="size-4" />
+            {t("noImage")}
+          </div>
+        )}
+        {editable ? (
+          <div className="flex flex-wrap gap-2">
+            <input
+              ref={fileInput}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              className="hidden"
+              onChange={(e) => void onFile(e.target.files?.[0])}
+            />
+            <Button
+              size="sm"
+              variant="outline"
+              disabled={busy}
+              onClick={() => fileInput.current?.click()}
+            >
+              <Upload className="size-4" />
+              {specimen.image_url ? t("replaceImage") : t("uploadImage")}
+            </Button>
+            {specimen.image_url ? (
+              <Button size="sm" variant="destructive" disabled={busy} onClick={() => void onDelete()}>
+                <Trash2 className="size-4" />
+                {t("deleteImage")}
+              </Button>
+            ) : null}
+          </div>
+        ) : null}
+      </CardContent>
+    </Card>
+  );
+}
+
 function SpecimenDetailPage() {
   const { id } = useParams({ from: "/_authenticated/specimens/$id/" });
   const { t, f } = useI18n();
@@ -254,6 +349,8 @@ function SpecimenDetailPage() {
                 </div>
               </CardContent>
             </Card>
+
+            <SpecimenImageCard specimen={s} editable={editable} />
 
             <Card>
               <CardHeader>
