@@ -691,6 +691,9 @@ function SpecimensPage() {
                             </Link>
                           </Button>
                         ) : null}
+                        {canEditSpecimen(s.id) ? <RowImageUploadButton specimen={s} /> : null}
+
+
 
                         <Button asChild size="icon" variant="ghost" title={t("printLabel")}>
                           <Link to="/print" search={{ ids: s.id }}>
