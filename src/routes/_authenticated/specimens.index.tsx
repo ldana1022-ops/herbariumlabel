@@ -1,11 +1,12 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import {
   Eye,
   FileSpreadsheet,
   FileText,
+  ImageUp,
   Pencil,
   Plus,
   Printer,
@@ -56,6 +57,56 @@ import {
 import { StatusSelect } from "@/components/StatusSelect";
 import { useEditableSpecimens } from "@/lib/edit-access";
 import { normalizeStatus, STATUS_ORDER, type SpecimenStatus } from "@/lib/specimen-status";
+import { isAllowedImage, uploadSpecimenImage } from "@/lib/specimen-image";
+
+function RowImageUploadButton({ specimen }: { specimen: Specimen }) {
+  const { t } = useI18n();
+  const queryClient = useQueryClient();
+  const fileInput = useRef<HTMLInputElement>(null);
+  const [busy, setBusy] = useState(false);
+
+  const onFile = async (file: File | undefined) => {
+    if (!file) return;
+    if (!isAllowedImage(file)) {
+      toast.error(t("imageInvalid"));
+      return;
+    }
+    setBusy(true);
+    try {
+      await uploadSpecimenImage(specimen.id, file);
+      queryClient.invalidateQueries({ queryKey: ["specimens"] });
+      queryClient.invalidateQueries({ queryKey: ["specimen", specimen.id] });
+      queryClient.invalidateQueries({ queryKey: ["specimen-image"] });
+      toast.success(t("imageUploaded"));
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : t("imageInvalid"));
+    } finally {
+      setBusy(false);
+      if (fileInput.current) fileInput.current.value = "";
+    }
+  };
+
+  return (
+    <>
+      <input
+        ref={fileInput}
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        className="hidden"
+        onChange={(e) => void onFile(e.target.files?.[0])}
+      />
+      <Button
+        size="icon"
+        variant="ghost"
+        disabled={busy}
+        title={specimen.image_url ? t("replaceImage") : t("uploadImage")}
+        onClick={() => fileInput.current?.click()}
+      >
+        <ImageUp className="size-4" />
+      </Button>
+    </>
+  );
+}
 
 export const Route = createFileRoute("/_authenticated/specimens/")({
   validateSearch: (search: Record<string, unknown>): { focus?: string } =>
@@ -640,6 +691,9 @@ function SpecimensPage() {
                             </Link>
                           </Button>
                         ) : null}
+                        {canEditSpecimen(s.id) ? <RowImageUploadButton specimen={s} /> : null}
+
+
 
                         <Button asChild size="icon" variant="ghost" title={t("printLabel")}>
                           <Link to="/print" search={{ ids: s.id }}>
