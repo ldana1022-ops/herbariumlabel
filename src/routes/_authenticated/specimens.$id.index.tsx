@@ -1,8 +1,8 @@
 import { createFileRoute, Link, useNavigate, useParams } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { ArrowRight, FileText, Pencil, Printer } from "lucide-react";
+import { ArrowRight, FileText, ImageIcon, Pencil, Printer, Trash2, Upload } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { HerbariumLabel } from "@/components/HerbariumLabel";
 import { BarcodeSection } from "@/components/BarcodeSection";
@@ -16,6 +16,12 @@ import { exportLabelsToWord } from "@/lib/export-word";
 import { useLabelSize } from "@/lib/label-size";
 import { useBarcodeText } from "@/lib/barcode-text";
 import { useEditableSpecimens } from "@/lib/edit-access";
+import {
+  deleteSpecimenImage,
+  isAllowedImage,
+  uploadSpecimenImage,
+  useSpecimenImageUrl,
+} from "@/lib/specimen-image";
 import type { SpecimenStatus } from "@/lib/specimen-status";
 import {
   fetchSpecimen,
