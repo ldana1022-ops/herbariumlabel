@@ -34,6 +34,21 @@ const dict = {
     ar: "امسح الباركود للوصول إلى بيانات هذه العينة.",
     en: "Scan the barcode to open this specimen.",
   },
+  specimenImage: { ar: "صورة العينة", en: "Specimen image" },
+  specimenImageHint: {
+    ar: "ارفع صورة للعينة (JPG أو PNG أو WebP حتى 10MB).",
+    en: "Upload a specimen image (JPG, PNG or WebP up to 10MB).",
+  },
+  uploadImage: { ar: "رفع صورة", en: "Upload image" },
+  replaceImage: { ar: "استبدال الصورة", en: "Replace image" },
+  deleteImage: { ar: "حذف الصورة", en: "Delete image" },
+  noImage: { ar: "لا توجد صورة بعد", en: "No image yet" },
+  imageInvalid: {
+    ar: "صيغة الصورة غير مدعومة أو حجمها أكبر من 10MB",
+    en: "Unsupported image type or larger than 10MB",
+  },
+  imageUploaded: { ar: "تم رفع الصورة", en: "Image uploaded" },
+  imageDeleted: { ar: "تم حذف الصورة", en: "Image deleted" },
   serialNotFound: {
     ar: "لا توجد عينة بهذا الرقم التسلسلي",
     en: "No specimen with this serial number",
