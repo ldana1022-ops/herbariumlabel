@@ -170,7 +170,7 @@ function SpecimensPage() {
 
   const filtered = useMemo(() => {
     const needle = q.trim().toLowerCase();
-    return data.filter((s) => {
+    const list = data.filter((s) => {
       if (needle) {
         const hay = [
           s.accession_number,
@@ -197,6 +197,12 @@ function SpecimensPage() {
       if (to && (s.collection_date ?? "") > to) return false;
       return true;
     });
+    // Completed specimens rise to the top; each group keeps its serial order.
+    return [...list].sort(
+      (a, b) =>
+        STATUS_RANK[normalizeStatus(a.status)] - STATUS_RANK[normalizeStatus(b.status)] ||
+        a.serial_number.localeCompare(b.serial_number),
+    );
   }, [data, q, family, region, collector, statusFilter, from, to]);
 
   const statusMutation = useMutation({
