@@ -36,3 +36,31 @@ export const logPublicSpecimenView = createServerFn({ method: "POST" })
 
     return { ok: true };
   });
+
+/**
+ * Returns a short-lived signed URL for the specimen image of a valid serial.
+ * Read-only: nothing but the image link is exposed, and no other specimen
+ * field or write capability is granted to anonymous visitors.
+ */
+export const getPublicSpecimenImageUrl = createServerFn({ method: "POST" })
+  .inputValidator((input: { serial: string }) =>
+    z.object({ serial: z.string().trim().toUpperCase().regex(SERIAL_RE) }).parse(input),
+  )
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const { data: specimen } = await supabaseAdmin
+      .from("herbarium_specimens")
+      .select("image_url, visibility")
+      .eq("serial_number", data.serial)
+      .maybeSingle();
+
+    // Only publicly visible specimens expose their image.
+    if (!specimen?.image_url || specimen.visibility !== "everyone") return { url: null };
+
+    const { data: signed } = await supabaseAdmin.storage
+      .from("specimen-images")
+      .createSignedUrl(specimen.image_url, 60 * 10);
+
+    return { url: signed?.signedUrl ?? null };
+  });
