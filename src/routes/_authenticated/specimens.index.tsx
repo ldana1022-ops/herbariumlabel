@@ -56,7 +56,12 @@ import {
 } from "@/lib/specimens";
 import { StatusSelect } from "@/components/StatusSelect";
 import { useEditableSpecimens } from "@/lib/edit-access";
-import { normalizeStatus, STATUS_ORDER, type SpecimenStatus } from "@/lib/specimen-status";
+import {
+  normalizeStatus,
+  STATUS_ORDER,
+  STATUS_RANK,
+  type SpecimenStatus,
+} from "@/lib/specimen-status";
 import { isAllowedImage, uploadSpecimenImage } from "@/lib/specimen-image";
 
 function RowImageUploadButton({ specimen }: { specimen: Specimen }) {
