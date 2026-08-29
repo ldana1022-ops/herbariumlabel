@@ -53,3 +53,11 @@ export function statusLabel(value: unknown, lang: "ar" | "en" = "ar"): string {
   const meta = STATUS_META[normalizeStatus(value)];
   return lang === "en" ? meta.en : meta.ar;
 }
+
+/** Display priority: completed specimens sort before unfinished ones. */
+export const STATUS_RANK: Record<SpecimenStatus, number> = {
+  completed: 0,
+  printed: 1,
+  in_progress: 2,
+  incomplete: 3,
+};

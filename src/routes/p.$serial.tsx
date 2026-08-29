@@ -2,7 +2,10 @@ import { createFileRoute, Link, useParams } from "@tanstack/react-router";
 import { useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { logPublicSpecimenView } from "@/lib/public-views.functions";
+import {
+  getPublicSpecimenImageUrl,
+  logPublicSpecimenView,
+} from "@/lib/public-views.functions";
 import { useI18n } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -56,6 +59,14 @@ function PublicSpecimenPage() {
     queryFn: () => fetchPublicSpecimenBySerial(serial),
   });
 
+  const imageUrlFn = useServerFn(getPublicSpecimenImageUrl);
+  const { data: image } = useQuery({
+    queryKey: ["public-specimen-image", serial],
+    queryFn: () => imageUrlFn({ data: { serial } }),
+    enabled: Boolean(data),
+    staleTime: 8 * 60 * 1000,
+  });
+
   return (
     <div dir={dir} className="min-h-screen bg-muted/40 px-4 py-8">
       <div className="mx-auto max-w-lg space-y-4">
@@ -71,6 +82,22 @@ function PublicSpecimenPage() {
             <p className="text-xs leading-tight text-muted-foreground">{t("org")}</p>
           </div>
         </div>
+
+        {image?.url ? (
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm">{t("specimenImage")}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <img
+                src={image.url}
+                alt={`${t("specimenImage")} ${data?.scientific_name ?? serial}`}
+                loading="lazy"
+                className="max-h-72 w-full rounded-md border border-border object-contain"
+              />
+            </CardContent>
+          </Card>
+        ) : null}
 
         <Card>
           <CardHeader className="pb-2">
