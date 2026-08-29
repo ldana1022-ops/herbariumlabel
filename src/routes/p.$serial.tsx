@@ -83,21 +83,26 @@ function PublicSpecimenPage() {
           </div>
         </div>
 
-        {image?.url ? (
+        {data ? (
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-sm">{t("specimenImage")}</CardTitle>
             </CardHeader>
             <CardContent>
-              <img
-                src={image.url}
-                alt={`${t("specimenImage")} ${data?.scientific_name ?? serial}`}
-                loading="lazy"
-                className="max-h-72 w-full rounded-md border border-border object-contain"
-              />
+              {image?.url ? (
+                <img
+                  src={image.url}
+                  alt={`${t("specimenImage")} ${data.scientific_name ?? serial}`}
+                  loading="lazy"
+                  className="max-h-72 w-full rounded-md border border-border object-contain"
+                />
+              ) : (
+                <p className="text-sm text-muted-foreground">{t("noImage")}</p>
+              )}
             </CardContent>
           </Card>
         ) : null}
+
 
         <Card>
           <CardHeader className="pb-2">
