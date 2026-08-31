@@ -49,9 +49,7 @@ export const logPublicSpecimenView = createServerFn({ method: "POST" })
  * field or write capability is granted to anonymous visitors.
  */
 export const getPublicSpecimenImageUrl = createServerFn({ method: "POST" })
-  .inputValidator((input: { serial: string }) =>
-    z.object({ serial: z.string().trim().toUpperCase().regex(SERIAL_RE) }).parse(input),
-  )
+  .inputValidator((input: { serial: string }) => serialInput.parse(input))
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
@@ -64,9 +62,15 @@ export const getPublicSpecimenImageUrl = createServerFn({ method: "POST" })
     // Only publicly visible specimens expose their image.
     if (!specimen?.image_url || specimen.visibility !== "everyone") return { url: null };
 
-    const { data: signed } = await supabaseAdmin.storage
-      .from("specimen-images")
-      .createSignedUrl(specimen.image_url, 60 * 10);
+    // A stored value may already be a full URL; otherwise sign the storage path.
+    if (/^https?:\/\//i.test(specimen.image_url)) return { url: specimen.image_url };
 
-    return { url: signed?.signedUrl ?? null };
+    const key = specimen.image_url.replace(/^specimen-images\//, "");
+    const storage = supabaseAdmin.storage.from("specimen-images");
+    const { data: signed } = await storage.createSignedUrl(key, 60 * 10);
+    if (signed?.signedUrl) return { url: signed.signedUrl };
+
+    const { data: pub } = storage.getPublicUrl(key);
+    return { url: pub?.publicUrl ?? null };
   });
+
