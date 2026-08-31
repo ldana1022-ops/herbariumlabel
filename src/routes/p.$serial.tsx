@@ -12,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { fetchPublicSpecimenBySerial } from "@/lib/specimens";
 import { statusLabel } from "@/lib/specimen-status";
 import { BackButton } from "@/components/BackButton";
+import { normalizeSerial } from "@/lib/serial";
 
 export const Route = createFileRoute("/p/$serial")({
   ssr: false,
@@ -41,7 +42,9 @@ function Row({ label, value }: { label: string; value: string }) {
 }
 
 function PublicSpecimenPage() {
-  const { serial } = useParams({ from: "/p/$serial" });
+  const { serial: rawSerial } = useParams({ from: "/p/$serial" });
+  // Canonical serial so data and image always resolve to the same specimen.
+  const serial = normalizeSerial(rawSerial) ?? rawSerial.trim().toUpperCase();
   const { t, f, lang, dir } = useI18n();
 
   const logView = useServerFn(logPublicSpecimenView);
@@ -63,7 +66,7 @@ function PublicSpecimenPage() {
   const { data: image } = useQuery({
     queryKey: ["public-specimen-image", serial],
     queryFn: () => imageUrlFn({ data: { serial } }),
-    enabled: Boolean(data),
+    enabled: Boolean(serial),
     staleTime: 8 * 60 * 1000,
   });
 
@@ -83,8 +86,7 @@ function PublicSpecimenPage() {
           </div>
         </div>
 
-        {data ? (
-          <Card>
+        <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-sm">{t("specimenImage")}</CardTitle>
             </CardHeader>
@@ -92,7 +94,7 @@ function PublicSpecimenPage() {
               {image?.url ? (
                 <img
                   src={image.url}
-                  alt={`${t("specimenImage")} ${data.scientific_name ?? serial}`}
+                  alt={`${t("specimenImage")} ${data?.scientific_name ?? serial}`}
                   loading="lazy"
                   className="max-h-72 w-full rounded-md border border-border object-contain"
                 />
@@ -100,8 +102,7 @@ function PublicSpecimenPage() {
                 <p className="text-sm text-muted-foreground">{t("noImage")}</p>
               )}
             </CardContent>
-          </Card>
-        ) : null}
+        </Card>
 
 
         <Card>
