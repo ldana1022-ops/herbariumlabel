@@ -42,14 +42,24 @@ export async function deleteSpecimenImage(specimenId: string, path: string | nul
   if (path) await supabase.storage.from(SPECIMEN_IMAGE_BUCKET).remove([path]);
 }
 
+/**
+ * Read-only URL for a stored image reference.
+ * Accepts either a full http(s) URL (returned as-is) or a storage path, for
+ * which a signed read-only URL is created; falls back to the public URL when
+ * the bucket is public.
+ */
 export async function getSpecimenImageUrl(path: string | null): Promise<string | null> {
   if (!path) return null;
+  if (/^https?:\/\//i.test(path)) return path;
+  const key = path.replace(new RegExp(`^${SPECIMEN_IMAGE_BUCKET}/`), "");
   const { data, error } = await supabase.storage
     .from(SPECIMEN_IMAGE_BUCKET)
-    .createSignedUrl(path, 60 * 60);
-  if (error) return null;
-  return data?.signedUrl ?? null;
+    .createSignedUrl(key, 60 * 60);
+  if (!error && data?.signedUrl) return data.signedUrl;
+  const { data: pub } = supabase.storage.from(SPECIMEN_IMAGE_BUCKET).getPublicUrl(key);
+  return pub?.publicUrl ?? null;
 }
+
 
 /** Signed URL for a specimen image path, refreshed before the hour expires. */
 export function useSpecimenImageUrl(path: string | null) {
