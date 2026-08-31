@@ -1,7 +1,14 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import { normalizeSerial } from "@/lib/serial";
 
-const SERIAL_RE = /^NCVCH?\d{6}$/;
+const serialInput = z
+  .object({ serial: z.string() })
+  .transform((v) => {
+    const serial = normalizeSerial(v.serial);
+    if (!serial) throw new Error("INVALID_SERIAL");
+    return { serial };
+  });
 
 /**
  * Records an anonymous visit to the public summary page (/p/:serial).
@@ -9,9 +16,8 @@ const SERIAL_RE = /^NCVCH?\d{6}$/;
  * or any specimen field beyond the identifier already present in the URL.
  */
 export const logPublicSpecimenView = createServerFn({ method: "POST" })
-  .inputValidator((input: { serial: string }) =>
-    z.object({ serial: z.string().trim().toUpperCase().regex(SERIAL_RE) }).parse(input),
-  )
+  .inputValidator((input: { serial: string }) => serialInput.parse(input))
+
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
