@@ -2,13 +2,14 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { normalizeSerial } from "@/lib/serial";
 
-const serialInput = z
-  .object({ serial: z.string() })
-  .transform((v) => {
-    const serial = normalizeSerial(v.serial);
-    if (!serial) throw new Error("INVALID_SERIAL");
-    return { serial };
-  });
+/** Validates and canonicalises the serial before any lookup. */
+function parseSerialInput(input: { serial: string }): { serial: string } {
+  const raw = z.object({ serial: z.string() }).parse(input).serial;
+  const serial = normalizeSerial(raw);
+  if (!serial) throw new Error("INVALID_SERIAL");
+  return { serial };
+}
+
 
 /**
  * Records an anonymous visit to the public summary page (/p/:serial).
