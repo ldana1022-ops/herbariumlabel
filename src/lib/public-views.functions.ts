@@ -17,7 +17,7 @@ function parseSerialInput(input: { serial: string }): { serial: string } {
  * or any specimen field beyond the identifier already present in the URL.
  */
 export const logPublicSpecimenView = createServerFn({ method: "POST" })
-  .inputValidator((input: { serial: string }) => serialInput.parse(input))
+  .inputValidator((input: { serial: string }) => parseSerialInput(input))
 
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -50,7 +50,7 @@ export const logPublicSpecimenView = createServerFn({ method: "POST" })
  * field or write capability is granted to anonymous visitors.
  */
 export const getPublicSpecimenImageUrl = createServerFn({ method: "POST" })
-  .inputValidator((input: { serial: string }) => serialInput.parse(input))
+  .inputValidator((input: { serial: string }) => parseSerialInput(input))
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
