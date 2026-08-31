@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScanLine, Camera, CameraOff, Keyboard } from "lucide-react";
 import { BackButton } from "@/components/BackButton";
+import { normalizeSerial } from "@/lib/serial";
 
 export const Route = createFileRoute("/scan")({
   ssr: false,
@@ -23,8 +24,6 @@ export const Route = createFileRoute("/scan")({
   }),
   component: ScanPage,
 });
-
-import { normalizeSerial } from "@/lib/serial";
 
 
 function ScanPage() {
