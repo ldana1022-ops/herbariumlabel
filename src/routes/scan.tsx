@@ -24,7 +24,7 @@ export const Route = createFileRoute("/scan")({
   component: ScanPage,
 });
 
-export { normalizeSerial } from "@/lib/serial";
+import { normalizeSerial } from "@/lib/serial";
 
 
 function ScanPage() {
