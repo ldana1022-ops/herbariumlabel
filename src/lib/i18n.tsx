@@ -442,7 +442,7 @@ const dict = {
     en: "Scan barcode as a guest (no sign-in)",
   },
   scanGuestNote: {
-    ar: "الزائر يستطيع العرض فقط، دون تعديل أو حذف.",
+    ar: "\n",
     en: "Guests get view-only access — no editing or deleting.",
   },
   scanStart: { ar: "بدء المسح", en: "Start Scanning" },
