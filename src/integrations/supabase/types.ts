@@ -77,6 +77,7 @@ export type Database = {
           scientific_name: string
           serial_number: string
           status: Database["public"]["Enums"]["specimen_status"]
+          status_rank: number | null
           updated_at: string
           visibility: Database["public"]["Enums"]["specimen_visibility"]
         }
@@ -103,6 +104,7 @@ export type Database = {
           scientific_name: string
           serial_number?: string
           status?: Database["public"]["Enums"]["specimen_status"]
+          status_rank?: number | null
           updated_at?: string
           visibility?: Database["public"]["Enums"]["specimen_visibility"]
         }
@@ -129,6 +131,7 @@ export type Database = {
           scientific_name?: string
           serial_number?: string
           status?: Database["public"]["Enums"]["specimen_status"]
+          status_rank?: number | null
           updated_at?: string
           visibility?: Database["public"]["Enums"]["specimen_visibility"]
         }
@@ -565,7 +568,9 @@ export type Database = {
       }
     }
     Functions: {
-      [_ in never]: never
+      log_auth_event: { Args: { _action: string }; Returns: undefined }
+      specimen_dashboard: { Args: never; Returns: Json }
+      specimen_facets: { Args: never; Returns: Json }
     }
     Enums: {
       app_role: "admin" | "editor" | "viewer"
