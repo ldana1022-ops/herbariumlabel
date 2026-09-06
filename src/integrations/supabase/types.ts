@@ -568,7 +568,6 @@ export type Database = {
       }
     }
     Functions: {
-      log_auth_event: { Args: { _action: string }; Returns: undefined }
       specimen_dashboard: { Args: never; Returns: Json }
       specimen_facets: { Args: never; Returns: Json }
     }
