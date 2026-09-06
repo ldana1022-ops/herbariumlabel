@@ -77,6 +77,7 @@ export type Database = {
           scientific_name: string
           serial_number: string
           status: Database["public"]["Enums"]["specimen_status"]
+          status_rank: number | null
           updated_at: string
           visibility: Database["public"]["Enums"]["specimen_visibility"]
         }
@@ -103,6 +104,7 @@ export type Database = {
           scientific_name: string
           serial_number?: string
           status?: Database["public"]["Enums"]["specimen_status"]
+          status_rank?: number | null
           updated_at?: string
           visibility?: Database["public"]["Enums"]["specimen_visibility"]
         }
@@ -129,6 +131,7 @@ export type Database = {
           scientific_name?: string
           serial_number?: string
           status?: Database["public"]["Enums"]["specimen_status"]
+          status_rank?: number | null
           updated_at?: string
           visibility?: Database["public"]["Enums"]["specimen_visibility"]
         }
@@ -206,6 +209,36 @@ export type Database = {
           is_active?: boolean
           last_login_at?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      public_access_throttle: {
+        Row: {
+          client_hash: string
+          created_at: string
+          endpoint: string
+          hit_count: number
+          id: string
+          updated_at: string
+          window_start: string
+        }
+        Insert: {
+          client_hash: string
+          created_at?: string
+          endpoint: string
+          hit_count?: number
+          id?: string
+          updated_at?: string
+          window_start?: string
+        }
+        Update: {
+          client_hash?: string
+          created_at?: string
+          endpoint?: string
+          hit_count?: number
+          id?: string
+          updated_at?: string
+          window_start?: string
         }
         Relationships: []
       }
@@ -535,7 +568,8 @@ export type Database = {
       }
     }
     Functions: {
-      [_ in never]: never
+      specimen_dashboard: { Args: never; Returns: Json }
+      specimen_facets: { Args: never; Returns: Json }
     }
     Enums: {
       app_role: "admin" | "editor" | "viewer"
