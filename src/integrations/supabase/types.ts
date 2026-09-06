@@ -209,6 +209,36 @@ export type Database = {
         }
         Relationships: []
       }
+      public_access_throttle: {
+        Row: {
+          client_hash: string
+          created_at: string
+          endpoint: string
+          hit_count: number
+          id: string
+          updated_at: string
+          window_start: string
+        }
+        Insert: {
+          client_hash: string
+          created_at?: string
+          endpoint: string
+          hit_count?: number
+          id?: string
+          updated_at?: string
+          window_start?: string
+        }
+        Update: {
+          client_hash?: string
+          created_at?: string
+          endpoint?: string
+          hit_count?: number
+          id?: string
+          updated_at?: string
+          window_start?: string
+        }
+        Relationships: []
+      }
       request_samples: {
         Row: {
           created_at: string
@@ -535,7 +565,8 @@ export type Database = {
       }
     }
     Functions: {
-      [_ in never]: never
+      show_limit: { Args: never; Returns: number }
+      show_trgm: { Args: { "": string }; Returns: string[] }
     }
     Enums: {
       app_role: "admin" | "editor" | "viewer"
