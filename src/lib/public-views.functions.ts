@@ -117,6 +117,7 @@ export const logPublicSpecimenView = createServerFn({ method: "POST" })
 export const getPublicSpecimenImageUrl = createServerFn({ method: "POST" })
   .inputValidator((input: { serial: string }) => parseSerialInput(input))
   .handler(async ({ data }) => {
+    if (!(await allowPublicCall("public_image"))) return { url: null };
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     const { data: specimen } = await supabaseAdmin
