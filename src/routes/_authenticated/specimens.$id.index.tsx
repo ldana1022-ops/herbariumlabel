@@ -140,7 +140,12 @@ function SpecimenImageCard({ specimen, editable }: { specimen: Specimen; editabl
               {specimen.image_url ? t("replaceImage") : t("uploadImage")}
             </Button>
             {specimen.image_url ? (
-              <Button size="sm" variant="destructive" disabled={busy} onClick={() => void onDelete()}>
+              <Button
+                size="sm"
+                variant="destructive"
+                disabled={busy}
+                onClick={() => void onDelete()}
+              >
                 <Trash2 className="size-4" />
                 {t("deleteImage")}
               </Button>

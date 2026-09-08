@@ -96,7 +96,6 @@ export async function getSpecimenImageUrl(path: string | null): Promise<string |
   return pub?.publicUrl ?? null;
 }
 
-
 /** Signed URL for a specimen image path, refreshed before the hour expires. */
 export function useSpecimenImageUrl(path: string | null) {
   return useQuery({

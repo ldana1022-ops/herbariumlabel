@@ -54,7 +54,13 @@ console.warn("bun audit unavailable, falling back to npm audit.\n");
 
 const generatedLock = !existsSync("package-lock.json");
 if (generatedLock) {
-  const gen = run("npm", ["install", "--package-lock-only", "--ignore-scripts", "--no-audit", "--no-fund"]);
+  const gen = run("npm", [
+    "install",
+    "--package-lock-only",
+    "--ignore-scripts",
+    "--no-audit",
+    "--no-fund",
+  ]);
   if (gen.status !== 0) {
     const out = `${gen.stdout ?? ""}${gen.stderr ?? ""}`;
     console.error(out);
