@@ -83,9 +83,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(data.session ?? null);
       setReady(true);
     });
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, next) => {
+    const { data: sub } = supabase.auth.onAuthStateChange((event, next) => {
       setSession(next ?? null);
       setReady(true);
+      // Audit trail: record successful sign-ins; failures are never logged here.
+      if (event === "SIGNED_IN" && next) {
+        void logAuthEvent({ data: { event: "sign_in" } }).catch(() => undefined);
+      }
     });
     return () => {
       mounted = false;
