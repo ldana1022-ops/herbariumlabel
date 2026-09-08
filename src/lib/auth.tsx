@@ -153,6 +153,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isSuperAdmin,
       can,
       signOut: async () => {
+        await logAuthEvent({ data: { event: "sign_out" } }).catch(() => undefined);
         await queryClient.cancelQueries();
         queryClient.clear();
 
