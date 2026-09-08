@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useMemo, useState, type ReactNode
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
+import { logAuthEvent } from "@/lib/auth-audit.functions";
 
 export type Permission =
   | "view"
@@ -83,9 +84,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(data.session ?? null);
       setReady(true);
     });
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, next) => {
+    const { data: sub } = supabase.auth.onAuthStateChange((event, next) => {
       setSession(next ?? null);
       setReady(true);
+      // Audit trail: record successful sign-ins; failures are never logged here.
+      if (event === "SIGNED_IN" && next) {
+        void logAuthEvent({ data: { event: "sign_in" } }).catch(() => undefined);
+      }
     });
     return () => {
       mounted = false;
@@ -149,6 +154,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isSuperAdmin,
       can,
       signOut: async () => {
+        await logAuthEvent({ data: { event: "sign_out" } }).catch(() => undefined);
         await queryClient.cancelQueries();
         queryClient.clear();
 
