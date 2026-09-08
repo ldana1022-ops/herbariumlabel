@@ -74,7 +74,6 @@ function parseSerialInput(input: { serial: string }): { serial: string } {
   return { serial };
 }
 
-
 /**
  * Records an anonymous visit to the public summary page (/p/:serial).
  * Only the serial number is stored: no IP address, user agent, referrer,
@@ -140,4 +139,3 @@ export const getPublicSpecimenImageUrl = createServerFn({ method: "POST" })
     const { data: pub } = storage.getPublicUrl(key);
     return { url: pub?.publicUrl ?? null };
   });
-

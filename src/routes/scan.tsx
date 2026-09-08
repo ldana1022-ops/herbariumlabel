@@ -25,7 +25,6 @@ export const Route = createFileRoute("/scan")({
   component: ScanPage,
 });
 
-
 function ScanPage() {
   const { t, dir } = useI18n();
   const navigate = useNavigate();

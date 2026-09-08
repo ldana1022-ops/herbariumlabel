@@ -21,7 +21,10 @@ const RULES = [
   { name: "GitHub token", re: /\bgh[pousr]_[A-Za-z0-9]{20,}\b/ },
   { name: "AWS access key id", re: /\bAKIA[0-9A-Z]{16}\b/ },
   { name: "Google API key", re: /\bAIza[0-9A-Za-z_-]{35}\b/ },
-  { name: "Generic hardcoded secret assignment", re: /\b(api[_-]?key|secret|password|token)\s*[:=]\s*["'][A-Za-z0-9/+_-]{24,}["']/i },
+  {
+    name: "Generic hardcoded secret assignment",
+    re: /\b(api[_-]?key|secret|password|token)\s*[:=]\s*["'][A-Za-z0-9/+_-]{24,}["']/i,
+  },
 ];
 
 function* walk(dir) {
@@ -45,7 +48,8 @@ for (const root of ROOTS) {
   for (const file of walk(root)) {
     const lines = readFileSync(file, "utf8").split("\n");
     lines.forEach((line, i) => {
-      if (/sb_publishable_|VITE_SUPABASE_PUBLISHABLE_KEY|process\.env|import\.meta\.env/.test(line)) return;
+      if (/sb_publishable_|VITE_SUPABASE_PUBLISHABLE_KEY|process\.env|import\.meta\.env/.test(line))
+        return;
       for (const rule of RULES) {
         if (rule.re.test(line)) {
           findings.push(`${file}:${i + 1}  ${rule.name}`);
