@@ -356,8 +356,8 @@ function SpecimensPage() {
             <Button
               size="sm"
               variant="outline"
-              onClick={() => exportSpecimensToExcel(filtered)}
-              disabled={filtered.length === 0}
+              onClick={() => void exportFiltered()}
+              disabled={total === 0 || busy}
             >
               <FileSpreadsheet className="size-4" />
               {t("exportExcel")}
@@ -365,13 +365,8 @@ function SpecimensPage() {
             <Button
               size="sm"
               variant="outline"
-              disabled={selected.length === 0}
-              onClick={() =>
-                exportLabelsToWord(
-                  data.filter((s) => selected.includes(s.id)),
-                  size,
-                )
-              }
+              disabled={selected.length === 0 || busy}
+              onClick={() => void exportSelectedLabels()}
             >
               <FileText className="size-4" />
               {t("exportWord")}
