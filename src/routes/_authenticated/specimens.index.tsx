@@ -267,7 +267,42 @@ function SpecimensPage() {
     onError: (e: Error) => toast.error(e.message === "NO_SELECTION" ? t("noSelection") : e.message),
   });
 
-  const allVisibleSelected = filtered.length > 0 && filtered.every((s) => selected.includes(s.id));
+  const allVisibleSelected = rows.length > 0 && rows.every((s) => selected.includes(s.id));
+
+  /** Export the whole filtered result set, not only the visible page. */
+  const exportFiltered = async () => {
+    setBusy(true);
+    try {
+      exportSpecimensToExcel(await fetchAllMatchingSpecimens(filters));
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : String(e));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const exportSelectedLabels = async () => {
+    setBusy(true);
+    try {
+      exportLabelsToWord(await fetchSpecimensByIds(selected), size);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : String(e));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const selectAllMatching = async () => {
+    setBusy(true);
+    try {
+      setSelected(await fetchMatchingSpecimenIds(filters));
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : String(e));
+    } finally {
+      setBusy(false);
+    }
+  };
+
 
   const clearFilters = () => {
     setQ("");
