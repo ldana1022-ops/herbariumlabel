@@ -168,10 +168,8 @@ function safeNeedle(value: string): string {
   return value.trim().replace(/[,()%*\\]/g, " ").replace(/\s+/g, " ").trim();
 }
 
-type Query = ReturnType<ReturnType<typeof supabase.from<"herbarium_specimens">>["select"]>;
-
 /** Applies the database-side filters shared by the list, export and select-all. */
-function withFilters<T extends { or: unknown }>(query: T, filters: SpecimenFilters): T {
+function withFilters<T>(query: T, filters: SpecimenFilters): T {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let q = query as any;
   const needle = safeNeedle(filters.q ?? "");
