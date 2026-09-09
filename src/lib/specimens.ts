@@ -137,6 +137,151 @@ export async function fetchSpecimens(): Promise<Specimen[]> {
   return (data ?? []) as Specimen[];
 }
 
+/** Rows loaded per page of the specimen database table. */
+export const SPECIMENS_PAGE_SIZE = 50;
+
+export type SpecimenFilters = {
+  q?: string;
+  family?: string;
+  region?: string;
+  collector?: string;
+  status?: SpecimenStatus | "";
+  from?: string;
+  to?: string;
+};
+
+const SEARCH_COLUMNS = [
+  "accession_number",
+  "serial_number",
+  "scientific_name",
+  "family",
+  "local_name",
+  "local_name_ar",
+  "locality",
+  "region",
+  "collectors",
+  "determination",
+];
+
+/** Strips characters that would break PostgREST's or() filter syntax. */
+function safeNeedle(value: string): string {
+  return value.trim().replace(/[,()%*\\]/g, " ").replace(/\s+/g, " ").trim();
+}
+
+type Query = ReturnType<ReturnType<typeof supabase.from<"herbarium_specimens">>["select"]>;
+
+/** Applies the database-side filters shared by the list, export and select-all. */
+function withFilters<T extends { or: unknown }>(query: T, filters: SpecimenFilters): T {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let q = query as any;
+  const needle = safeNeedle(filters.q ?? "");
+  if (needle) {
+    q = q.or(SEARCH_COLUMNS.map((c) => `${c}.ilike.%${needle}%`).join(","));
+  }
+  if (filters.family) q = q.eq("family", filters.family);
+  if (filters.region) q = q.eq("region", filters.region);
+  if (filters.collector) q = q.ilike("collectors", `%${filters.collector}%`);
+  if (filters.status) q = q.eq("status", filters.status);
+  if (filters.from) q = q.gte("collection_date", filters.from);
+  if (filters.to) q = q.lte("collection_date", filters.to);
+  return q as T;
+}
+
+/** Completed/printed first, then serial order — the same order as before, in SQL. */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function withOrder(query: any) {
+  return query
+    .order("status_rank", { ascending: true, nullsFirst: false })
+    .order("serial_number", { ascending: true });
+}
+
+/** One page of specimens plus the total number of matching rows. */
+export async function fetchSpecimensPage(
+  filters: SpecimenFilters,
+  page = 0,
+  pageSize = SPECIMENS_PAGE_SIZE,
+): Promise<{ rows: Specimen[]; total: number }> {
+  const base = supabase.from("herbarium_specimens").select("*", { count: "exact" });
+  const from = page * pageSize;
+  const { data, error, count } = await withOrder(withFilters(base, filters)).range(
+    from,
+    from + pageSize - 1,
+  );
+  if (error) throw new Error(error.message);
+  return { rows: (data ?? []) as Specimen[], total: count ?? 0 };
+}
+
+/** All rows matching the filters, fetched in chunks (used for export). */
+export async function fetchAllMatchingSpecimens(filters: SpecimenFilters): Promise<Specimen[]> {
+  const chunk = 1000;
+  const all: Specimen[] = [];
+  for (let page = 0; ; page += 1) {
+    const { rows, total } = await fetchSpecimensPage(filters, page, chunk);
+    all.push(...rows);
+    if (all.length >= total || rows.length === 0) break;
+  }
+  return all;
+}
+
+/** Ids of every row matching the filters (used by "select all"). */
+export async function fetchMatchingSpecimenIds(filters: SpecimenFilters): Promise<string[]> {
+  const base = supabase.from("herbarium_specimens").select("id");
+  const { data, error } = await withOrder(withFilters(base, filters));
+  if (error) throw new Error(error.message);
+  return ((data ?? []) as { id: string }[]).map((r) => r.id);
+}
+
+export async function fetchSpecimensByIds(ids: string[]): Promise<Specimen[]> {
+  if (ids.length === 0) return [];
+  const out: Specimen[] = [];
+  for (let i = 0; i < ids.length; i += 200) {
+    const { data, error } = await supabase
+      .from("herbarium_specimens")
+      .select("*")
+      .in("id", ids.slice(i, i + 200));
+    if (error) throw new Error(error.message);
+    out.push(...((data ?? []) as Specimen[]));
+  }
+  return out;
+}
+
+export type SpecimenFacets = { families: string[]; regions: string[]; collectors: string[] };
+
+/** Distinct filter values, computed in the database. */
+export async function fetchSpecimenFacets(): Promise<SpecimenFacets> {
+  const { data, error } = await supabase.rpc("specimen_facets");
+  if (error) throw new Error(error.message);
+  const raw = (data ?? {}) as Partial<SpecimenFacets>;
+  return {
+    families: raw.families ?? [],
+    regions: raw.regions ?? [],
+    collectors: raw.collectors ?? [],
+  };
+}
+
+export type SpecimenDashboard = {
+  total: number;
+  recent: number;
+  statuses: Record<string, number>;
+  families: { name: string; count: number }[];
+  localities: { locality: string | null; region: string | null; count: number }[];
+};
+
+/** Dashboard counters aggregated in the database instead of in the browser. */
+export async function fetchSpecimenDashboard(): Promise<SpecimenDashboard> {
+  const { data, error } = await supabase.rpc("specimen_dashboard");
+  if (error) throw new Error(error.message);
+  const raw = (data ?? {}) as Partial<SpecimenDashboard>;
+  return {
+    total: raw.total ?? 0,
+    recent: raw.recent ?? 0,
+    statuses: raw.statuses ?? {},
+    families: raw.families ?? [],
+    localities: raw.localities ?? [],
+  };
+}
+
+
 export async function fetchSpecimen(id: string): Promise<Specimen | null> {
   const { data, error } = await supabase
     .from("herbarium_specimens")
