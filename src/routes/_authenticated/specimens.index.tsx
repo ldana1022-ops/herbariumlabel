@@ -48,20 +48,21 @@ import {
   bulkUpdateField,
   bulkUpdateStatus,
   deleteSpecimen,
-  fetchSpecimens,
+  fetchAllMatchingSpecimens,
+  fetchMatchingSpecimenIds,
+  fetchSpecimenFacets,
+  fetchSpecimensByIds,
+  fetchSpecimensPage,
   formatDate,
+  SPECIMENS_PAGE_SIZE,
   updateSpecimenStatus,
   type BulkEditableField,
   type Specimen,
+  type SpecimenFilters,
 } from "@/lib/specimens";
 import { StatusSelect } from "@/components/StatusSelect";
 import { useEditableSpecimens } from "@/lib/edit-access";
-import {
-  normalizeStatus,
-  STATUS_ORDER,
-  STATUS_RANK,
-  type SpecimenStatus,
-} from "@/lib/specimen-status";
+import { STATUS_ORDER, type SpecimenStatus } from "@/lib/specimen-status";
 import { isAllowedImage, uploadSpecimenImage } from "@/lib/specimen-image";
 
 function RowImageUploadButton({ specimen }: { specimen: Specimen }) {
@@ -144,7 +145,6 @@ function SpecimensPage() {
   const { canEditSpecimen, isSuperAdmin, hasAnyEditable } = useEditableSpecimens();
   const canImport = can("import");
   const canDelete = isSuperAdmin;
-  const { data = [], isLoading } = useQuery({ queryKey: ["specimens"], queryFn: fetchSpecimens });
 
   const [q, setQ] = useState("");
   const [family, setFamily] = useState(ALL);
@@ -153,62 +153,54 @@ function SpecimensPage() {
   const [statusFilter, setStatusFilter] = useState(ALL);
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
+  const [page, setPage] = useState(0);
   const [selected, setSelected] = useState<string[]>([]);
   const [pendingDelete, setPendingDelete] = useState<Specimen | null>(null);
   const [bulkField, setBulkField] = useState("");
   const [bulkValue, setBulkValue] = useState("");
   const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
+  const [busy, setBusy] = useState(false);
   const editableSelected = selected.filter((id) => canEditSpecimen(id));
 
-  const unique = (fn: (s: Specimen) => string | null) =>
-    [...new Set(data.map(fn).filter((v): v is string => Boolean(v)))].sort();
-
-  const collectorOptions = useMemo(
-    () =>
-      [
-        ...new Set(
-          data.flatMap((s) => (s.collectors ?? "").split(";").map((c) => c.trim())).filter(Boolean),
-        ),
-      ].sort(),
-    [data],
+  const filters = useMemo<SpecimenFilters>(
+    () => ({
+      q,
+      family: family === ALL ? "" : family,
+      region: region === ALL ? "" : region,
+      collector: collector === ALL ? "" : collector,
+      status: statusFilter === ALL ? "" : (statusFilter as SpecimenStatus),
+      from,
+      to,
+    }),
+    [q, family, region, collector, statusFilter, from, to],
   );
 
-  const filtered = useMemo(() => {
-    const needle = q.trim().toLowerCase();
-    const list = data.filter((s) => {
-      if (needle) {
-        const hay = [
-          s.accession_number,
-          s.serial_number,
-          s.scientific_name,
-          s.family,
-          s.local_name,
-          s.local_name_ar,
-          s.locality,
-          s.region,
-          s.collectors,
-          s.determination,
-        ]
-          .filter(Boolean)
-          .join(" ")
-          .toLowerCase();
-        if (!hay.includes(needle)) return false;
-      }
-      if (family !== ALL && s.family !== family) return false;
-      if (region !== ALL && s.region !== region) return false;
-      if (collector !== ALL && !(s.collectors ?? "").includes(collector)) return false;
-      if (statusFilter !== ALL && normalizeStatus(s.status) !== statusFilter) return false;
-      if (from && (s.collection_date ?? "") < from) return false;
-      if (to && (s.collection_date ?? "") > to) return false;
-      return true;
-    });
-    // Completed specimens rise to the top; each group keeps its serial order.
-    return [...list].sort(
-      (a, b) =>
-        STATUS_RANK[normalizeStatus(a.status)] - STATUS_RANK[normalizeStatus(b.status)] ||
-        a.serial_number.localeCompare(b.serial_number),
-    );
-  }, [data, q, family, region, collector, statusFilter, from, to]);
+  // Changing a filter always goes back to the first page.
+  const filtersKey = JSON.stringify(filters);
+  const lastFiltersKey = useRef(filtersKey);
+  if (lastFiltersKey.current !== filtersKey) {
+    lastFiltersKey.current = filtersKey;
+    if (page !== 0) setPage(0);
+  }
+
+  const { data: pageData, isLoading } = useQuery({
+    queryKey: ["specimens", "page", filtersKey, page],
+    queryFn: () => fetchSpecimensPage(filters, page),
+    placeholderData: (prev) => prev,
+  });
+  const rows = pageData?.rows ?? [];
+  const total = pageData?.total ?? 0;
+  const pageCount = Math.max(1, Math.ceil(total / SPECIMENS_PAGE_SIZE));
+
+  const { data: facets } = useQuery({
+    queryKey: ["specimen-facets"],
+    queryFn: fetchSpecimenFacets,
+    staleTime: 60_000,
+  });
+  const familyOptions = facets?.families ?? [];
+  const regionOptions = facets?.regions ?? [];
+  const collectorOptions = facets?.collectors ?? [];
+
 
   const statusMutation = useMutation({
     mutationFn: ({ id, status }: { id: string; status: SpecimenStatus }) =>
@@ -275,7 +267,42 @@ function SpecimensPage() {
     onError: (e: Error) => toast.error(e.message === "NO_SELECTION" ? t("noSelection") : e.message),
   });
 
-  const allVisibleSelected = filtered.length > 0 && filtered.every((s) => selected.includes(s.id));
+  const allVisibleSelected = rows.length > 0 && rows.every((s) => selected.includes(s.id));
+
+  /** Export the whole filtered result set, not only the visible page. */
+  const exportFiltered = async () => {
+    setBusy(true);
+    try {
+      exportSpecimensToExcel(await fetchAllMatchingSpecimens(filters));
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : String(e));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const exportSelectedLabels = async () => {
+    setBusy(true);
+    try {
+      exportLabelsToWord(await fetchSpecimensByIds(selected), size);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : String(e));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const selectAllMatching = async () => {
+    setBusy(true);
+    try {
+      setSelected(await fetchMatchingSpecimenIds(filters));
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : String(e));
+    } finally {
+      setBusy(false);
+    }
+  };
+
 
   const clearFilters = () => {
     setQ("");
@@ -329,8 +356,8 @@ function SpecimensPage() {
             <Button
               size="sm"
               variant="outline"
-              onClick={() => exportSpecimensToExcel(filtered)}
-              disabled={filtered.length === 0}
+              onClick={() => void exportFiltered()}
+              disabled={total === 0 || busy}
             >
               <FileSpreadsheet className="size-4" />
               {t("exportExcel")}
@@ -338,13 +365,8 @@ function SpecimensPage() {
             <Button
               size="sm"
               variant="outline"
-              disabled={selected.length === 0}
-              onClick={() =>
-                exportLabelsToWord(
-                  data.filter((s) => selected.includes(s.id)),
-                  size,
-                )
-              }
+              disabled={selected.length === 0 || busy}
+              onClick={() => void exportSelectedLabels()}
             >
               <FileText className="size-4" />
               {t("exportWord")}
