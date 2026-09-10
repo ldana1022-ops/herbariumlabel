@@ -1,16 +1,24 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { toast } from "sonner";
 import { Database, FileSpreadsheet, Plus, Printer, Search } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useI18n } from "@/lib/i18n";
 import { exportSpecimensToExcel } from "@/lib/export-excel";
-import { fetchSpecimens, formatDate, type Specimen } from "@/lib/specimens";
+import {
+  fetchAllMatchingSpecimens,
+  fetchSpecimenDashboard,
+  fetchSpecimensPage,
+  formatDate,
+} from "@/lib/specimens";
 import { fetchPrintRecords } from "@/lib/prints";
-import { normalizeStatus, STATUS_ORDER } from "@/lib/specimen-status";
-import { countByRegion } from "@/lib/region";
+import { STATUS_ORDER } from "@/lib/specimen-status";
+import { countByRegionGroups } from "@/lib/region";
 import { StatusBadge } from "@/components/StatusBadge";
+
 
 export const Route = createFileRoute("/_authenticated/")({
   head: () => ({
