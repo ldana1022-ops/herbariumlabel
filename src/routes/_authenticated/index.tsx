@@ -187,8 +187,32 @@ function Index() {
                 </div>
               </div>
             ))}
+            {printedTotal > PRINTED_PAGE_SIZE ? (
+              <div className="flex items-center justify-between gap-3 pt-2 text-sm">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  disabled={printedPage === 0}
+                  onClick={() => setPrintedPage((p) => Math.max(0, p - 1))}
+                >
+                  {lang === "en" ? "Previous" : "السابق"}
+                </Button>
+                <span className="tabular-nums text-muted-foreground" dir="ltr">
+                  {printedPage + 1} / {printedPageCount}
+                </span>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  disabled={printedPage + 1 >= printedPageCount}
+                  onClick={() => setPrintedPage((p) => p + 1)}
+                >
+                  {lang === "en" ? "Next" : "التالي"}
+                </Button>
+              </div>
+            ) : null}
           </CardContent>
         </Card>
+
 
         <div className="grid gap-4 lg:grid-cols-2">
           <Card>
