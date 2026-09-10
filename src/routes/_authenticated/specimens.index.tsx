@@ -201,7 +201,6 @@ function SpecimensPage() {
   const regionOptions = facets?.regions ?? [];
   const collectorOptions = facets?.collectors ?? [];
 
-
   const statusMutation = useMutation({
     mutationFn: ({ id, status }: { id: string; status: SpecimenStatus }) =>
       updateSpecimenStatus(id, status),
@@ -302,7 +301,6 @@ function SpecimensPage() {
       setBusy(false);
     }
   };
-
 
   const clearFilters = () => {
     setQ("");
@@ -515,9 +513,7 @@ function SpecimensPage() {
               {lang === "en" ? "Select all results" : "تحديد كل النتائج"}
             </Button>
           ) : null}
-
         </div>
-
 
         {selected.length > 0 && (hasAnyEditable || canDelete) ? (
           <Card>
@@ -640,9 +636,7 @@ function SpecimensPage() {
                 <th className="w-10 border-b border-border p-2">
                   <Checkbox
                     checked={allVisibleSelected}
-                    onCheckedChange={(checked) =>
-                      setSelected(checked ? rows.map((s) => s.id) : [])
-                    }
+                    onCheckedChange={(checked) => setSelected(checked ? rows.map((s) => s.id) : [])}
                     aria-label="select all"
                   />
                 </th>
@@ -784,7 +778,6 @@ function SpecimensPage() {
           </Button>
         </div>
       </div>
-
 
       <AlertDialog open={Boolean(pendingDelete)} onOpenChange={(o) => !o && setPendingDelete(null)}>
         <AlertDialogContent>

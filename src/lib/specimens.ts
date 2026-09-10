@@ -165,7 +165,11 @@ const SEARCH_COLUMNS = [
 
 /** Strips characters that would break PostgREST's or() filter syntax. */
 function safeNeedle(value: string): string {
-  return value.trim().replace(/[,()%*\\]/g, " ").replace(/\s+/g, " ").trim();
+  return value
+    .trim()
+    .replace(/[,()%*\\]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 /** Applies the database-side filters shared by the list, export and select-all. */
@@ -278,7 +282,6 @@ export async function fetchSpecimenDashboard(): Promise<SpecimenDashboard> {
     localities: raw.localities ?? [],
   };
 }
-
 
 export async function fetchSpecimen(id: string): Promise<Specimen | null> {
   const { data, error } = await supabase

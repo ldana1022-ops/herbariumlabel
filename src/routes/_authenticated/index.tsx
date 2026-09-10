@@ -19,7 +19,6 @@ import { STATUS_ORDER } from "@/lib/specimen-status";
 import { countByRegionGroups } from "@/lib/region";
 import { StatusBadge } from "@/components/StatusBadge";
 
-
 export const Route = createFileRoute("/_authenticated/")({
   head: () => ({
     meta: [
@@ -114,7 +113,6 @@ function Index() {
           <Stat label={t("printedCount")} value={printedTotal} />
         </div>
 
-
         <Card>
           <CardHeader>
             <CardTitle className="text-base">{t("quickActions")}</CardTitle>
@@ -145,11 +143,14 @@ function Index() {
                 {t("printLabels")}
               </Link>
             </Button>
-            <Button variant="outline" onClick={() => void exportAll()} disabled={total === 0 || busy}>
+            <Button
+              variant="outline"
+              onClick={() => void exportAll()}
+              disabled={total === 0 || busy}
+            >
               <FileSpreadsheet className="size-4" />
               {t("exportExcel")}
             </Button>
-
           </CardContent>
         </Card>
 
@@ -213,7 +214,6 @@ function Index() {
           </CardContent>
         </Card>
 
-
         <div className="grid gap-4 lg:grid-cols-2">
           <Card>
             <CardHeader>
@@ -249,7 +249,6 @@ function Index() {
                   <span className="font-semibold tabular-nums">{count}</span>
                 </div>
               ))}
-
             </CardContent>
           </Card>
         </div>
