@@ -201,7 +201,6 @@ function SpecimensPage() {
   const regionOptions = facets?.regions ?? [];
   const collectorOptions = facets?.collectors ?? [];
 
-
   const statusMutation = useMutation({
     mutationFn: ({ id, status }: { id: string; status: SpecimenStatus }) =>
       updateSpecimenStatus(id, status),
@@ -302,7 +301,6 @@ function SpecimensPage() {
       setBusy(false);
     }
   };
-
 
   const clearFilters = () => {
     setQ("");
@@ -412,7 +410,7 @@ function SpecimensPage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value={ALL}>{t("all")}</SelectItem>
-                  {unique((s) => s.family).map((v) => (
+                  {familyOptions.map((v) => (
                     <SelectItem key={v} value={v}>
                       {v}
                     </SelectItem>
@@ -428,7 +426,7 @@ function SpecimensPage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value={ALL}>{t("all")}</SelectItem>
-                  {unique((s) => s.region).map((v) => (
+                  {regionOptions.map((v) => (
                     <SelectItem key={v} value={v}>
                       {v}
                     </SelectItem>
@@ -496,14 +494,24 @@ function SpecimensPage() {
           </CardContent>
         </Card>
 
-        <div className="flex items-center gap-3 text-sm text-muted-foreground">
+        <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
           <span>
-            {t("resultsCount")}: <strong className="text-foreground">{filtered.length}</strong>
+            {t("resultsCount")}: <strong className="text-foreground">{total}</strong>
           </span>
           {selected.length > 0 ? (
             <span>
               {selected.length} {t("selected")}
             </span>
+          ) : null}
+          {total > rows.length ? (
+            <Button
+              size="sm"
+              variant="ghost"
+              disabled={busy}
+              onClick={() => void selectAllMatching()}
+            >
+              {lang === "en" ? "Select all results" : "تحديد كل النتائج"}
+            </Button>
           ) : null}
         </div>
 
@@ -628,9 +636,7 @@ function SpecimensPage() {
                 <th className="w-10 border-b border-border p-2">
                   <Checkbox
                     checked={allVisibleSelected}
-                    onCheckedChange={(checked) =>
-                      setSelected(checked ? filtered.map((s) => s.id) : [])
-                    }
+                    onCheckedChange={(checked) => setSelected(checked ? rows.map((s) => s.id) : [])}
                     aria-label="select all"
                   />
                 </th>
@@ -660,7 +666,7 @@ function SpecimensPage() {
                     {t("loading")}
                   </td>
                 </tr>
-              ) : filtered.length === 0 ? (
+              ) : rows.length === 0 ? (
                 <tr>
                   <td
                     colSpan={headers.length + 3}
@@ -670,7 +676,7 @@ function SpecimensPage() {
                   </td>
                 </tr>
               ) : (
-                filtered.map((s) => (
+                rows.map((s) => (
                   <tr key={s.id} className="border-b border-border last:border-0 hover:bg-muted/50">
                     <td className="p-2">
                       <Checkbox
@@ -748,6 +754,28 @@ function SpecimensPage() {
               )}
             </tbody>
           </table>
+        </div>
+
+        <div className="flex items-center justify-between gap-3 text-sm">
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={page === 0 || isLoading}
+            onClick={() => setPage((p) => Math.max(0, p - 1))}
+          >
+            {lang === "en" ? "Previous" : "السابق"}
+          </Button>
+          <span className="tabular-nums text-muted-foreground" dir="ltr">
+            {page + 1} / {pageCount}
+          </span>
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={page + 1 >= pageCount || isLoading}
+            onClick={() => setPage((p) => p + 1)}
+          >
+            {lang === "en" ? "Next" : "التالي"}
+          </Button>
         </div>
       </div>
 
