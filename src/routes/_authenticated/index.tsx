@@ -145,14 +145,11 @@ function Index() {
                 {t("printLabels")}
               </Link>
             </Button>
-            <Button
-              variant="outline"
-              onClick={() => exportSpecimensToExcel(data)}
-              disabled={data.length === 0}
-            >
+            <Button variant="outline" onClick={() => void exportAll()} disabled={total === 0 || busy}>
               <FileSpreadsheet className="size-4" />
               {t("exportExcel")}
             </Button>
+
           </CardContent>
         </Card>
 
