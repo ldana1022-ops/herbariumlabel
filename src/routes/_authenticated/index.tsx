@@ -221,10 +221,10 @@ function Index() {
             </CardHeader>
             <CardContent className="space-y-2">
               {isLoading ? <p className="text-sm text-muted-foreground">{t("loading")}</p> : null}
-              {!isLoading && data.length === 0 ? (
+              {!isLoading && total === 0 ? (
                 <p className="text-sm text-muted-foreground">{t("noResults")}</p>
               ) : null}
-              {countByRegion(data).map(({ region, count }) => (
+              {countByRegionGroups(stats?.localities ?? []).map(({ region, count }) => (
                 <div
                   key={region.key}
                   className="flex items-center justify-between border-b border-border pb-1.5 text-sm last:border-0"
@@ -240,7 +240,7 @@ function Index() {
               <CardTitle className="text-base">{t("byFamily")}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
-              {countBy(data, (s) => s.family).map(([name, count]) => (
+              {(stats?.families ?? []).map(({ name, count }) => (
                 <div
                   key={name}
                   className="flex items-center justify-between border-b border-border pb-1.5 text-sm last:border-0"
@@ -249,6 +249,7 @@ function Index() {
                   <span className="font-semibold tabular-nums">{count}</span>
                 </div>
               ))}
+
             </CardContent>
           </Card>
         </div>
