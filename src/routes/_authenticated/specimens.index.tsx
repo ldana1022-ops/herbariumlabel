@@ -506,10 +506,16 @@ function SpecimensPage() {
             </span>
           ) : null}
           {total > rows.length ? (
-            <Button size="sm" variant="ghost" disabled={busy} onClick={() => void selectAllMatching()}>
-              {t("selectAll") || "select all"}
+            <Button
+              size="sm"
+              variant="ghost"
+              disabled={busy}
+              onClick={() => void selectAllMatching()}
+            >
+              {lang === "en" ? "Select all results" : "تحديد كل النتائج"}
             </Button>
           ) : null}
+
         </div>
 
 

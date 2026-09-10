@@ -327,3 +327,17 @@ export function countByRegion(list: Specimen[]): { region: RegionInfo; count: nu
   }
   return [...map.values()].sort((a, b) => b.count - a.count);
 }
+
+/** Group pre-aggregated locality counts by derived region, sorted by count desc. */
+export function countByRegionGroups(
+  groups: { locality: string | null; region: string | null; count: number }[],
+): { region: RegionInfo; count: number }[] {
+  const map = new Map<string, { region: RegionInfo; count: number }>();
+  for (const g of groups) {
+    const region = specimenRegion({ locality: g.locality, region: g.region });
+    const entry = map.get(region.key);
+    if (entry) entry.count += g.count;
+    else map.set(region.key, { region, count: g.count });
+  }
+  return [...map.values()].sort((a, b) => b.count - a.count);
+}
